@@ -5,10 +5,6 @@ import lombok.*;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-
-import static br.com.gabrielferreira.evento.utils.DataUtils.*;
 
 @Data
 @AllArgsConstructor
@@ -28,25 +24,9 @@ public class Cidade implements Serializable {
     @EqualsAndHashCode.Include
     private Long id;
 
-    @Column(name = "NOME", nullable = false)
+    @Column(name = "NOME", nullable = false, unique = true)
     private String nome;
 
     @Column(name = "CODIGO", nullable = false, unique = true)
     private String codigo;
-
-    @Column(name = "CREATED_AT", nullable = false)
-    private ZonedDateTime createdAt;
-
-    @Column(name = "UPDATED_AT")
-    private ZonedDateTime updatedAt;
-
-    @PrePersist
-    public void prePersist(){
-        createdAt = ZonedDateTime.now(ZoneId.of(AMERICA_SAO_PAULO));
-    }
-
-    @PreUpdate
-    public void preUpdate(){
-        updatedAt = ZonedDateTime.now(ZoneId.of(AMERICA_SAO_PAULO));
-    }
 }
