@@ -176,4 +176,40 @@ class EventoControllerIT {
         resultActions.andExpect(status().isOk());
         resultActions.andExpect(jsonPath("$.content").exists());
     }
+
+    @Test
+    @DisplayName("Não deve buscar eventos paginados quando informar propriedades repetidos")
+    @Order(9)
+    void naoDeveBuscarEventosPaginadosQuandoInformarPropriedadesRepetidos() throws Exception {
+        ResultActions resultActions = mockMvc
+                .perform(get(URL.concat("?page=0&size=5&sort=id,desc&sort=id,asc&sort=id,asc"))
+                        .accept(MEDIA_TYPE_JSON));
+
+        resultActions.andExpect(status().isBadRequest());
+        resultActions.andExpect(jsonPath("$.mensagem").value("A propriedade informada id está sendo informada mais de uma vez"));
+    }
+
+    @Test
+    @DisplayName("Não deve buscar eventos paginados quando informar propriedade incorreta")
+    @Order(10)
+    void naoDeveBuscarEventosPaginadosQuandoInformarPropriedadesIncorreta() throws Exception {
+        ResultActions resultActions = mockMvc
+                .perform(get(URL.concat("?page=0&size=5&sort=iddd,desc"))
+                        .accept(MEDIA_TYPE_JSON));
+
+        resultActions.andExpect(status().isBadRequest());
+        resultActions.andExpect(jsonPath("$.mensagem").value("A propriedade informada iddd não existe"));
+    }
+
+    @Test
+    @DisplayName("Deve buscar eventos paginados quando informar propriedade diferente do dto com a entidade")
+    @Order(11)
+    void deveBuscarEventosPaginadosPropriedadeDiferente() throws Exception {
+        ResultActions resultActions = mockMvc
+                .perform(get(URL.concat("?page=0&size=5&sort=data,desc"))
+                        .accept(MEDIA_TYPE_JSON));
+
+        resultActions.andExpect(status().isOk());
+        resultActions.andExpect(jsonPath("$.content").exists());
+    }
 }
