@@ -1,6 +1,7 @@
 package br.com.gabrielferreira.evento.controller;
 
 import br.com.gabrielferreira.evento.dto.EventoDTO;
+import br.com.gabrielferreira.evento.dto.EventoFiltroDTO;
 import br.com.gabrielferreira.evento.dto.EventoInsertDTO;
 import br.com.gabrielferreira.evento.service.EventoService;
 import lombok.RequiredArgsConstructor;
@@ -46,5 +47,10 @@ public class EventoController {
     @GetMapping
     public ResponseEntity<Page<EventoDTO>> buscarEventos(Pageable pageable){
         return ResponseEntity.ok().body(eventoService.buscarEventos(pageable));
+    }
+
+    @GetMapping("/avancada")
+    public ResponseEntity<Page<EventoDTO>> buscarEventosAvancados(EventoFiltroDTO filtros, Pageable pageable){
+        return ResponseEntity.ok().body(eventoService.buscarEventosAvancados(filtros, pageable));
     }
 }
