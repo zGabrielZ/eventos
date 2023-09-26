@@ -200,4 +200,19 @@ class EventoControllerIT {
         resultActions.andExpect(status().isOk());
         resultActions.andExpect(jsonPath("$.content").exists());
     }
+
+    @Test
+    @DisplayName("Deve buscar eventos avançados paginados quando existir")
+    @Order(11)
+    void deveBuscarEventosAvancadosPaginados() throws Exception {
+        String filtro = "/avancada?page=0&size=5&sort=id,desc&id=4&nome=Semana&data=2021-05-03" +
+                "&url=https://devsuperior.com.br&idCidade=3&createdAt=2023-09-26&updatedAt=";
+
+        ResultActions resultActions = mockMvc
+                .perform(get(URL.concat(filtro))
+                        .accept(MEDIA_TYPE_JSON));
+
+        resultActions.andExpect(status().isOk());
+        resultActions.andExpect(jsonPath("$.content").exists());
+    }
 }

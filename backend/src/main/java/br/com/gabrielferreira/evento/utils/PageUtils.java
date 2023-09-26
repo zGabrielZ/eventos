@@ -17,7 +17,7 @@ public class PageUtils {
 
     public static void validarPropriedadeInformada(Sort sorts, Class<?> classe){
         if(!sorts.isEmpty()){
-            List<String> propriedadesInformadas = sorts.stream().map(Sort.Order::getProperty).toList();
+            List<String> propriedadesInformadas = sorts.stream().map(s -> s.getProperty().toLowerCase()).toList();
             List<String> campos = listarAtributosRecursivamente(new ArrayList<>(), "", classe);
 
             propriedadesInformadas.forEach(propriedadeInformada -> {

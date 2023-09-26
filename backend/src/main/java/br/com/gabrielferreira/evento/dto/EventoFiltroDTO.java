@@ -50,7 +50,7 @@ public class EventoFiltroDTO implements Serializable {
     }
 
     @JsonIgnore
-    public boolean isUrl(){
+    public boolean isUrlExistente(){
         return StringUtils.isNotBlank(this.url);
     }
 
