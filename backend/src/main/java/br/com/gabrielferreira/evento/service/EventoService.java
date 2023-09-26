@@ -20,12 +20,15 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static br.com.gabrielferreira.evento.dto.factory.EventoDTOFactory.*;
 import static br.com.gabrielferreira.evento.entities.factory.EventoFactory.*;
 import static br.com.gabrielferreira.evento.model.factory.ConsultaFactory.*;
 import static br.com.gabrielferreira.evento.validate.ValidacaoConsulta.*;
+import static br.com.gabrielferreira.evento.utils.PageUtils.*;
 
 @Service
 @RequiredArgsConstructor
@@ -70,8 +73,12 @@ public class EventoService {
     }
 
     public Page<EventoDTO> buscarEventos(Pageable pageable){
-        ModelConsulta consulta = criar(EventoDTOConsulta.class);
-        pageable = validarOrderBy(pageable, consulta);
+        validarPropriedadeInformada(pageable.getSort(), EventoDTO.class);
+
+        Map<String, String> atributoDtoToEntity = new HashMap<>();
+        atributoDtoToEntity.put("data", "dataEvento");
+
+        pageable = validarOrderBy(pageable, atributoDtoToEntity);
         return toEventosDtos(eventoRepository.buscarEventos(pageable));
     }
 
