@@ -7,6 +7,7 @@ import br.com.gabrielferreira.evento.service.EventoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -45,12 +46,12 @@ public class EventoController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<EventoDTO>> buscarEventos(Pageable pageable){
+    public ResponseEntity<Page<EventoDTO>> buscarEventos(@PageableDefault(size = 5) Pageable pageable){
         return ResponseEntity.ok().body(eventoService.buscarEventos(pageable));
     }
 
     @GetMapping("/avancada")
-    public ResponseEntity<Page<EventoDTO>> buscarEventosAvancados(EventoFiltroDTO filtros, Pageable pageable){
+    public ResponseEntity<Page<EventoDTO>> buscarEventosAvancados(EventoFiltroDTO filtros, @PageableDefault(size = 5) Pageable pageable){
         return ResponseEntity.ok().body(eventoService.buscarEventosAvancados(filtros, pageable));
     }
 }
