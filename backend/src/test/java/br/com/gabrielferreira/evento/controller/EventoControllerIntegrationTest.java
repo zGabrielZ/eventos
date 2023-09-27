@@ -21,7 +21,7 @@ import static br.com.gabrielferreira.evento.tests.Factory.*;
 @AutoConfigureMockMvc
 @Transactional
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-class EventoControllerIT {
+class EventoControllerIntegrationTest {
 
     private static final String URL = "/eventos";
     private static final MediaType MEDIA_TYPE_JSON = MediaType.APPLICATION_JSON;
