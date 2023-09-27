@@ -1,7 +1,8 @@
 package br.com.gabrielferreira.evento.service;
 
 import br.com.gabrielferreira.evento.dto.EventoDTO;
-import br.com.gabrielferreira.evento.dto.EventoFiltroDTO;
+import br.com.gabrielferreira.evento.dto.EventoInsertDTO;
+import br.com.gabrielferreira.evento.entities.Evento;
 import br.com.gabrielferreira.evento.exception.NaoEncontradoException;
 import br.com.gabrielferreira.evento.repository.EventoRepository;
 import org.junit.jupiter.api.*;
@@ -32,24 +33,31 @@ class EventoServiceTest {
     @Mock
     private CidadeService cidadeService;
 
-    @Mock
-    private ConsultaAvancadaService consultaAvancadaService;
-
     private Long idEventoExistente;
 
     private Long idEventoInexistente;
 
-    private EventoFiltroDTO filtroDTO;
+    private EventoInsertDTO eventoInsertDTO;
+
+    private EventoInsertDTO eventoUpdateDTO;
 
     @BeforeEach
     void setUp(){
         idEventoExistente = 1L;
         idEventoInexistente = -1L;
+        eventoInsertDTO = criarEventoInsertDto();
+        eventoUpdateDTO = criarEventoUpdate();
 
-        when(eventoRepository.buscarEventoPorId(idEventoExistente)).thenReturn(Optional.of(gerarEvento()));
+        Evento evento = gerarEvento();
+        when(eventoRepository.buscarEventoPorId(idEventoExistente)).thenReturn(Optional.of(evento));
         when(eventoRepository.buscarEventoPorId(idEventoInexistente)).thenReturn(Optional.empty());
 
         when(eventoRepository.buscarEventos(any())).thenReturn(gerarPageEventos());
+
+        when(eventoRepository.save(any())).thenReturn(evento);
+        when(cidadeService.buscarCidade(any())).thenReturn(gerarCidade());
+
+        doNothing().when(eventoRepository).delete(evento);
     }
 
     @Test
@@ -81,4 +89,42 @@ class EventoServiceTest {
         assertNotNull(eventoDTOS);
         verify(eventoRepository, times(1)).buscarEventos(pageRequest);
     }
+
+    @Test
+    @DisplayName("Deve cadastrar evento quando informar valores corretos")
+    @Order(4)
+    void deveCadastrarEventos(){
+        EventoDTO eventoDTO = eventoService.cadastrarEvento(eventoInsertDTO);
+
+        assertNotNull(eventoDTO);
+        verify(eventoRepository, times(1)).save(any());
+    }
+
+    @Test
+    @DisplayName("Deve atualizar evento quando informar valores corretos")
+    @Order(5)
+    void deveAtualizarEventos(){
+        EventoDTO eventoDTO = eventoService.atualizarEvento(idEventoExistente, eventoUpdateDTO);
+
+        assertNotNull(eventoDTO);
+        verify(eventoRepository, times(1)).save(any());
+    }
+
+    @Test
+    @DisplayName("Deve deletar evento quando informar id existente")
+    @Order(6)
+    void deveDeletarEvento(){
+        assertDoesNotThrow(() -> eventoService.deletarEventoPorId(idEventoExistente));
+        verify(eventoRepository, times(1)).delete(any());
+    }
+
+    @Test
+    @DisplayName("Não deve deletar evento quando informar id inexistente")
+    @Order(7)
+    void naoDeveDeletarCategoria(){
+        assertThrows(NaoEncontradoException.class, () -> eventoService.deletarEventoPorId(idEventoInexistente));
+        verify(eventoRepository, never()).delete(any());
+    }
+
+
 }
