@@ -1,6 +1,6 @@
 package br.com.gabrielferreira.evento.service;
 
-import br.com.gabrielferreira.evento.dto.CidadeDTO;
+import br.com.gabrielferreira.evento.dto.response.CidadeResponseDTO;
 import br.com.gabrielferreira.evento.exception.MsgException;
 import br.com.gabrielferreira.evento.exception.NaoEncontradoException;
 import br.com.gabrielferreira.evento.repository.CidadeRepository;
@@ -58,7 +58,7 @@ class CidadeServiceTest {
     @DisplayName("Deve buscar lista de cidades")
     @Order(1)
     void deveBuscarListaDeCidades(){
-        List<CidadeDTO> cidades = cidadeService.buscarCidades();
+        List<CidadeResponseDTO> cidades = cidadeService.buscarCidades();
 
         assertFalse(cidades.isEmpty());
         assertEquals("Manaus", cidades.get(0).nome());
@@ -71,7 +71,7 @@ class CidadeServiceTest {
     @DisplayName("Deve buscar cidade por id quando existir")
     @Order(2)
     void deveBuscarCidadePorId(){
-        CidadeDTO cidade = cidadeService.buscarCidadePorId(idCidadeExistente);
+        CidadeResponseDTO cidade = cidadeService.buscarCidadePorId(idCidadeExistente);
 
         assertNotNull(cidade);
         verify(cidadeRepository, times(1)).findById(idCidadeExistente);
@@ -89,7 +89,7 @@ class CidadeServiceTest {
     @DisplayName("Deve buscar cidade por código quando existir")
     @Order(4)
     void deveBuscarCidadePorCodigo(){
-        CidadeDTO cidade = cidadeService.buscarCidadePorCodigo(codigoExistente);
+        CidadeResponseDTO cidade = cidadeService.buscarCidadePorCodigo(codigoExistente);
 
         assertNotNull(cidade);
         verify(cidadeRepository, times(1)).buscarCidadePorCodigo(codigoExistente);

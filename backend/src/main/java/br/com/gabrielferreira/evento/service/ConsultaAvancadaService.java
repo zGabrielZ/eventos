@@ -1,9 +1,9 @@
 package br.com.gabrielferreira.evento.service;
 
 import br.com.gabrielferreira.evento.dao.QueryDslDAO;
-import br.com.gabrielferreira.evento.dto.CidadeDTO;
-import br.com.gabrielferreira.evento.dto.EventoDTO;
-import br.com.gabrielferreira.evento.dto.EventoFiltroDTO;
+import br.com.gabrielferreira.evento.dto.response.CidadeResponseDTO;
+import br.com.gabrielferreira.evento.dto.response.EventoResponseDTO;
+import br.com.gabrielferreira.evento.dto.filter.EventoFilterDTO;
 import br.com.gabrielferreira.evento.entities.Evento;
 import br.com.gabrielferreira.evento.entities.QEvento;
 import com.querydsl.core.BooleanBuilder;
@@ -33,22 +33,22 @@ public class ConsultaAvancadaService {
 
     private final QueryDslDAO queryDslDAO;
 
-    public Page<EventoDTO> buscarEventos(EventoFiltroDTO filtros, Pageable pageable, Map<String, String> atributoDtoToEntity){
-        validarPropriedadeInformada(pageable.getSort(), EventoDTO.class);
+    public Page<EventoResponseDTO> buscarEventos(EventoFilterDTO filtros, Pageable pageable, Map<String, String> atributoDtoToEntity){
+        validarPropriedadeInformada(pageable.getSort(), EventoResponseDTO.class);
         pageable = validarOrderBy(pageable, atributoDtoToEntity);
 
         QEvento qEvento = QEvento.evento;
         BooleanBuilder booleanBuilder = new BooleanBuilder();
         validarFiltroEventos(filtros, booleanBuilder, qEvento);
 
-        List<EventoDTO> eventoDTOS = queryDslDAO.query(q -> q.select(Projections.constructor(
-                        EventoDTO.class,
+        List<EventoResponseDTO> eventoResponseDTOS = queryDslDAO.query(q -> q.select(Projections.constructor(
+                        EventoResponseDTO.class,
                         qEvento.id,
                         qEvento.nome,
                         qEvento.dataEvento,
                         qEvento.url,
                         Projections.constructor(
-                                CidadeDTO.class,
+                                CidadeResponseDTO.class,
                                 qEvento.cidade.id,
                                 qEvento.cidade.nome,
                                 qEvento.cidade.codigo
@@ -63,10 +63,10 @@ public class ConsultaAvancadaService {
                 .limit(pageable.getPageSize())
                 .fetch();
 
-        return new PageImpl<>(eventoDTOS, pageable, eventoDTOS.size());
+        return new PageImpl<>(eventoResponseDTOS, pageable, eventoResponseDTOS.size());
     }
 
-    private void validarFiltroEventos(EventoFiltroDTO filtros, BooleanBuilder booleanBuilder, QEvento qEvento){
+    private void validarFiltroEventos(EventoFilterDTO filtros, BooleanBuilder booleanBuilder, QEvento qEvento){
         if(filtros.isIdExistente()){
             booleanBuilder.and(qEvento.id.eq(filtros.getId()));
         }

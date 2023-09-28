@@ -1,7 +1,7 @@
 package br.com.gabrielferreira.evento.tests;
 
-import br.com.gabrielferreira.evento.dto.CidadeInsertDTO;
-import br.com.gabrielferreira.evento.dto.EventoInsertDTO;
+import br.com.gabrielferreira.evento.dto.request.CidadeRequestDTO;
+import br.com.gabrielferreira.evento.dto.request.EventoRequestDTO;
 import br.com.gabrielferreira.evento.entities.Cidade;
 import br.com.gabrielferreira.evento.entities.Evento;
 import org.springframework.data.domain.PageImpl;
@@ -52,23 +52,23 @@ public class Factory {
         return new PageImpl<>(eventos);
     }
 
-    public static EventoInsertDTO criarEventoInsertDto(){
-        CidadeInsertDTO cidadeInsertDTO = CidadeInsertDTO.builder().id(1L).build();
-        return EventoInsertDTO.builder()
+    public static EventoRequestDTO criarEventoInsertDto(){
+        CidadeRequestDTO cidadeRequestDTO = CidadeRequestDTO.builder().id(1L).build();
+        return EventoRequestDTO.builder()
                 .nome("evento teste")
                 .data(LocalDate.of(2022, 4, 22))
                 .url("https://www.google.com.br/?hl=pt-BR")
-                .cidade(cidadeInsertDTO)
+                .cidade(cidadeRequestDTO)
                 .build();
     }
 
-    public static EventoInsertDTO criarEventoUpdate(){
-        CidadeInsertDTO cidadeInsertDTO = CidadeInsertDTO.builder().id(2L).build();
-        return EventoInsertDTO.builder()
+    public static EventoRequestDTO criarEventoUpdateDto(){
+        CidadeRequestDTO cidadeRequestDTO = CidadeRequestDTO.builder().id(2L).build();
+        return EventoRequestDTO.builder()
                 .nome("evento teste atualizado")
                 .data(LocalDate.of(2023, 6, 22))
                 .url("teste url")
-                .cidade(cidadeInsertDTO)
+                .cidade(cidadeRequestDTO)
                 .build();
     }
 }

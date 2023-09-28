@@ -1,6 +1,6 @@
 package br.com.gabrielferreira.evento.controller;
 
-import br.com.gabrielferreira.evento.dto.EventoInsertDTO;
+import br.com.gabrielferreira.evento.dto.request.EventoRequestDTO;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,16 +36,16 @@ class EventoControllerIntegrationTest {
 
     private Long idEventoInexistente;
 
-    private EventoInsertDTO eventoInsertDTO;
+    private EventoRequestDTO eventoRequestDTO;
 
-    private EventoInsertDTO eventoUpdate;
+    private EventoRequestDTO eventoUpdate;
 
     @BeforeEach
     void setUp(){
         idEventoExistente = 1L;
         idEventoInexistente = -1L;
-        eventoInsertDTO = criarEventoInsertDto();
-        eventoUpdate = criarEventoUpdate();
+        eventoRequestDTO = criarEventoInsertDto();
+        eventoUpdate = criarEventoUpdateDto();
     }
 
     @Test
@@ -81,10 +81,10 @@ class EventoControllerIntegrationTest {
     @DisplayName("Deve cadastrar um evento")
     @Order(3)
     void deveCadastrarEvento() throws Exception{
-        String jsonBody = objectMapper.writeValueAsString(eventoInsertDTO);
+        String jsonBody = objectMapper.writeValueAsString(eventoRequestDTO);
 
-        String nomeEsperado = eventoInsertDTO.getNome();
-        String dataEsperado = eventoInsertDTO.getData().toString();
+        String nomeEsperado = eventoRequestDTO.getNome();
+        String dataEsperado = eventoRequestDTO.getData().toString();
 
         ResultActions resultActions = mockMvc
                 .perform(post(URL)

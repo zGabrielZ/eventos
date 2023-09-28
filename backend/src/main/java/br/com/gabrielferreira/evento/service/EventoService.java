@@ -1,8 +1,8 @@
 package br.com.gabrielferreira.evento.service;
 
-import br.com.gabrielferreira.evento.dto.EventoDTO;
-import br.com.gabrielferreira.evento.dto.EventoFiltroDTO;
-import br.com.gabrielferreira.evento.dto.EventoInsertDTO;
+import br.com.gabrielferreira.evento.dto.response.EventoResponseDTO;
+import br.com.gabrielferreira.evento.dto.filter.EventoFilterDTO;
+import br.com.gabrielferreira.evento.dto.request.EventoRequestDTO;
 import br.com.gabrielferreira.evento.entities.Cidade;
 import br.com.gabrielferreira.evento.entities.Evento;
 import br.com.gabrielferreira.evento.exception.NaoEncontradoException;
@@ -15,7 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.HashMap;
 import java.util.Map;
 
-import static br.com.gabrielferreira.evento.dto.factory.EventoDTOFactory.*;
+import static br.com.gabrielferreira.evento.dto.response.factory.EventoResponseDTOFactory.*;
 import static br.com.gabrielferreira.evento.entities.factory.EventoFactory.*;
 import static br.com.gabrielferreira.evento.utils.PageUtils.*;
 
@@ -30,25 +30,25 @@ public class EventoService {
     private final ConsultaAvancadaService consultaAvancadaService;
 
     @Transactional
-    public EventoDTO cadastrarEvento(EventoInsertDTO eventoInsertDTO){
-        Cidade cidade = cidadeService.buscarCidade(eventoInsertDTO.getCidade().getId());
+    public EventoResponseDTO cadastrarEvento(EventoRequestDTO eventoRequestDTO){
+        Cidade cidade = cidadeService.buscarCidade(eventoRequestDTO.getCidade().getId());
 
-        Evento evento = toEvento(cidade, eventoInsertDTO);
+        Evento evento = toEvento(cidade, eventoRequestDTO);
         evento = eventoRepository.save(evento);
         return toEventoDto(evento);
     }
 
-    public EventoDTO buscarEventoPorId(Long id){
+    public EventoResponseDTO buscarEventoPorId(Long id){
         return toEventoDto(buscarEvento(id));
     }
 
     @Transactional
-    public EventoDTO atualizarEvento(Long id, EventoInsertDTO eventoInsertDTO){
+    public EventoResponseDTO atualizarEvento(Long id, EventoRequestDTO eventoRequestDTO){
         Evento eventoEncontrado = buscarEvento(id);
 
-        Cidade cidadeEncontrada = cidadeService.buscarCidade(eventoInsertDTO.getCidade().getId());
+        Cidade cidadeEncontrada = cidadeService.buscarCidade(eventoRequestDTO.getCidade().getId());
 
-        toEvento(cidadeEncontrada, eventoEncontrado, eventoInsertDTO);
+        toEvento(cidadeEncontrada, eventoEncontrado, eventoRequestDTO);
 
         eventoEncontrado = eventoRepository.save(eventoEncontrado);
 
@@ -61,13 +61,13 @@ public class EventoService {
         eventoRepository.delete(eventoEncontrado);
     }
 
-    public Page<EventoDTO> buscarEventos(Pageable pageable){
-        validarPropriedadeInformada(pageable.getSort(), EventoDTO.class);
+    public Page<EventoResponseDTO> buscarEventos(Pageable pageable){
+        validarPropriedadeInformada(pageable.getSort(), EventoResponseDTO.class);
         pageable = validarOrderBy(pageable, atributoDtoToEntity());
         return toEventosDtos(eventoRepository.buscarEventos(pageable));
     }
 
-    public Page<EventoDTO> buscarEventosAvancados(EventoFiltroDTO filtros, Pageable pageable){
+    public Page<EventoResponseDTO> buscarEventosAvancados(EventoFilterDTO filtros, Pageable pageable){
         return consultaAvancadaService.buscarEventos(filtros, pageable, atributoDtoToEntity());
     }
 

@@ -1,7 +1,7 @@
 package br.com.gabrielferreira.evento.service;
 
-import br.com.gabrielferreira.evento.dto.EventoDTO;
-import br.com.gabrielferreira.evento.dto.EventoInsertDTO;
+import br.com.gabrielferreira.evento.dto.response.EventoResponseDTO;
+import br.com.gabrielferreira.evento.dto.request.EventoRequestDTO;
 import br.com.gabrielferreira.evento.entities.Evento;
 import br.com.gabrielferreira.evento.exception.NaoEncontradoException;
 import br.com.gabrielferreira.evento.repository.EventoRepository;
@@ -37,16 +37,16 @@ class EventoServiceTest {
 
     private Long idEventoInexistente;
 
-    private EventoInsertDTO eventoInsertDTO;
+    private EventoRequestDTO eventoRequestDTO;
 
-    private EventoInsertDTO eventoUpdateDTO;
+    private EventoRequestDTO eventoUpdateDTO;
 
     @BeforeEach
     void setUp(){
         idEventoExistente = 1L;
         idEventoInexistente = -1L;
-        eventoInsertDTO = criarEventoInsertDto();
-        eventoUpdateDTO = criarEventoUpdate();
+        eventoRequestDTO = criarEventoInsertDto();
+        eventoUpdateDTO = criarEventoUpdateDto();
 
         Evento evento = gerarEvento();
         when(eventoRepository.buscarEventoPorId(idEventoExistente)).thenReturn(Optional.of(evento));
@@ -64,9 +64,9 @@ class EventoServiceTest {
     @DisplayName("Deve buscar evento por id quando existir")
     @Order(1)
     void deveBuscarEventoPorId(){
-        EventoDTO eventoDTO = eventoService.buscarEventoPorId(idEventoExistente);
+        EventoResponseDTO eventoResponseDTO = eventoService.buscarEventoPorId(idEventoExistente);
 
-        assertNotNull(eventoDTO);
+        assertNotNull(eventoResponseDTO);
         verify(eventoRepository, times(1)).buscarEventoPorId(idEventoExistente);
     }
 
@@ -83,7 +83,7 @@ class EventoServiceTest {
     @Order(3)
     void deveRetornarEventosPaginados(){
         PageRequest pageRequest = PageRequest.of(0, 10, Sort.by("id"));
-        Page<EventoDTO> eventoDTOS = eventoService.buscarEventos(pageRequest);
+        Page<EventoResponseDTO> eventoDTOS = eventoService.buscarEventos(pageRequest);
 
         assertFalse(eventoDTOS.isEmpty());
         assertNotNull(eventoDTOS);
@@ -94,9 +94,9 @@ class EventoServiceTest {
     @DisplayName("Deve cadastrar evento quando informar valores corretos")
     @Order(4)
     void deveCadastrarEventos(){
-        EventoDTO eventoDTO = eventoService.cadastrarEvento(eventoInsertDTO);
+        EventoResponseDTO eventoResponseDTO = eventoService.cadastrarEvento(eventoRequestDTO);
 
-        assertNotNull(eventoDTO);
+        assertNotNull(eventoResponseDTO);
         verify(eventoRepository, times(1)).save(any());
     }
 
@@ -104,9 +104,9 @@ class EventoServiceTest {
     @DisplayName("Deve atualizar evento quando informar valores corretos")
     @Order(5)
     void deveAtualizarEventos(){
-        EventoDTO eventoDTO = eventoService.atualizarEvento(idEventoExistente, eventoUpdateDTO);
+        EventoResponseDTO eventoResponseDTO = eventoService.atualizarEvento(idEventoExistente, eventoUpdateDTO);
 
-        assertNotNull(eventoDTO);
+        assertNotNull(eventoResponseDTO);
         verify(eventoRepository, times(1)).save(any());
     }
 

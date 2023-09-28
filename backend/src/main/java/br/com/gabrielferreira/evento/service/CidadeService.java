@@ -1,6 +1,6 @@
 package br.com.gabrielferreira.evento.service;
 
-import br.com.gabrielferreira.evento.dto.CidadeDTO;
+import br.com.gabrielferreira.evento.dto.response.CidadeResponseDTO;
 import br.com.gabrielferreira.evento.entities.Cidade;
 import br.com.gabrielferreira.evento.exception.MsgException;
 import br.com.gabrielferreira.evento.exception.NaoEncontradoException;
@@ -10,7 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.util.List;
 
-import static br.com.gabrielferreira.evento.dto.factory.CidadeDTOFactory.*;
+import static br.com.gabrielferreira.evento.dto.response.factory.CidadeResponseDTOFactory.*;
 
 @Service
 @RequiredArgsConstructor
@@ -18,22 +18,22 @@ public class CidadeService {
 
     private final CidadeRepository cidadeRepository;
 
-    public List<CidadeDTO> buscarCidades(){
-        return toCidadesDtos(cidadeRepository.buscarCidades());
+    public List<CidadeResponseDTO> buscarCidades(){
+        return toCidadesResponsesDtos(cidadeRepository.buscarCidades());
     }
 
-    public CidadeDTO buscarCidadePorId(Long id){
-        return toCidadeDto(buscarCidade(id));
+    public CidadeResponseDTO buscarCidadePorId(Long id){
+        return toCidadeResponseDto(buscarCidade(id));
     }
 
-    public CidadeDTO buscarCidadePorCodigo(String codigo){
+    public CidadeResponseDTO buscarCidadePorCodigo(String codigo){
         if(StringUtils.isBlank(codigo)){
             throw new MsgException("É necessário informar o código");
         }
 
         Cidade cidade = cidadeRepository.buscarCidadePorCodigo(codigo)
                 .orElseThrow(() -> new NaoEncontradoException("Cidade não encontrada"));
-        return toCidadeDto(cidade);
+        return toCidadeResponseDto(cidade);
     }
 
     public Cidade buscarCidade(Long id){

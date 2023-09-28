@@ -1,4 +1,4 @@
-package br.com.gabrielferreira.evento.dto;
+package br.com.gabrielferreira.evento.dto.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,7 +13,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class EventoInsertDTO implements Serializable {
+public class EventoRequestDTO implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 958714108846456044L;
@@ -24,5 +24,5 @@ public class EventoInsertDTO implements Serializable {
 
     private String url;
 
-    private CidadeInsertDTO cidade;
+    private CidadeRequestDTO cidade;
 }
