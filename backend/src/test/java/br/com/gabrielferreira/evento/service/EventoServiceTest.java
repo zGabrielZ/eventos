@@ -2,7 +2,7 @@ package br.com.gabrielferreira.evento.service;
 
 import br.com.gabrielferreira.evento.dto.response.EventoResponseDTO;
 import br.com.gabrielferreira.evento.dto.request.EventoRequestDTO;
-import br.com.gabrielferreira.evento.entities.Evento;
+import br.com.gabrielferreira.evento.entity.Evento;
 import br.com.gabrielferreira.evento.exception.NaoEncontradoException;
 import br.com.gabrielferreira.evento.repository.EventoRepository;
 import org.junit.jupiter.api.*;

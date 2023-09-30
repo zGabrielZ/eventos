@@ -1,7 +1,7 @@
 package br.com.gabrielferreira.evento.dto.response.factory;
 
 import br.com.gabrielferreira.evento.dto.response.EventoResponseDTO;
-import br.com.gabrielferreira.evento.entities.Evento;
+import br.com.gabrielferreira.evento.entity.Evento;
 import org.springframework.data.domain.Page;
 
 import static br.com.gabrielferreira.evento.dto.response.factory.CidadeResponseDTOFactory.*;

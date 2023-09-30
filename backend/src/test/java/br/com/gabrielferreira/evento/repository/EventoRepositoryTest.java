@@ -1,6 +1,6 @@
 package br.com.gabrielferreira.evento.repository;
 
-import br.com.gabrielferreira.evento.entities.Evento;
+import br.com.gabrielferreira.evento.entity.Evento;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;

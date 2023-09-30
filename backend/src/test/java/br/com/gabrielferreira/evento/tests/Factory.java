@@ -2,8 +2,8 @@ package br.com.gabrielferreira.evento.tests;
 
 import br.com.gabrielferreira.evento.dto.request.CidadeRequestDTO;
 import br.com.gabrielferreira.evento.dto.request.EventoRequestDTO;
-import br.com.gabrielferreira.evento.entities.Cidade;
-import br.com.gabrielferreira.evento.entities.Evento;
+import br.com.gabrielferreira.evento.entity.Cidade;
+import br.com.gabrielferreira.evento.entity.Evento;
 import org.springframework.data.domain.PageImpl;
 
 import java.time.LocalDate;

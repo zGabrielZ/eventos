@@ -1,6 +1,6 @@
 package br.com.gabrielferreira.evento.repository;
 
-import br.com.gabrielferreira.evento.entities.Cidade;
+import br.com.gabrielferreira.evento.entity.Cidade;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

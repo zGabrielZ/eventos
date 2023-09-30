@@ -1,7 +1,7 @@
 package br.com.gabrielferreira.evento.dto.response.factory;
 
 import br.com.gabrielferreira.evento.dto.response.CidadeResponseDTO;
-import br.com.gabrielferreira.evento.entities.Cidade;
+import br.com.gabrielferreira.evento.entity.Cidade;
 
 import java.util.List;
 

@@ -3,8 +3,8 @@ package br.com.gabrielferreira.evento.service;
 import br.com.gabrielferreira.evento.dto.response.EventoResponseDTO;
 import br.com.gabrielferreira.evento.dto.filter.EventoFilterDTO;
 import br.com.gabrielferreira.evento.dto.request.EventoRequestDTO;
-import br.com.gabrielferreira.evento.entities.Cidade;
-import br.com.gabrielferreira.evento.entities.Evento;
+import br.com.gabrielferreira.evento.entity.Cidade;
+import br.com.gabrielferreira.evento.entity.Evento;
 import br.com.gabrielferreira.evento.exception.NaoEncontradoException;
 import br.com.gabrielferreira.evento.repository.EventoRepository;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static br.com.gabrielferreira.evento.dto.response.factory.EventoResponseDTOFactory.*;
-import static br.com.gabrielferreira.evento.entities.factory.EventoFactory.*;
+import static br.com.gabrielferreira.evento.entity.factory.EventoFactory.*;
 import static br.com.gabrielferreira.evento.utils.PageUtils.*;
 
 @Service

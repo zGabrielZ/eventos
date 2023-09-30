@@ -1,8 +1,8 @@
-package br.com.gabrielferreira.evento.entities.factory;
+package br.com.gabrielferreira.evento.entity.factory;
 
 import br.com.gabrielferreira.evento.dto.request.EventoRequestDTO;
-import br.com.gabrielferreira.evento.entities.Cidade;
-import br.com.gabrielferreira.evento.entities.Evento;
+import br.com.gabrielferreira.evento.entity.Cidade;
+import br.com.gabrielferreira.evento.entity.Evento;
 
 public class EventoFactory {
 

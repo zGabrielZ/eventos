@@ -1,7 +1,7 @@
 package br.com.gabrielferreira.evento.service;
 
 import br.com.gabrielferreira.evento.dto.response.CidadeResponseDTO;
-import br.com.gabrielferreira.evento.entities.Cidade;
+import br.com.gabrielferreira.evento.entity.Cidade;
 import br.com.gabrielferreira.evento.exception.MsgException;
 import br.com.gabrielferreira.evento.exception.NaoEncontradoException;
 import br.com.gabrielferreira.evento.repository.CidadeRepository;
