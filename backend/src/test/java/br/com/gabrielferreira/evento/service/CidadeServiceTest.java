@@ -43,8 +43,6 @@ class CidadeServiceTest {
         codigoExistente = "MANAUS";
         codigoInexistente = "teste123";
 
-        cidadeService = new CidadeService(cidadeRepository);
-
         List<Cidade> cidades = gerarCidades();
         when(cidadeRepository.buscarCidades()).thenReturn(cidades);
 

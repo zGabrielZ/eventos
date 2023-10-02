@@ -2,12 +2,12 @@ package br.com.gabrielferreira.evento.factory.filters;
 
 import br.com.gabrielferreira.evento.dto.params.EventoParamsDTO;
 import br.com.gabrielferreira.evento.repository.filter.EventoFilters;
-import org.springframework.stereotype.Component;
 
-@Component
 public class EventoFiltersFactory {
 
-    public EventoFilters toEventoFilters(EventoParamsDTO eventoParamsDTO){
+    private EventoFiltersFactory(){}
+
+    public static EventoFilters createEventoFilters(EventoParamsDTO eventoParamsDTO){
         if(eventoParamsDTO != null){
             return EventoFilters.builder()
                     .id(eventoParamsDTO.getId())

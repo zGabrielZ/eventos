@@ -8,7 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
-import static br.com.gabrielferreira.evento.factory.dto.v2.CidadeResponseDTOFactory.*;
+import static br.com.gabrielferreira.evento.factory.dto.CidadeResponseDTOFactory.*;
 
 @RestController
 @RequestMapping("/cidades")

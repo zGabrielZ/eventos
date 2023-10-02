@@ -10,7 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.util.List;
 
-import static br.com.gabrielferreira.evento.factory.domain.v2.CidadeDomainFactory.*;
+import static br.com.gabrielferreira.evento.factory.domain.CidadeDomainFactory.*;
 
 @Service
 @RequiredArgsConstructor

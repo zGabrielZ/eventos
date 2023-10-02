@@ -1,10 +1,12 @@
 package br.com.gabrielferreira.evento.tests;
 
+import br.com.gabrielferreira.evento.domain.CidadeDomain;
 import br.com.gabrielferreira.evento.dto.request.CidadeRequestDTO;
 import br.com.gabrielferreira.evento.dto.request.EventoRequestDTO;
 import br.com.gabrielferreira.evento.entity.Cidade;
 import br.com.gabrielferreira.evento.entity.Evento;
 import org.springframework.data.domain.PageImpl;
+
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -33,26 +35,40 @@ public class Factory {
                 .build();
     }
 
-    public static Evento gerarEvento(){
-        return Evento.builder()
-                .id(1L)
-                .nome("Evento teste")
-                .dataEvento(LocalDate.of(2023, 4, 22))
-                .url("https://www.google.com.br/?hl=pt-BR")
-                .cidade(gerarCidade())
-                .createdAt(ZonedDateTime.now(ZoneId.of(AMERICA_SAO_PAULO)))
-                .updatedAt(ZonedDateTime.now(ZoneId.of(AMERICA_SAO_PAULO)))
+    public static Cidade gerarCidade2(){
+        return Cidade.builder()
+                .id(2L)
+                .nome("São Paulo")
+                .codigo("SAO_PAULO")
+                .build();
+    }
+
+    public static CidadeDomain gerarCidadeDomain(){
+        Cidade cidade = gerarCidade();
+        return CidadeDomain.builder()
+                .id(cidade.getId())
+                .nome(cidade.getNome())
+                .codigo(cidade.getCodigo())
+                .build();
+    }
+
+    public static CidadeDomain gerarCidadeDomain2(){
+        Cidade cidade = gerarCidade2();
+        return CidadeDomain.builder()
+                .id(cidade.getId())
+                .nome(cidade.getNome())
+                .codigo(cidade.getCodigo())
                 .build();
     }
 
     public static PageImpl<Evento> gerarPageEventos(){
         List<Evento> eventos = new ArrayList<>();
-        eventos.add(gerarEvento());
+        eventos.add(gerarEventoInsert());
         return new PageImpl<>(eventos);
     }
 
     public static EventoRequestDTO criarEventoInsertDto(){
-        CidadeRequestDTO cidadeRequestDTO = CidadeRequestDTO.builder().id(1L).build();
+        CidadeRequestDTO cidadeRequestDTO = CidadeRequestDTO.builder().id(gerarCidade().getId()).build();
         return EventoRequestDTO.builder()
                 .nome("evento teste")
                 .data(LocalDate.of(2022, 4, 22))
@@ -62,12 +78,40 @@ public class Factory {
     }
 
     public static EventoRequestDTO criarEventoUpdateDto(){
-        CidadeRequestDTO cidadeRequestDTO = CidadeRequestDTO.builder().id(2L).build();
+        CidadeRequestDTO cidadeRequestDTO = CidadeRequestDTO.builder().id(gerarCidade2().getId()).build();
         return EventoRequestDTO.builder()
                 .nome("evento teste atualizado")
                 .data(LocalDate.of(2023, 6, 22))
                 .url("teste url")
                 .cidade(cidadeRequestDTO)
+                .build();
+    }
+
+    public static Evento gerarEventoInsert(){
+        EventoRequestDTO eventoRequestDTO = criarEventoInsertDto();
+        Cidade cidade = Cidade.builder().id(eventoRequestDTO.getCidade().getId()).build();
+        return Evento.builder()
+                .id(1L)
+                .nome(eventoRequestDTO.getNome())
+                .dataEvento(eventoRequestDTO.getData())
+                .url(eventoRequestDTO.getUrl())
+                .cidade(cidade)
+                .createdAt(ZonedDateTime.now(ZoneId.of(AMERICA_SAO_PAULO)))
+                .updatedAt(null)
+                .build();
+    }
+
+    public static Evento gerarEventoUpdate(){
+        EventoRequestDTO eventoRequestDTO = criarEventoUpdateDto();
+        Cidade cidade = Cidade.builder().id(eventoRequestDTO.getCidade().getId()).build();
+        return Evento.builder()
+                .id(1L)
+                .nome(eventoRequestDTO.getNome())
+                .dataEvento(eventoRequestDTO.getData())
+                .url(eventoRequestDTO.getUrl())
+                .cidade(cidade)
+                .createdAt(null)
+                .updatedAt(ZonedDateTime.now(ZoneId.of(AMERICA_SAO_PAULO)))
                 .build();
     }
 }
