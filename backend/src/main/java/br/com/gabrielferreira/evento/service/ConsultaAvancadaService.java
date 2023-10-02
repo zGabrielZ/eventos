@@ -1,11 +1,11 @@
 package br.com.gabrielferreira.evento.service;
 
 import br.com.gabrielferreira.evento.dao.QueryDslDAO;
-import br.com.gabrielferreira.evento.dto.response.CidadeResponseDTO;
-import br.com.gabrielferreira.evento.dto.response.EventoResponseDTO;
-import br.com.gabrielferreira.evento.dto.filter.EventoFilterDTO;
+import br.com.gabrielferreira.evento.domain.CidadeDomain;
+import br.com.gabrielferreira.evento.domain.EventoDomain;
 import br.com.gabrielferreira.evento.entity.Evento;
 import br.com.gabrielferreira.evento.entity.QEvento;
+import br.com.gabrielferreira.evento.repository.filter.EventoFilters;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Projections;
@@ -17,7 +17,6 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -33,22 +32,21 @@ public class ConsultaAvancadaService {
 
     private final QueryDslDAO queryDslDAO;
 
-    public Page<EventoResponseDTO> buscarEventos(EventoFilterDTO filtros, Pageable pageable, Map<String, String> atributoDtoToEntity){
-        validarPropriedadeInformada(pageable.getSort(), EventoResponseDTO.class);
+    public Page<EventoDomain> buscarEventos(EventoFilters filtros, Pageable pageable, Map<String, String> atributoDtoToEntity){
         pageable = validarOrderBy(pageable, atributoDtoToEntity);
 
         QEvento qEvento = QEvento.evento;
         BooleanBuilder booleanBuilder = new BooleanBuilder();
         validarFiltroEventos(filtros, booleanBuilder, qEvento);
 
-        List<EventoResponseDTO> eventoResponseDTOS = queryDslDAO.query(q -> q.select(Projections.constructor(
-                        EventoResponseDTO.class,
+        List<EventoDomain> eventoDomains = queryDslDAO.query(q -> q.select(Projections.constructor(
+                        EventoDomain.class,
                         qEvento.id,
                         qEvento.nome,
                         qEvento.dataEvento,
                         qEvento.url,
                         Projections.constructor(
-                                CidadeResponseDTO.class,
+                                CidadeDomain.class,
                                 qEvento.cidade.id,
                                 qEvento.cidade.nome,
                                 qEvento.cidade.codigo
@@ -63,10 +61,10 @@ public class ConsultaAvancadaService {
                 .limit(pageable.getPageSize())
                 .fetch();
 
-        return new PageImpl<>(eventoResponseDTOS, pageable, eventoResponseDTOS.size());
+        return new PageImpl<>(eventoDomains, pageable, eventoDomains.size());
     }
 
-    private void validarFiltroEventos(EventoFilterDTO filtros, BooleanBuilder booleanBuilder, QEvento qEvento){
+    private void validarFiltroEventos(EventoFilters filtros, BooleanBuilder booleanBuilder, QEvento qEvento){
         if(filtros.isIdExistente()){
             booleanBuilder.and(qEvento.id.eq(filtros.getId()));
         }

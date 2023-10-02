@@ -3,7 +3,6 @@ package br.com.gabrielferreira.evento.factory.dto;
 import br.com.gabrielferreira.evento.domain.CidadeDomain;
 import br.com.gabrielferreira.evento.dto.response.CidadeResponseDTO;
 import org.springframework.stereotype.Component;
-
 import java.util.List;
 
 @Component

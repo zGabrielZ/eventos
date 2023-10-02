@@ -2,7 +2,6 @@ package br.com.gabrielferreira.evento.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-
 import java.io.Serial;
 import java.io.Serializable;
 

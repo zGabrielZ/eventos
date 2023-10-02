@@ -1,4 +1,4 @@
-package br.com.gabrielferreira.evento.dto.filter;
+package br.com.gabrielferreira.evento.repository.filter;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.micrometer.common.util.StringUtils;
@@ -6,7 +6,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -15,7 +14,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class EventoFilterDTO implements Serializable {
+public class EventoFilters implements Serializable {
 
     @Serial
     private static final long serialVersionUID = -3550554456478798801L;
