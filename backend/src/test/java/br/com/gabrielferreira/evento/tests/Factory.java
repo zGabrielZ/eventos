@@ -27,6 +27,20 @@ public class Factory {
         return cidades;
     }
 
+    public static List<CidadeDomain> gerarCidadesDomains(){
+        List<Cidade> cidades = gerarCidades();
+        List<CidadeDomain> cidadeDomains = new ArrayList<>();
+        cidades.forEach(cidade -> {
+            CidadeDomain cidadeDomain = CidadeDomain.builder()
+                    .id(cidade.getId())
+                    .nome(cidade.getNome())
+                    .codigo(cidade.getCodigo())
+                    .build();
+            cidadeDomains.add(cidadeDomain);
+        });
+        return cidadeDomains;
+    }
+
     public static Cidade gerarCidade(){
         return Cidade.builder()
                 .id(1L)

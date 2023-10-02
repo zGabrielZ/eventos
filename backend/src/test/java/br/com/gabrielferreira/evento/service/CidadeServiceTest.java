@@ -4,6 +4,7 @@ import br.com.gabrielferreira.evento.domain.CidadeDomain;
 import br.com.gabrielferreira.evento.entity.Cidade;
 import br.com.gabrielferreira.evento.exception.MsgException;
 import br.com.gabrielferreira.evento.exception.NaoEncontradoException;
+import br.com.gabrielferreira.evento.mapper.domain.CidadeDomainMapper;
 import br.com.gabrielferreira.evento.repository.CidadeRepository;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -27,6 +28,9 @@ class CidadeServiceTest {
     @Mock
     private CidadeRepository cidadeRepository;
 
+    @Mock
+    private CidadeDomainMapper cidadeDomainMapper;
+
     private Long idCidadeExistente;
 
     private Long idCidadeInexistente;
@@ -39,27 +43,18 @@ class CidadeServiceTest {
     void setUp(){
         idCidadeExistente = 1L;
         idCidadeInexistente = -1L;
-
         codigoExistente = "MANAUS";
         codigoInexistente = "teste123";
-
-        List<Cidade> cidades = gerarCidades();
-        when(cidadeRepository.buscarCidades()).thenReturn(cidades);
-
-        Optional<Cidade> cidadeOptional = Optional.of(gerarCidade());
-        when(cidadeRepository.findById(idCidadeExistente)).thenReturn(cidadeOptional);
-
-        when(cidadeRepository.findById(idCidadeInexistente)).thenReturn(Optional.empty());
-
-        when(cidadeRepository.buscarCidadePorCodigo(codigoExistente)).thenReturn(cidadeOptional);
-
-        when(cidadeRepository.buscarCidadePorCodigo(codigoInexistente)).thenReturn(Optional.empty());
     }
 
     @Test
     @DisplayName("Deve buscar lista de cidades")
     @Order(1)
     void deveBuscarListaDeCidades(){
+        List<Cidade> cidades = gerarCidades();
+        when(cidadeRepository.buscarCidades()).thenReturn(cidades);
+        when(cidadeDomainMapper.toCidadesDomains(cidades)).thenReturn(gerarCidadesDomains());
+
         List<CidadeDomain> cidadesDomains = cidadeService.buscarCidades();
 
         assertFalse(cidadesDomains.isEmpty());
@@ -73,6 +68,10 @@ class CidadeServiceTest {
     @DisplayName("Deve buscar cidade por id quando existir")
     @Order(2)
     void deveBuscarCidadePorId(){
+        Cidade cidade = gerarCidade();
+        when(cidadeRepository.findById(idCidadeExistente)).thenReturn(Optional.of(cidade));
+        when(cidadeDomainMapper.toCidadeDomain(cidade)).thenReturn(gerarCidadeDomain());
+
         CidadeDomain cidadeDomain = cidadeService.buscarCidadePorId(idCidadeExistente);
 
         assertNotNull(cidadeDomain);
@@ -83,6 +82,8 @@ class CidadeServiceTest {
     @DisplayName("Nao deve buscar cidade por id quando não existir")
     @Order(3)
     void naoDeveBuscarCidadePorId(){
+        when(cidadeRepository.findById(idCidadeInexistente)).thenReturn(Optional.empty());
+
         assertThrows(NaoEncontradoException.class, () -> cidadeService.buscarCidadePorId(idCidadeInexistente));
         verify(cidadeRepository, times(1)).findById(idCidadeInexistente);
     }
@@ -91,6 +92,10 @@ class CidadeServiceTest {
     @DisplayName("Deve buscar cidade por código quando existir")
     @Order(4)
     void deveBuscarCidadePorCodigo(){
+        Cidade cidade = gerarCidade();
+        when(cidadeRepository.buscarCidadePorCodigo(codigoExistente)).thenReturn(Optional.of(cidade));
+        when(cidadeDomainMapper.toCidadeDomain(cidade)).thenReturn(gerarCidadeDomain());
+
         CidadeDomain cidadeDomain = cidadeService.buscarCidadePorCodigo(codigoExistente);
 
         assertNotNull(cidadeDomain);
@@ -101,6 +106,8 @@ class CidadeServiceTest {
     @DisplayName("Nao deve buscar cidade por código quando não existir")
     @Order(5)
     void naoDeveBuscarCidadePorCodigo(){
+        when(cidadeRepository.buscarCidadePorCodigo(codigoInexistente)).thenReturn(Optional.empty());
+
         assertThrows(NaoEncontradoException.class, () -> cidadeService.buscarCidadePorCodigo(codigoInexistente));
         verify(cidadeRepository, times(1)).buscarCidadePorCodigo(codigoInexistente);
     }
