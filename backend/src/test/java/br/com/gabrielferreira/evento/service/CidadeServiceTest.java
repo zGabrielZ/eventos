@@ -1,15 +1,16 @@
 package br.com.gabrielferreira.evento.service;
 
-import br.com.gabrielferreira.evento.dto.response.CidadeResponseDTO;
+import br.com.gabrielferreira.evento.domain.CidadeDomain;
+import br.com.gabrielferreira.evento.entity.Cidade;
 import br.com.gabrielferreira.evento.exception.MsgException;
 import br.com.gabrielferreira.evento.exception.NaoEncontradoException;
+import br.com.gabrielferreira.evento.factory.domain.CidadeDomainFactory;
 import br.com.gabrielferreira.evento.repository.CidadeRepository;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-
 import java.util.List;
 import java.util.Optional;
 
@@ -27,6 +28,9 @@ class CidadeServiceTest {
     @Mock
     private CidadeRepository cidadeRepository;
 
+    @Mock
+    private CidadeDomainFactory cidadeDomainFactory;
+
     private Long idCidadeExistente;
 
     private Long idCidadeInexistente;
@@ -43,14 +47,22 @@ class CidadeServiceTest {
         codigoExistente = "MANAUS";
         codigoInexistente = "teste123";
 
-        cidadeService = new CidadeService(cidadeRepository);
+        cidadeService = new CidadeService(cidadeRepository, cidadeDomainFactory);
 
-        when(cidadeRepository.buscarCidades()).thenReturn(gerarCidades());
+        List<Cidade> cidades = gerarCidades();
+        List<CidadeDomain> cidadeDomains = gerarCidadesDomains();
+        when(cidadeRepository.buscarCidades()).thenReturn(cidades);
+        when(cidadeDomainFactory.toCidadesDomains(cidades)).thenReturn(cidadeDomains);
 
-        when(cidadeRepository.findById(idCidadeExistente)).thenReturn(Optional.of(gerarCidade()));
+        Optional<Cidade> cidadeOptional = Optional.of(gerarCidade());
+        CidadeDomain cidadeDomain = gerarCidadeDomain();
+        when(cidadeRepository.findById(idCidadeExistente)).thenReturn(cidadeOptional);
+        when(cidadeDomainFactory.toCidadeDomain(cidadeOptional.get())).thenReturn(cidadeDomain);
+
         when(cidadeRepository.findById(idCidadeInexistente)).thenReturn(Optional.empty());
 
-        when(cidadeRepository.buscarCidadePorCodigo(codigoExistente)).thenReturn(Optional.of(gerarCidade()));
+        when(cidadeRepository.buscarCidadePorCodigo(codigoExistente)).thenReturn(cidadeOptional);
+
         when(cidadeRepository.buscarCidadePorCodigo(codigoInexistente)).thenReturn(Optional.empty());
     }
 
@@ -58,12 +70,12 @@ class CidadeServiceTest {
     @DisplayName("Deve buscar lista de cidades")
     @Order(1)
     void deveBuscarListaDeCidades(){
-        List<CidadeResponseDTO> cidades = cidadeService.buscarCidades();
+        List<CidadeDomain> cidadesDomains = cidadeService.buscarCidades();
 
-        assertFalse(cidades.isEmpty());
-        assertEquals("Manaus", cidades.get(0).nome());
-        assertEquals("Campinas", cidades.get(1).nome());
-        assertEquals("Belo Horizonte", cidades.get(2).nome());
+        assertFalse(cidadesDomains.isEmpty());
+        assertEquals("Manaus", cidadesDomains.get(0).getNome());
+        assertEquals("Campinas", cidadesDomains.get(1).getNome());
+        assertEquals("Belo Horizonte", cidadesDomains.get(2).getNome());
         verify(cidadeRepository, times(1)).buscarCidades();
     }
 
@@ -71,9 +83,9 @@ class CidadeServiceTest {
     @DisplayName("Deve buscar cidade por id quando existir")
     @Order(2)
     void deveBuscarCidadePorId(){
-        CidadeResponseDTO cidade = cidadeService.buscarCidadePorId(idCidadeExistente);
+        CidadeDomain cidadeDomain = cidadeService.buscarCidadePorId(idCidadeExistente);
 
-        assertNotNull(cidade);
+        assertNotNull(cidadeDomain);
         verify(cidadeRepository, times(1)).findById(idCidadeExistente);
     }
 
@@ -89,9 +101,9 @@ class CidadeServiceTest {
     @DisplayName("Deve buscar cidade por código quando existir")
     @Order(4)
     void deveBuscarCidadePorCodigo(){
-        CidadeResponseDTO cidade = cidadeService.buscarCidadePorCodigo(codigoExistente);
+        CidadeDomain cidadeDomain = cidadeService.buscarCidadePorCodigo(codigoExistente);
 
-        assertNotNull(cidade);
+        assertNotNull(cidadeDomain);
         verify(cidadeRepository, times(1)).buscarCidadePorCodigo(codigoExistente);
     }
 

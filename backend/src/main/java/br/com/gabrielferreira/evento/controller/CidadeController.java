@@ -1,11 +1,11 @@
 package br.com.gabrielferreira.evento.controller;
 
 import br.com.gabrielferreira.evento.dto.response.CidadeResponseDTO;
+import br.com.gabrielferreira.evento.factory.dto.CidadeResponseDTOFactory;
 import br.com.gabrielferreira.evento.service.CidadeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController
@@ -15,18 +15,23 @@ public class CidadeController {
 
     private final CidadeService cidadeService;
 
+    private final CidadeResponseDTOFactory cidadeResponseDTOFactory;
+
     @GetMapping
     public ResponseEntity<List<CidadeResponseDTO>> buscarCidades(){
-        return ResponseEntity.ok().body(cidadeService.buscarCidades());
+        List<CidadeResponseDTO> cidadeResponseDTOS = cidadeResponseDTOFactory.toCidadesResponsesDtos(cidadeService.buscarCidades());
+        return ResponseEntity.ok().body(cidadeResponseDTOS);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<CidadeResponseDTO> buscarCidadePorId(@PathVariable Long id){
-        return ResponseEntity.ok().body(cidadeService.buscarCidadePorId(id));
+        CidadeResponseDTO cidadeResponseDTO = cidadeResponseDTOFactory.toCidadeResponseDto(cidadeService.buscarCidadePorId(id));
+        return ResponseEntity.ok().body(cidadeResponseDTO);
     }
 
     @GetMapping("/buscar")
     public ResponseEntity<CidadeResponseDTO> buscarCidadePorCodigo(@RequestParam String codigo){
-        return ResponseEntity.ok().body(cidadeService.buscarCidadePorCodigo(codigo));
+        CidadeResponseDTO cidadeResponseDTO = cidadeResponseDTOFactory.toCidadeResponseDto(cidadeService.buscarCidadePorCodigo(codigo));
+        return ResponseEntity.ok().body(cidadeResponseDTO);
     }
 }
