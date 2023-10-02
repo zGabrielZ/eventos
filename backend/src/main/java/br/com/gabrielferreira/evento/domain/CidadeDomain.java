@@ -15,6 +15,7 @@ public class CidadeDomain implements Serializable {
     @Serial
     private static final long serialVersionUID = -1094994962508191281L;
 
+    @EqualsAndHashCode.Include
     private Long id;
 
     private String nome;
