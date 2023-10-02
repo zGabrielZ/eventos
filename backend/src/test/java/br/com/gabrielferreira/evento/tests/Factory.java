@@ -1,12 +1,10 @@
 package br.com.gabrielferreira.evento.tests;
 
-import br.com.gabrielferreira.evento.domain.CidadeDomain;
 import br.com.gabrielferreira.evento.dto.request.CidadeRequestDTO;
 import br.com.gabrielferreira.evento.dto.request.EventoRequestDTO;
 import br.com.gabrielferreira.evento.entity.Cidade;
 import br.com.gabrielferreira.evento.entity.Evento;
 import org.springframework.data.domain.PageImpl;
-
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -27,34 +25,11 @@ public class Factory {
         return cidades;
     }
 
-    public static List<CidadeDomain> gerarCidadesDomains(){
-        List<Cidade> cidades = gerarCidades();
-        List<CidadeDomain> cidadeDomains = new ArrayList<>();
-        cidades.forEach(cidade -> {
-            CidadeDomain cidadeDomain = CidadeDomain.builder()
-                            .id(cidade.getId())
-                            .nome(cidade.getNome())
-                            .codigo(cidade.getCodigo())
-                            .build();
-            cidadeDomains.add(cidadeDomain);
-        });
-        return cidadeDomains;
-    }
-
     public static Cidade gerarCidade(){
         return Cidade.builder()
                 .id(1L)
                 .nome("Manaus")
                 .codigo("MANAUS")
-                .build();
-    }
-
-    public static CidadeDomain gerarCidadeDomain(){
-        Cidade cidade = gerarCidade();
-        return CidadeDomain.builder()
-                .id(cidade.getId())
-                .nome(cidade.getNome())
-                .codigo(cidade.getCodigo())
                 .build();
     }
 

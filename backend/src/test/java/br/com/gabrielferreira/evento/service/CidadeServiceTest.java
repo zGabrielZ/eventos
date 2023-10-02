@@ -4,7 +4,6 @@ import br.com.gabrielferreira.evento.domain.CidadeDomain;
 import br.com.gabrielferreira.evento.entity.Cidade;
 import br.com.gabrielferreira.evento.exception.MsgException;
 import br.com.gabrielferreira.evento.exception.NaoEncontradoException;
-import br.com.gabrielferreira.evento.factory.domain.CidadeDomainFactory;
 import br.com.gabrielferreira.evento.repository.CidadeRepository;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -28,9 +27,6 @@ class CidadeServiceTest {
     @Mock
     private CidadeRepository cidadeRepository;
 
-    @Mock
-    private CidadeDomainFactory cidadeDomainFactory;
-
     private Long idCidadeExistente;
 
     private Long idCidadeInexistente;
@@ -47,17 +43,13 @@ class CidadeServiceTest {
         codigoExistente = "MANAUS";
         codigoInexistente = "teste123";
 
-        cidadeService = new CidadeService(cidadeRepository, cidadeDomainFactory);
+        cidadeService = new CidadeService(cidadeRepository);
 
         List<Cidade> cidades = gerarCidades();
-        List<CidadeDomain> cidadeDomains = gerarCidadesDomains();
         when(cidadeRepository.buscarCidades()).thenReturn(cidades);
-        when(cidadeDomainFactory.toCidadesDomains(cidades)).thenReturn(cidadeDomains);
 
         Optional<Cidade> cidadeOptional = Optional.of(gerarCidade());
-        CidadeDomain cidadeDomain = gerarCidadeDomain();
         when(cidadeRepository.findById(idCidadeExistente)).thenReturn(cidadeOptional);
-        when(cidadeDomainFactory.toCidadeDomain(cidadeOptional.get())).thenReturn(cidadeDomain);
 
         when(cidadeRepository.findById(idCidadeInexistente)).thenReturn(Optional.empty());
 
