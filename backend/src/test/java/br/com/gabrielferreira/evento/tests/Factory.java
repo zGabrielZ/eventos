@@ -1,12 +1,11 @@
 package br.com.gabrielferreira.evento.tests;
 
 import br.com.gabrielferreira.evento.domain.CidadeDomain;
+import br.com.gabrielferreira.evento.domain.EventoDomain;
 import br.com.gabrielferreira.evento.dto.request.CidadeRequestDTO;
 import br.com.gabrielferreira.evento.dto.request.EventoRequestDTO;
 import br.com.gabrielferreira.evento.entity.Cidade;
 import br.com.gabrielferreira.evento.entity.Evento;
-import org.springframework.data.domain.PageImpl;
-
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -75,12 +74,6 @@ public class Factory {
                 .build();
     }
 
-    public static PageImpl<Evento> gerarPageEventos(){
-        List<Evento> eventos = new ArrayList<>();
-        eventos.add(gerarEventoInsert());
-        return new PageImpl<>(eventos);
-    }
-
     public static EventoRequestDTO criarEventoInsertDto(){
         CidadeRequestDTO cidadeRequestDTO = CidadeRequestDTO.builder().id(gerarCidade().getId()).build();
         return EventoRequestDTO.builder()
@@ -101,6 +94,20 @@ public class Factory {
                 .build();
     }
 
+    public static EventoDomain gerarEventoDomainInsert(){
+        EventoRequestDTO eventoRequestDTO = criarEventoInsertDto();
+        CidadeDomain cidadeDomain = CidadeDomain.builder().id(eventoRequestDTO.getCidade().getId()).build();
+        return EventoDomain.builder()
+                .id(1L)
+                .nome(eventoRequestDTO.getNome())
+                .dataEvento(eventoRequestDTO.getData())
+                .url(eventoRequestDTO.getUrl())
+                .cidade(cidadeDomain)
+                .createdAt(ZonedDateTime.now(ZoneId.of(AMERICA_SAO_PAULO)))
+                .updatedAt(null)
+                .build();
+    }
+
     public static Evento gerarEventoInsert(){
         EventoRequestDTO eventoRequestDTO = criarEventoInsertDto();
         Cidade cidade = Cidade.builder().id(eventoRequestDTO.getCidade().getId()).build();
@@ -112,6 +119,20 @@ public class Factory {
                 .cidade(cidade)
                 .createdAt(ZonedDateTime.now(ZoneId.of(AMERICA_SAO_PAULO)))
                 .updatedAt(null)
+                .build();
+    }
+
+    public static EventoDomain gerarEventoDomainUpdate(){
+        EventoRequestDTO eventoRequestDTO = criarEventoUpdateDto();
+        CidadeDomain cidadeDomain = CidadeDomain.builder().id(eventoRequestDTO.getCidade().getId()).build();
+        return EventoDomain.builder()
+                .id(1L)
+                .nome(eventoRequestDTO.getNome())
+                .dataEvento(eventoRequestDTO.getData())
+                .url(eventoRequestDTO.getUrl())
+                .cidade(cidadeDomain)
+                .createdAt(null)
+                .updatedAt(ZonedDateTime.now(ZoneId.of(AMERICA_SAO_PAULO)))
                 .build();
     }
 

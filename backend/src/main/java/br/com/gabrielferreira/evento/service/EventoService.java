@@ -1,10 +1,10 @@
 package br.com.gabrielferreira.evento.service;
 
 import br.com.gabrielferreira.evento.domain.EventoDomain;
-import br.com.gabrielferreira.evento.dto.params.EventoParamsDTO;
-import br.com.gabrielferreira.evento.dto.request.EventoRequestDTO;
 import br.com.gabrielferreira.evento.entity.Evento;
 import br.com.gabrielferreira.evento.exception.NaoEncontradoException;
+import br.com.gabrielferreira.evento.mapper.domain.EventoDomainMapper;
+import br.com.gabrielferreira.evento.mapper.entity.EventoMapper;
 import br.com.gabrielferreira.evento.repository.EventoRepository;
 import br.com.gabrielferreira.evento.repository.filter.EventoFilters;
 import lombok.RequiredArgsConstructor;
@@ -15,9 +15,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.HashMap;
 import java.util.Map;
 
-import static br.com.gabrielferreira.evento.factory.domain.EventoDomainFactory.*;
-import static br.com.gabrielferreira.evento.factory.entity.EventoFactory.*;
-import static br.com.gabrielferreira.evento.factory.filters.EventoFiltersFactory.*;
 import static br.com.gabrielferreira.evento.utils.PageUtils.*;
 
 @Service
@@ -30,34 +27,35 @@ public class EventoService {
 
     private final ConsultaAvancadaService consultaAvancadaService;
 
-    @Transactional
-    public EventoDomain cadastrarEvento(EventoRequestDTO eventoRequestDTO){
-        EventoDomain eventoDomain = createEventoDomain(eventoRequestDTO);
-        eventoDomain.setCidade(cidadeService.buscarCidadePorId(eventoRequestDTO.getCidade().getId()));
+    private final EventoMapper eventoMapper;
 
-        Evento evento = createEvento(eventoDomain);
+    private final EventoDomainMapper eventoDomainMapper;
+
+    @Transactional
+    public EventoDomain cadastrarEvento(EventoDomain eventoDomain){
+        eventoDomain.setCidade(cidadeService.buscarCidadePorId(eventoDomain.getCidade().getId()));
+
+        Evento evento = eventoMapper.toEvento(eventoDomain);
         evento = eventoRepository.save(evento);
-        return toEventoDomain(evento);
+        return eventoDomainMapper.toEventoDomain(evento);
     }
 
     public EventoDomain buscarEventoPorId(Long id){
         Evento evento = eventoRepository.buscarEventoPorId(id)
                 .orElseThrow(() -> new NaoEncontradoException("Evento não encontrado"));
-        return toEventoDomain(evento);
+        return eventoDomainMapper.toEventoDomain(evento);
     }
 
     @Transactional
-    public EventoDomain atualizarEvento(Long id, EventoRequestDTO eventoRequestDTO){
-        EventoDomain eventoDomainEncontrado = buscarEventoPorId(id);
-        eventoDomainEncontrado.setCidade(cidadeService.buscarCidadePorId(eventoRequestDTO.getCidade().getId()));
+    public EventoDomain atualizarEvento(EventoDomain eventoDomain){
+        EventoDomain eventoDomainEncontrado = buscarEventoPorId(eventoDomain.getId());
+        eventoDomainEncontrado.setCidade(cidadeService.buscarCidadePorId(eventoDomain.getCidade().getId()));
 
-        EventoDomain eventoDomainUpdate = createEventoDomain(eventoRequestDTO);
+        eventoDomainMapper.updateEventoDomain(eventoDomainEncontrado, eventoDomain);
 
-        updateEventoDomain(eventoDomainEncontrado, eventoDomainUpdate);
-
-        Evento evento = updateEvento(eventoDomainEncontrado);
+        Evento evento = eventoMapper.toEvento(eventoDomainEncontrado);
         evento = eventoRepository.save(evento);
-        return toEventoDomain(evento);
+        return eventoDomainMapper.toEventoDomain(evento);
     }
 
     @Transactional
@@ -68,11 +66,10 @@ public class EventoService {
 
     public Page<EventoDomain> buscarEventos(Pageable pageable){
         pageable = validarOrderBy(pageable, atributoDtoToEntity());
-        return toEventosDomains(eventoRepository.buscarEventos(pageable));
+        return eventoDomainMapper.toEventosDomains(eventoRepository.buscarEventos(pageable));
     }
 
-    public Page<EventoDomain> buscarEventosAvancados(EventoParamsDTO params, Pageable pageable){
-        EventoFilters eventoFilters = createEventoFilters(params);
+    public Page<EventoDomain> buscarEventosAvancados(EventoFilters eventoFilters, Pageable pageable){
         return consultaAvancadaService.buscarEventos(eventoFilters, pageable, atributoDtoToEntity());
     }
 

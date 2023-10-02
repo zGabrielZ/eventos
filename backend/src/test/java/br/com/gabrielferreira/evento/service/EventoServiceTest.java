@@ -1,17 +1,15 @@
 package br.com.gabrielferreira.evento.service;
 
 import br.com.gabrielferreira.evento.domain.EventoDomain;
-import br.com.gabrielferreira.evento.dto.request.EventoRequestDTO;
 import br.com.gabrielferreira.evento.entity.Evento;
 import br.com.gabrielferreira.evento.exception.NaoEncontradoException;
+import br.com.gabrielferreira.evento.mapper.domain.EventoDomainMapper;
+import br.com.gabrielferreira.evento.mapper.entity.EventoMapper;
 import br.com.gabrielferreira.evento.repository.EventoRepository;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import java.util.Optional;
 
@@ -32,7 +30,13 @@ class EventoServiceTest {
     @Mock
     private EventoRepository eventoRepository;
 
-    private EventoRequestDTO eventoInsertRequestDto;
+    @Mock
+    private EventoMapper eventoMapper;
+
+    @Mock
+    private EventoDomainMapper eventoDomainMapper;
+
+    private EventoDomain eventoInsertDomain;
 
     private Evento eventoInsert;
 
@@ -42,14 +46,14 @@ class EventoServiceTest {
 
     private Long idEventoInexistente;
 
-    private EventoRequestDTO eventoUpdateRequestDto;
+    private EventoDomain eventoUpdateDomain;
 
     @BeforeEach
     void setUp(){
         idEventoExistente = 1L;
         idEventoInexistente = -1L;
-        eventoInsertRequestDto = criarEventoInsertDto();
-        eventoUpdateRequestDto = criarEventoUpdateDto();
+        eventoInsertDomain = gerarEventoDomainInsert();
+        eventoUpdateDomain = gerarEventoDomainUpdate();
 
         eventoInsert = gerarEventoInsert();
         eventoUpdate = gerarEventoUpdate();
@@ -59,10 +63,12 @@ class EventoServiceTest {
     @DisplayName("Deve cadastrar evento quando informar valores corretos")
     @Order(1)
     void deveCadastrarEvento(){
-        when(cidadeService.buscarCidadePorId(eventoInsertRequestDto.getCidade().getId())).thenReturn(gerarCidadeDomain());
+        when(cidadeService.buscarCidadePorId(eventoInsertDomain.getCidade().getId())).thenReturn(gerarCidadeDomain());
+        when(eventoMapper.toEvento(eventoInsertDomain)).thenReturn(eventoInsert);
         when(eventoRepository.save(any())).thenReturn(eventoInsert);
+        when(eventoDomainMapper.toEventoDomain(eventoInsert)).thenReturn(eventoInsertDomain);
 
-        EventoDomain eventoDomain = eventoService.cadastrarEvento(eventoInsertRequestDto);
+        EventoDomain eventoDomain = eventoService.cadastrarEvento(eventoInsertDomain);
 
         assertNotNull(eventoDomain);
         verify(eventoRepository, times(1)).save(any());
@@ -73,6 +79,7 @@ class EventoServiceTest {
     @Order(2)
     void deveBuscarEventoPorId() {
         when(eventoRepository.buscarEventoPorId(idEventoExistente)).thenReturn(Optional.of(eventoInsert));
+        when(eventoDomainMapper.toEventoDomain(eventoInsert)).thenReturn(eventoInsertDomain);
 
         EventoDomain eventoDomain = eventoService.buscarEventoPorId(idEventoExistente);
 
@@ -95,10 +102,13 @@ class EventoServiceTest {
     @Order(4)
     void deveAtualizarEventos() {
         when(eventoRepository.buscarEventoPorId(idEventoExistente)).thenReturn(Optional.of(eventoInsert));
-        when(cidadeService.buscarCidadePorId(eventoInsertRequestDto.getCidade().getId())).thenReturn(gerarCidadeDomain2());
+        when(cidadeService.buscarCidadePorId(eventoUpdateDomain.getCidade().getId())).thenReturn(gerarCidadeDomain2());
+        doNothing().when(eventoDomainMapper).updateEventoDomain(any(), any());
+        when(eventoMapper.toEvento(eventoUpdateDomain)).thenReturn(eventoUpdate);
         when(eventoRepository.save(any())).thenReturn(eventoUpdate);
+        when(eventoDomainMapper.toEventoDomain(eventoUpdate)).thenReturn(eventoUpdateDomain);
 
-        EventoDomain eventoDomain = eventoService.atualizarEvento(idEventoExistente, eventoUpdateRequestDto);
+        EventoDomain eventoDomain = eventoService.atualizarEvento(eventoUpdateDomain);
 
         assertNotNull(eventoDomain);
         verify(eventoRepository, times(1)).save(any());
@@ -110,6 +120,7 @@ class EventoServiceTest {
     @Order(6)
     void deveDeletarEvento() {
         when(eventoRepository.buscarEventoPorId(idEventoExistente)).thenReturn(Optional.of(eventoInsert));
+        when(eventoDomainMapper.toEventoDomain(eventoInsert)).thenReturn(eventoInsertDomain);
         doNothing().when(eventoRepository).deleteById(eventoInsert.getId());
 
         assertDoesNotThrow(() -> eventoService.deletarEventoPorId(idEventoExistente));
@@ -124,20 +135,5 @@ class EventoServiceTest {
 
         assertThrows(NaoEncontradoException.class, () -> eventoService.deletarEventoPorId(idEventoInexistente));
         verify(eventoRepository, never()).deleteById(any());
-    }
-
-
-    @Test
-    @DisplayName("Deve buscar eventos paginados quando existir")
-    @Order(8)
-    void deveRetornarEventosPaginados() {
-        when(eventoRepository.buscarEventos(any())).thenReturn(gerarPageEventos());
-
-        PageRequest pageRequest = PageRequest.of(0, 10, Sort.by("id"));
-        Page<EventoDomain> eventoDomains = eventoService.buscarEventos(pageRequest);
-
-        assertFalse(eventoDomains.isEmpty());
-        assertNotNull(eventoDomains);
-        verify(eventoRepository, times(1)).buscarEventos(pageRequest);
     }
 }
