@@ -5,10 +5,13 @@ import br.com.gabrielferreira.evento.dto.request.EventoRequestDTO;
 import br.com.gabrielferreira.evento.entity.Evento;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.factory.Mappers;
 import org.springframework.data.domain.Page;
 
 @Mapper(componentModel = "spring")
 public interface EventoDomainMapper {
+
+    EventoDomainMapper INSTANCE = Mappers.getMapper(EventoDomainMapper.class);
 
     @Mapping(source = "data", target = "dataEvento")
     EventoDomain toEventoDomain(EventoRequestDTO eventoRequestDTO);

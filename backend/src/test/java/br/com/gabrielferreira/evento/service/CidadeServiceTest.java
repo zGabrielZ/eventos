@@ -53,7 +53,7 @@ class CidadeServiceTest {
     void deveBuscarListaDeCidades(){
         List<Cidade> cidades = gerarCidades();
         when(cidadeRepository.buscarCidades()).thenReturn(cidades);
-        when(cidadeDomainMapper.toCidadesDomains(cidades)).thenReturn(gerarCidadesDomains());
+        when(cidadeDomainMapper.toCidadesDomains(cidades)).thenReturn(CidadeDomainMapper.INSTANCE.toCidadesDomains(cidades));
 
         List<CidadeDomain> cidadesDomains = cidadeService.buscarCidades();
 
@@ -70,7 +70,7 @@ class CidadeServiceTest {
     void deveBuscarCidadePorId(){
         Cidade cidade = gerarCidade();
         when(cidadeRepository.findById(idCidadeExistente)).thenReturn(Optional.of(cidade));
-        when(cidadeDomainMapper.toCidadeDomain(cidade)).thenReturn(gerarCidadeDomain());
+        when(cidadeDomainMapper.toCidadeDomain(cidade)).thenReturn(CidadeDomainMapper.INSTANCE.toCidadeDomain(cidade));
 
         CidadeDomain cidadeDomain = cidadeService.buscarCidadePorId(idCidadeExistente);
 
@@ -94,7 +94,7 @@ class CidadeServiceTest {
     void deveBuscarCidadePorCodigo(){
         Cidade cidade = gerarCidade();
         when(cidadeRepository.buscarCidadePorCodigo(codigoExistente)).thenReturn(Optional.of(cidade));
-        when(cidadeDomainMapper.toCidadeDomain(cidade)).thenReturn(gerarCidadeDomain());
+        when(cidadeDomainMapper.toCidadeDomain(cidade)).thenReturn(CidadeDomainMapper.INSTANCE.toCidadeDomain(cidade));
 
         CidadeDomain cidadeDomain = cidadeService.buscarCidadePorCodigo(codigoExistente);
 

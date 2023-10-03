@@ -3,6 +3,7 @@ package br.com.gabrielferreira.evento.service;
 import br.com.gabrielferreira.evento.domain.EventoDomain;
 import br.com.gabrielferreira.evento.entity.Evento;
 import br.com.gabrielferreira.evento.exception.NaoEncontradoException;
+import br.com.gabrielferreira.evento.mapper.domain.CidadeDomainMapper;
 import br.com.gabrielferreira.evento.mapper.domain.EventoDomainMapper;
 import br.com.gabrielferreira.evento.mapper.entity.EventoMapper;
 import br.com.gabrielferreira.evento.repository.EventoRepository;
@@ -52,8 +53,9 @@ class EventoServiceTest {
     void setUp(){
         idEventoExistente = 1L;
         idEventoInexistente = -1L;
-        eventoInsertDomain = gerarEventoDomainInsert();
-        eventoUpdateDomain = gerarEventoDomainUpdate();
+        eventoInsertDomain = EventoDomainMapper.INSTANCE.toEventoDomain(criarEventoInsertDto());
+        eventoUpdateDomain = EventoDomainMapper.INSTANCE.toEventoDomain(criarEventoUpdateDto());
+        eventoUpdateDomain.setId(idEventoExistente);
 
         eventoInsert = gerarEventoInsert();
         eventoUpdate = gerarEventoUpdate();
@@ -63,7 +65,7 @@ class EventoServiceTest {
     @DisplayName("Deve cadastrar evento quando informar valores corretos")
     @Order(1)
     void deveCadastrarEvento(){
-        when(cidadeService.buscarCidadePorId(eventoInsertDomain.getCidade().getId())).thenReturn(gerarCidadeDomain());
+        when(cidadeService.buscarCidadePorId(eventoInsertDomain.getCidade().getId())).thenReturn(CidadeDomainMapper.INSTANCE.toCidadeDomain(gerarCidade()));
         when(eventoMapper.toEvento(eventoInsertDomain)).thenReturn(eventoInsert);
         when(eventoRepository.save(any())).thenReturn(eventoInsert);
         when(eventoDomainMapper.toEventoDomain(eventoInsert)).thenReturn(eventoInsertDomain);
@@ -102,7 +104,7 @@ class EventoServiceTest {
     @Order(4)
     void deveAtualizarEventos() {
         when(eventoRepository.buscarEventoPorId(idEventoExistente)).thenReturn(Optional.of(eventoInsert));
-        when(cidadeService.buscarCidadePorId(eventoUpdateDomain.getCidade().getId())).thenReturn(gerarCidadeDomain2());
+        when(cidadeService.buscarCidadePorId(eventoUpdateDomain.getCidade().getId())).thenReturn(CidadeDomainMapper.INSTANCE.toCidadeDomain(gerarCidade2()));
         doNothing().when(eventoDomainMapper).updateEventoDomain(any(), any());
         when(eventoMapper.toEvento(eventoUpdateDomain)).thenReturn(eventoUpdate);
         when(eventoRepository.save(any())).thenReturn(eventoUpdate);
