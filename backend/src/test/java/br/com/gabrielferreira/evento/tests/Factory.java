@@ -3,14 +3,9 @@ package br.com.gabrielferreira.evento.tests;
 import br.com.gabrielferreira.evento.dto.request.CidadeRequestDTO;
 import br.com.gabrielferreira.evento.dto.request.EventoRequestDTO;
 import br.com.gabrielferreira.evento.entity.Cidade;
-import br.com.gabrielferreira.evento.entity.Evento;
 import java.time.LocalDate;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
-
-import static br.com.gabrielferreira.evento.utils.DataUtils.*;
 
 public class Factory {
 
@@ -57,34 +52,6 @@ public class Factory {
                 .data(LocalDate.of(2023, 6, 22))
                 .url("teste url")
                 .cidade(cidadeRequestDTO)
-                .build();
-    }
-
-    public static Evento gerarEventoInsert(){
-        EventoRequestDTO eventoRequestDTO = criarEventoInsertDto();
-        Cidade cidade = Cidade.builder().id(eventoRequestDTO.getCidade().getId()).build();
-        return Evento.builder()
-                .id(1L)
-                .nome(eventoRequestDTO.getNome())
-                .dataEvento(eventoRequestDTO.getData())
-                .url(eventoRequestDTO.getUrl())
-                .cidade(cidade)
-                .createdAt(ZonedDateTime.now(ZoneId.of(AMERICA_SAO_PAULO)))
-                .updatedAt(null)
-                .build();
-    }
-
-    public static Evento gerarEventoUpdate(){
-        EventoRequestDTO eventoRequestDTO = criarEventoUpdateDto();
-        Cidade cidade = Cidade.builder().id(eventoRequestDTO.getCidade().getId()).build();
-        return Evento.builder()
-                .id(1L)
-                .nome(eventoRequestDTO.getNome())
-                .dataEvento(eventoRequestDTO.getData())
-                .url(eventoRequestDTO.getUrl())
-                .cidade(cidade)
-                .createdAt(null)
-                .updatedAt(ZonedDateTime.now(ZoneId.of(AMERICA_SAO_PAULO)))
                 .build();
     }
 }

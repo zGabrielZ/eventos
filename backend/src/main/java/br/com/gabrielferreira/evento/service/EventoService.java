@@ -3,8 +3,7 @@ package br.com.gabrielferreira.evento.service;
 import br.com.gabrielferreira.evento.domain.EventoDomain;
 import br.com.gabrielferreira.evento.entity.Evento;
 import br.com.gabrielferreira.evento.exception.NaoEncontradoException;
-import br.com.gabrielferreira.evento.mapper.domain.EventoDomainMapper;
-import br.com.gabrielferreira.evento.mapper.entity.EventoMapper;
+import br.com.gabrielferreira.evento.mapper.EventoMapper;
 import br.com.gabrielferreira.evento.repository.EventoRepository;
 import br.com.gabrielferreira.evento.repository.filter.EventoFilters;
 import lombok.RequiredArgsConstructor;
@@ -29,21 +28,19 @@ public class EventoService {
 
     private final EventoMapper eventoMapper;
 
-    private final EventoDomainMapper eventoDomainMapper;
-
     @Transactional
     public EventoDomain cadastrarEvento(EventoDomain eventoDomain){
         eventoDomain.setCidade(cidadeService.buscarCidadePorId(eventoDomain.getCidade().getId()));
 
         Evento evento = eventoMapper.toEvento(eventoDomain);
         evento = eventoRepository.save(evento);
-        return eventoDomainMapper.toEventoDomain(evento);
+        return eventoMapper.toEventoDomain(evento);
     }
 
     public EventoDomain buscarEventoPorId(Long id){
         Evento evento = eventoRepository.buscarEventoPorId(id)
                 .orElseThrow(() -> new NaoEncontradoException("Evento não encontrado"));
-        return eventoDomainMapper.toEventoDomain(evento);
+        return eventoMapper.toEventoDomain(evento);
     }
 
     @Transactional
@@ -51,11 +48,11 @@ public class EventoService {
         EventoDomain eventoDomainEncontrado = buscarEventoPorId(eventoDomain.getId());
         eventoDomainEncontrado.setCidade(cidadeService.buscarCidadePorId(eventoDomain.getCidade().getId()));
 
-        eventoDomainMapper.updateEventoDomain(eventoDomainEncontrado, eventoDomain);
+        updateEvento(eventoDomainEncontrado, eventoDomain);
 
         Evento evento = eventoMapper.toEvento(eventoDomainEncontrado);
         evento = eventoRepository.save(evento);
-        return eventoDomainMapper.toEventoDomain(evento);
+        return eventoMapper.toEventoDomain(evento);
     }
 
     @Transactional
@@ -66,7 +63,8 @@ public class EventoService {
 
     public Page<EventoDomain> buscarEventos(Pageable pageable){
         pageable = validarOrderBy(pageable, atributoDtoToEntity());
-        return eventoDomainMapper.toEventosDomains(eventoRepository.buscarEventos(pageable));
+        Page<Evento> eventoDomains = eventoRepository.buscarEventos(pageable);
+        return eventoMapper.toEventosDomains(eventoDomains);
     }
 
     public Page<EventoDomain> buscarEventosAvancados(EventoFilters eventoFilters, Pageable pageable){
@@ -77,6 +75,14 @@ public class EventoService {
         Map<String, String> atributoDtoToEntity = new HashMap<>();
         atributoDtoToEntity.put("data", "dataEvento");
         return atributoDtoToEntity;
+    }
+
+    private void updateEvento(EventoDomain eventoDomainEncontrado, EventoDomain eventoDomainUpdate){
+        if(eventoDomainEncontrado != null && eventoDomainUpdate != null){
+            eventoDomainEncontrado.setNome(eventoDomainUpdate.getNome());
+            eventoDomainEncontrado.setDataEvento(eventoDomainUpdate.getDataEvento());
+            eventoDomainEncontrado.setUrl(eventoDomainUpdate.getUrl());
+        }
     }
 
 }
