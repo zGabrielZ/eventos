@@ -1,8 +1,12 @@
 package br.com.gabrielferreira.evento.utils;
 
+import java.time.ZoneId;
+
 public class DataUtils {
 
     private DataUtils(){}
 
-    public static final String AMERICA_SAO_PAULO = "America/Sao_Paulo";
+    public static final ZoneId UTC = ZoneId.of("UTC");
+
+    public static final ZoneId FUSO_HORARIO_PADRAO_SISTEMA = ZoneId.systemDefault();
 }

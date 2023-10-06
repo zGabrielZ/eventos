@@ -17,7 +17,6 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -86,12 +85,12 @@ public class ConsultaAvancadaService {
         }
 
         if(filtros.isCreatedAtExistente()){
-            ZonedDateTime createdAt = filtros.getCreatedAt().atStartOfDay(ZoneId.of(AMERICA_SAO_PAULO));
+            ZonedDateTime createdAt = filtros.getCreatedAt().atStartOfDay(UTC);
             booleanBuilder.and(qEvento.createdAt.goe(createdAt));
         }
 
         if(filtros.isUpdatedAtExistente()){
-            ZonedDateTime updatedAt = filtros.getUpdatedAt().atStartOfDay(ZoneId.of(AMERICA_SAO_PAULO));
+            ZonedDateTime updatedAt = filtros.getUpdatedAt().atStartOfDay(UTC);
             booleanBuilder.and(qEvento.updatedAt.goe(updatedAt));
         }
     }
