@@ -4,7 +4,6 @@ import br.com.gabrielferreira.evento.domain.CidadeDomain;
 import br.com.gabrielferreira.evento.entity.Cidade;
 import br.com.gabrielferreira.evento.exception.MsgException;
 import br.com.gabrielferreira.evento.exception.NaoEncontradoException;
-import br.com.gabrielferreira.evento.mapper.CidadeMapper;
 import br.com.gabrielferreira.evento.repository.CidadeRepository;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -28,9 +27,6 @@ class CidadeServiceTest {
     @Mock
     private CidadeRepository cidadeRepository;
 
-    @Mock
-    private CidadeMapper cidadeMapper;
-
     private Long idCidadeExistente;
 
     private Long idCidadeInexistente;
@@ -53,7 +49,6 @@ class CidadeServiceTest {
     void deveBuscarListaDeCidades(){
         List<Cidade> cidades = gerarCidades();
         when(cidadeRepository.buscarCidades()).thenReturn(cidades);
-        when(cidadeMapper.toCidadesDomains(cidades)).thenReturn(CidadeMapper.INSTANCE.toCidadesDomains(cidades));
 
         List<CidadeDomain> cidadesDomains = cidadeService.buscarCidades();
 
@@ -70,7 +65,6 @@ class CidadeServiceTest {
     void deveBuscarCidadePorId(){
         Cidade cidade = gerarCidade();
         when(cidadeRepository.findById(idCidadeExistente)).thenReturn(Optional.of(cidade));
-        when(cidadeMapper.toCidadeDomain(cidade)).thenReturn(CidadeMapper.INSTANCE.toCidadeDomain(cidade));
 
         CidadeDomain cidadeDomain = cidadeService.buscarCidadePorId(idCidadeExistente);
 
@@ -94,7 +88,6 @@ class CidadeServiceTest {
     void deveBuscarCidadePorCodigo(){
         Cidade cidade = gerarCidade();
         when(cidadeRepository.buscarCidadePorCodigo(codigoExistente)).thenReturn(Optional.of(cidade));
-        when(cidadeMapper.toCidadeDomain(cidade)).thenReturn(CidadeMapper.INSTANCE.toCidadeDomain(cidade));
 
         CidadeDomain cidadeDomain = cidadeService.buscarCidadePorCodigo(codigoExistente);
 

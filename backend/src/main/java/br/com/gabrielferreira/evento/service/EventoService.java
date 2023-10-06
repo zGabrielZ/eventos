@@ -3,7 +3,6 @@ package br.com.gabrielferreira.evento.service;
 import br.com.gabrielferreira.evento.domain.EventoDomain;
 import br.com.gabrielferreira.evento.entity.Evento;
 import br.com.gabrielferreira.evento.exception.NaoEncontradoException;
-import br.com.gabrielferreira.evento.mapper.EventoMapper;
 import br.com.gabrielferreira.evento.repository.EventoRepository;
 import br.com.gabrielferreira.evento.repository.filter.EventoFilters;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +14,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static br.com.gabrielferreira.evento.utils.PageUtils.*;
+import static br.com.gabrielferreira.evento.factory.domain.EventoDomainFactory.*;
+import static br.com.gabrielferreira.evento.factory.entity.EventoFactory.*;
 
 @Service
 @RequiredArgsConstructor
@@ -26,21 +27,19 @@ public class EventoService {
 
     private final ConsultaAvancadaService consultaAvancadaService;
 
-    private final EventoMapper eventoMapper;
-
     @Transactional
     public EventoDomain cadastrarEvento(EventoDomain eventoDomain){
         eventoDomain.setCidade(cidadeService.buscarCidadePorId(eventoDomain.getCidade().getId()));
 
-        Evento evento = eventoMapper.toEvento(eventoDomain);
+        Evento evento = toCreateEvento(eventoDomain);
         evento = eventoRepository.save(evento);
-        return eventoMapper.toEventoDomain(evento);
+        return toEventoDomain(evento);
     }
 
     public EventoDomain buscarEventoPorId(Long id){
         Evento evento = eventoRepository.buscarEventoPorId(id)
                 .orElseThrow(() -> new NaoEncontradoException("Evento não encontrado"));
-        return eventoMapper.toEventoDomain(evento);
+        return toEventoDomain(evento);
     }
 
     @Transactional
@@ -48,11 +47,9 @@ public class EventoService {
         EventoDomain eventoDomainEncontrado = buscarEventoPorId(eventoDomain.getId());
         eventoDomainEncontrado.setCidade(cidadeService.buscarCidadePorId(eventoDomain.getCidade().getId()));
 
-        updateEvento(eventoDomainEncontrado, eventoDomain);
-
-        Evento evento = eventoMapper.toEvento(eventoDomainEncontrado);
+        Evento evento = toUpdateEvento(eventoDomainEncontrado, eventoDomain);
         evento = eventoRepository.save(evento);
-        return eventoMapper.toEventoDomain(evento);
+        return toEventoDomain(evento);
     }
 
     @Transactional
@@ -64,7 +61,7 @@ public class EventoService {
     public Page<EventoDomain> buscarEventos(Pageable pageable){
         pageable = validarOrderBy(pageable, atributoDtoToEntity());
         Page<Evento> eventoDomains = eventoRepository.buscarEventos(pageable);
-        return eventoMapper.toEventosDomains(eventoDomains);
+        return toEventosDomains(eventoDomains);
     }
 
     public Page<EventoDomain> buscarEventosAvancados(EventoFilters eventoFilters, Pageable pageable){
@@ -75,14 +72,6 @@ public class EventoService {
         Map<String, String> atributoDtoToEntity = new HashMap<>();
         atributoDtoToEntity.put("data", "dataEvento");
         return atributoDtoToEntity;
-    }
-
-    private void updateEvento(EventoDomain eventoDomainEncontrado, EventoDomain eventoDomainUpdate){
-        if(eventoDomainEncontrado != null && eventoDomainUpdate != null){
-            eventoDomainEncontrado.setNome(eventoDomainUpdate.getNome());
-            eventoDomainEncontrado.setDataEvento(eventoDomainUpdate.getDataEvento());
-            eventoDomainEncontrado.setUrl(eventoDomainUpdate.getUrl());
-        }
     }
 
 }

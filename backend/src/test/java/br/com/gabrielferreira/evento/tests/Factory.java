@@ -1,11 +1,18 @@
 package br.com.gabrielferreira.evento.tests;
 
+import br.com.gabrielferreira.evento.domain.CidadeDomain;
+import br.com.gabrielferreira.evento.domain.EventoDomain;
 import br.com.gabrielferreira.evento.dto.request.CidadeRequestDTO;
 import br.com.gabrielferreira.evento.dto.request.EventoRequestDTO;
 import br.com.gabrielferreira.evento.entity.Cidade;
+import br.com.gabrielferreira.evento.entity.Evento;
+
 import java.time.LocalDate;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
+import static br.com.gabrielferreira.evento.utils.DataUtils.UTC;
 
 public class Factory {
 
@@ -27,11 +34,29 @@ public class Factory {
                 .build();
     }
 
+    public static CidadeDomain gerarCidadeDomain(){
+        Cidade cidade = gerarCidade();
+        return CidadeDomain.builder()
+                .id(cidade.getId())
+                .nome(cidade.getNome())
+                .codigo(cidade.getCodigo())
+                .build();
+    }
+
     public static Cidade gerarCidade2(){
         return Cidade.builder()
                 .id(2L)
                 .nome("São Paulo")
                 .codigo("SAO_PAULO")
+                .build();
+    }
+
+    public static CidadeDomain gerarCidadeDomain2(){
+        Cidade cidade = gerarCidade2();
+        return CidadeDomain.builder()
+                .id(cidade.getId())
+                .nome(cidade.getNome())
+                .codigo(cidade.getCodigo())
                 .build();
     }
 
@@ -45,6 +70,28 @@ public class Factory {
                 .build();
     }
 
+    public static EventoDomain criarEventoDomainInsert(EventoRequestDTO eventoRequestDTO){
+        CidadeDomain cidadeDomain = CidadeDomain.builder().id(eventoRequestDTO.getCidade().getId()).build();
+        return EventoDomain.builder()
+                .nome(eventoRequestDTO.getNome())
+                .dataEvento(eventoRequestDTO.getData())
+                .url(eventoRequestDTO.getUrl())
+                .cidade(cidadeDomain)
+                .build();
+    }
+
+    public static Evento criarEventoInsert(EventoDomain eventoDomain){
+        Cidade cidade = Cidade.builder().id(eventoDomain.getCidade().getId()).build();
+        return Evento.builder()
+                .id(eventoDomain.getId())
+                .nome(eventoDomain.getNome())
+                .dataEvento(eventoDomain.getDataEvento())
+                .url(eventoDomain.getUrl())
+                .cidade(cidade)
+                .createdAt(ZonedDateTime.now(UTC))
+                .build();
+    }
+
     public static EventoRequestDTO criarEventoUpdateDto(){
         CidadeRequestDTO cidadeRequestDTO = CidadeRequestDTO.builder().id(gerarCidade2().getId()).build();
         return EventoRequestDTO.builder()
@@ -52,6 +99,29 @@ public class Factory {
                 .data(LocalDate.of(2023, 6, 22))
                 .url("teste url")
                 .cidade(cidadeRequestDTO)
+                .build();
+    }
+
+    public static EventoDomain criarEventoDomainUpdate(Long id, EventoRequestDTO eventoRequestDTO){
+        CidadeDomain cidadeDomain = CidadeDomain.builder().id(eventoRequestDTO.getCidade().getId()).build();
+        return EventoDomain.builder()
+                .id(id)
+                .nome(eventoRequestDTO.getNome())
+                .dataEvento(eventoRequestDTO.getData())
+                .url(eventoRequestDTO.getUrl())
+                .cidade(cidadeDomain)
+                .build();
+    }
+
+    public static Evento criarEventoUpdate(EventoDomain eventoDomain){
+        Cidade cidade = Cidade.builder().id(eventoDomain.getCidade().getId()).build();
+        return Evento.builder()
+                .id(eventoDomain.getId())
+                .nome(eventoDomain.getNome())
+                .dataEvento(eventoDomain.getDataEvento())
+                .url(eventoDomain.getUrl())
+                .cidade(cidade)
+                .updatedAt(ZonedDateTime.now(UTC))
                 .build();
     }
 }

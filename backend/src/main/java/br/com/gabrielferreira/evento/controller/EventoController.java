@@ -4,7 +4,6 @@ import br.com.gabrielferreira.evento.domain.EventoDomain;
 import br.com.gabrielferreira.evento.dto.params.EventoParamsDTO;
 import br.com.gabrielferreira.evento.dto.response.EventoResponseDTO;
 import br.com.gabrielferreira.evento.dto.request.EventoRequestDTO;
-import br.com.gabrielferreira.evento.mapper.EventoMapper;
 import br.com.gabrielferreira.evento.repository.filter.EventoFilters;
 import br.com.gabrielferreira.evento.service.EventoService;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +16,9 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import java.net.URI;
 
 import static br.com.gabrielferreira.evento.utils.PageUtils.*;
+import static br.com.gabrielferreira.evento.factory.dto.EventoDTOFactory.*;
+import static br.com.gabrielferreira.evento.factory.domain.EventoDomainFactory.*;
+import static br.com.gabrielferreira.evento.factory.filter.EventoFilterFactory.*;
 
 @RestController
 @RequestMapping("/eventos")
@@ -25,26 +27,24 @@ public class EventoController {
 
     private final EventoService eventoService;
 
-    private final EventoMapper eventoMapper;
-
     @PostMapping
     public ResponseEntity<EventoResponseDTO> cadastrarEvento(@RequestBody EventoRequestDTO eventoRequestDTO){
-        EventoDomain eventoDomain = eventoService.cadastrarEvento(eventoMapper.toEventoDomain(eventoRequestDTO));
+        EventoDomain eventoDomain = eventoService.cadastrarEvento(toCreateEventoDomain(eventoRequestDTO));
         URI uri = ServletUriComponentsBuilder.fromCurrentRequestUri().path("/{id}")
                 .buildAndExpand(eventoDomain.getId()).toUri();
-        return ResponseEntity.created(uri).body(eventoMapper.toEventoResponseDto(eventoDomain));
+        return ResponseEntity.created(uri).body(toEventoResponseDto(eventoDomain));
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<EventoResponseDTO> buscarEventoPorId(@PathVariable Long id){
         EventoDomain eventoDomain = eventoService.buscarEventoPorId(id);
-        return ResponseEntity.ok().body(eventoMapper.toEventoResponseDto(eventoDomain));
+        return ResponseEntity.ok().body(toEventoResponseDto(eventoDomain));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<EventoResponseDTO> atualizarEvento(@PathVariable Long id, @RequestBody EventoRequestDTO eventoRequestDTO){
-        EventoDomain eventoDomain = eventoService.atualizarEvento(eventoMapper.toEventoDomain(id, eventoRequestDTO));
-        return ResponseEntity.ok().body(eventoMapper.toEventoResponseDto(eventoDomain));
+        EventoDomain eventoDomain = eventoService.atualizarEvento(toUpdateEventoDomain(id, eventoRequestDTO));
+        return ResponseEntity.ok().body(toEventoResponseDto(eventoDomain));
     }
 
     @DeleteMapping("/{id}")
@@ -57,14 +57,14 @@ public class EventoController {
     public ResponseEntity<Page<EventoResponseDTO>> buscarEventos(@PageableDefault(size = 5) Pageable pageable){
         validarPropriedadeInformada(pageable.getSort(), EventoResponseDTO.class);
         Page<EventoDomain> eventoDomains = eventoService.buscarEventos(pageable);
-        return ResponseEntity.ok().body(eventoMapper.toEventosResponsesDto(eventoDomains));
+        return ResponseEntity.ok().body(toEventosResponsesDtos(eventoDomains));
     }
 
     @GetMapping("/avancada")
     public ResponseEntity<Page<EventoResponseDTO>> buscarEventosAvancados(EventoParamsDTO params, @PageableDefault(size = 5) Pageable pageable){
         validarPropriedadeInformada(pageable.getSort(), EventoResponseDTO.class);
-        EventoFilters eventoFilters = eventoMapper.toEventoFilters(params);
+        EventoFilters eventoFilters = toEventoFilters(params);
         Page<EventoDomain> eventoDomains = eventoService.buscarEventosAvancados(eventoFilters, pageable);
-        return ResponseEntity.ok().body(eventoMapper.toEventosResponsesDto(eventoDomains));
+        return ResponseEntity.ok().body(toEventosResponsesDtos(eventoDomains));
     }
 }

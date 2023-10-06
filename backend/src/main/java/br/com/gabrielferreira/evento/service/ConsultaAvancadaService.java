@@ -60,6 +60,14 @@ public class ConsultaAvancadaService {
                 .limit(pageable.getPageSize())
                 .fetch();
 
+        eventoDomains.forEach(eventoDomain -> {
+            ZonedDateTime createdAt = eventoDomain.getCreatedAt() != null ? eventoDomain.getCreatedAt().withZoneSameInstant(FUSO_HORARIO_PADRAO_SISTEMA) : null;
+            ZonedDateTime updateAt = eventoDomain.getUpdatedAt() != null ? eventoDomain.getUpdatedAt().withZoneSameInstant(FUSO_HORARIO_PADRAO_SISTEMA) : null;
+
+            eventoDomain.setCreatedAt(createdAt);
+            eventoDomain.setUpdatedAt(updateAt);
+        });
+
         return new PageImpl<>(eventoDomains, pageable, eventoDomains.size());
     }
 
