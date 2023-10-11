@@ -215,4 +215,23 @@ class EventoControllerIntegrationTest {
         resultActions.andExpect(status().isOk());
         resultActions.andExpect(jsonPath("$.content").exists());
     }
+
+    @Test
+    @DisplayName("Não deve cadastrar evento quando não informar nenhum campo")
+    @Order(12)
+    void naoDeveCadastrarEvento() throws Exception{
+        eventoRequestDTO = criarEventoInsertDtoVazio();
+        String jsonBody = objectMapper.writeValueAsString(eventoRequestDTO);
+
+        ResultActions resultActions = mockMvc
+                .perform(post(URL)
+                        .content(jsonBody)
+                        .contentType(MEDIA_TYPE_JSON)
+                        .accept(MEDIA_TYPE_JSON));
+
+        resultActions.andExpect(status().isBadRequest());
+        resultActions.andExpect(jsonPath("$.erro").value("Erro validação de campos"));
+        resultActions.andExpect(jsonPath("$.mensagem").value("Ocorreu um erro de validação nos campos"));
+        resultActions.andExpect(jsonPath("$.erroFormularios").exists());
+    }
 }

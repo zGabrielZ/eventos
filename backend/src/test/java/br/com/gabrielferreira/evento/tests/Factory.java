@@ -124,4 +124,14 @@ public class Factory {
                 .updatedAt(ZonedDateTime.now(UTC))
                 .build();
     }
+
+    public static EventoRequestDTO criarEventoInsertDtoVazio(){
+        CidadeRequestDTO cidadeRequestDTO = CidadeRequestDTO.builder().id(null).build();
+        return EventoRequestDTO.builder()
+                .nome(null)
+                .data(null)
+                .url(null)
+                .cidade(cidadeRequestDTO)
+                .build();
+    }
 }

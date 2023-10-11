@@ -6,6 +6,7 @@ import br.com.gabrielferreira.evento.dto.response.EventoResponseDTO;
 import br.com.gabrielferreira.evento.dto.request.EventoRequestDTO;
 import br.com.gabrielferreira.evento.repository.filter.EventoFilters;
 import br.com.gabrielferreira.evento.service.EventoService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -28,7 +29,7 @@ public class EventoController {
     private final EventoService eventoService;
 
     @PostMapping
-    public ResponseEntity<EventoResponseDTO> cadastrarEvento(@RequestBody EventoRequestDTO eventoRequestDTO){
+    public ResponseEntity<EventoResponseDTO> cadastrarEvento(@Valid @RequestBody EventoRequestDTO eventoRequestDTO){
         EventoDomain eventoDomain = eventoService.cadastrarEvento(toCreateEventoDomain(eventoRequestDTO));
         URI uri = ServletUriComponentsBuilder.fromCurrentRequestUri().path("/{id}")
                 .buildAndExpand(eventoDomain.getId()).toUri();
@@ -42,7 +43,7 @@ public class EventoController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<EventoResponseDTO> atualizarEvento(@PathVariable Long id, @RequestBody EventoRequestDTO eventoRequestDTO){
+    public ResponseEntity<EventoResponseDTO> atualizarEvento(@PathVariable Long id, @Valid @RequestBody EventoRequestDTO eventoRequestDTO){
         EventoDomain eventoDomain = eventoService.atualizarEvento(toUpdateEventoDomain(id, eventoRequestDTO));
         return ResponseEntity.ok().body(toEventoResponseDto(eventoDomain));
     }
