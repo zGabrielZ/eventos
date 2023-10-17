@@ -234,4 +234,40 @@ class EventoControllerIntegrationTest {
         resultActions.andExpect(jsonPath("$.mensagem").value("Ocorreu um erro de validação nos campos"));
         resultActions.andExpect(jsonPath("$.erroFormularios").exists());
     }
+
+    @Test
+    @DisplayName("Não deve cadastrar evento quando não informar nome evento já existente")
+    @Order(13)
+    void naoDeveCadastrarEventoQuandoTiverNomeCadastrado() throws Exception{
+        eventoRequestDTO.setNome("Feira do Software");
+        String jsonBody = objectMapper.writeValueAsString(eventoRequestDTO);
+
+        ResultActions resultActions = mockMvc
+                .perform(post(URL)
+                        .content(jsonBody)
+                        .contentType(MEDIA_TYPE_JSON)
+                        .accept(MEDIA_TYPE_JSON));
+
+        resultActions.andExpect(status().isBadRequest());
+        resultActions.andExpect(jsonPath("$.erro").value("Erro personalizado"));
+        resultActions.andExpect(jsonPath("$.mensagem").value("Não vai ser possível cadastrar este evento pois o nome 'Feira do Software' já foi cadastrado"));
+    }
+
+    @Test
+    @DisplayName("Não deve alterar evento quando informar nome já existente")
+    @Order(14)
+    void naoDeveAlterarEventoQuandoTiverNomeEventoJaExistente() throws Exception {
+        eventoUpdateDTO.setNome("CCXP");
+        String jsonBody = objectMapper.writeValueAsString(eventoUpdateDTO);
+
+        ResultActions resultActions = mockMvc
+                .perform(put(URL.concat("/{id}"), idEventoExistente)
+                        .content(jsonBody)
+                        .contentType(MEDIA_TYPE_JSON)
+                        .accept(MEDIA_TYPE_JSON));
+
+        resultActions.andExpect(status().isBadRequest());
+        resultActions.andExpect(jsonPath("$.erro").value("Erro personalizado"));
+        resultActions.andExpect(jsonPath("$.mensagem").value("Não vai ser possível atualizar este evento pois o nome 'CCXP' já foi cadastrado"));
+    }
 }

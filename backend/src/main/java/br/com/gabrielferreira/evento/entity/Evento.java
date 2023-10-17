@@ -27,7 +27,7 @@ public class Evento implements Serializable {
     @EqualsAndHashCode.Include
     private Long id;
 
-    @Column(name = "NOME", nullable = false)
+    @Column(name = "NOME", nullable = false, unique = true)
     private String nome;
 
     @Column(name = "DATA_EVENTO", nullable = false)

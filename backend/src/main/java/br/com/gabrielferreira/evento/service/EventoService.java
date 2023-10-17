@@ -2,9 +2,11 @@ package br.com.gabrielferreira.evento.service;
 
 import br.com.gabrielferreira.evento.domain.EventoDomain;
 import br.com.gabrielferreira.evento.entity.Evento;
+import br.com.gabrielferreira.evento.exception.MsgException;
 import br.com.gabrielferreira.evento.exception.NaoEncontradoException;
 import br.com.gabrielferreira.evento.repository.EventoRepository;
 import br.com.gabrielferreira.evento.repository.filter.EventoFilters;
+import br.com.gabrielferreira.evento.repository.projection.EventoProjection;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -12,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import static br.com.gabrielferreira.evento.utils.PageUtils.*;
 import static br.com.gabrielferreira.evento.factory.domain.EventoDomainFactory.*;
@@ -29,6 +32,7 @@ public class EventoService {
 
     @Transactional
     public EventoDomain cadastrarEvento(EventoDomain eventoDomain){
+        validarNomeEvento(eventoDomain);
         eventoDomain.setCidade(cidadeService.buscarCidadePorId(eventoDomain.getCidade().getId()));
 
         Evento evento = toCreateEvento(eventoDomain);
@@ -45,6 +49,8 @@ public class EventoService {
     @Transactional
     public EventoDomain atualizarEvento(EventoDomain eventoDomain){
         EventoDomain eventoDomainEncontrado = buscarEventoPorId(eventoDomain.getId());
+        validarNomeEvento(eventoDomain);
+
         eventoDomainEncontrado.setCidade(cidadeService.buscarCidadePorId(eventoDomain.getCidade().getId()));
 
         Evento evento = toUpdateEvento(eventoDomainEncontrado, eventoDomain);
@@ -66,6 +72,15 @@ public class EventoService {
 
     public Page<EventoDomain> buscarEventosAvancados(EventoFilters eventoFilters, Pageable pageable){
         return consultaAvancadaService.buscarEventos(eventoFilters, pageable, atributoDtoToEntity());
+    }
+
+    public void validarNomeEvento(EventoDomain eventoDomain){
+        Optional<EventoProjection> eventoEncontrado = eventoRepository.existeNomeEvento(eventoDomain.getNome());
+        if(eventoDomain.getId() == null && eventoEncontrado.isPresent()){
+            throw new MsgException(String.format("Não vai ser possível cadastrar este evento pois o nome '%s' já foi cadastrado", eventoDomain.getNome()));
+        } else if(eventoDomain.getId() != null && eventoEncontrado.isPresent() && !eventoDomain.getId().equals(eventoEncontrado.get().getId())){
+            throw new MsgException(String.format("Não vai ser possível atualizar este evento pois o nome '%s' já foi cadastrado", eventoDomain.getNome()));
+        }
     }
 
     private Map<String, String> atributoDtoToEntity(){
