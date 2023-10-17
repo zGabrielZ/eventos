@@ -7,6 +7,7 @@ import br.com.gabrielferreira.evento.exception.NaoEncontradoException;
 import br.com.gabrielferreira.evento.repository.EventoRepository;
 import br.com.gabrielferreira.evento.repository.filter.EventoFilters;
 import br.com.gabrielferreira.evento.repository.projection.EventoProjection;
+import io.micrometer.common.util.StringUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -32,7 +33,9 @@ public class EventoService {
 
     @Transactional
     public EventoDomain cadastrarEvento(EventoDomain eventoDomain){
+        validarCamposEvento(eventoDomain);
         validarNomeEvento(eventoDomain);
+
         eventoDomain.setCidade(cidadeService.buscarCidadePorId(eventoDomain.getCidade().getId()));
 
         Evento evento = toCreateEvento(eventoDomain);
@@ -49,6 +52,7 @@ public class EventoService {
     @Transactional
     public EventoDomain atualizarEvento(EventoDomain eventoDomain){
         EventoDomain eventoDomainEncontrado = buscarEventoPorId(eventoDomain.getId());
+        validarCamposEvento(eventoDomain);
         validarNomeEvento(eventoDomain);
 
         eventoDomainEncontrado.setCidade(cidadeService.buscarCidadePorId(eventoDomain.getCidade().getId()));
@@ -80,6 +84,13 @@ public class EventoService {
             throw new MsgException(String.format("Não vai ser possível cadastrar este evento pois o nome '%s' já foi cadastrado", eventoDomain.getNome()));
         } else if(eventoDomain.getId() != null && eventoEncontrado.isPresent() && !eventoDomain.getId().equals(eventoEncontrado.get().getId())){
             throw new MsgException(String.format("Não vai ser possível atualizar este evento pois o nome '%s' já foi cadastrado", eventoDomain.getNome()));
+        }
+    }
+
+    private void validarCamposEvento(EventoDomain eventoDomain){
+        eventoDomain.setNome(eventoDomain.getNome().trim());
+        if(!StringUtils.isBlank(eventoDomain.getUrl())){
+            eventoDomain.setUrl(eventoDomain.getUrl().trim());
         }
     }
 
