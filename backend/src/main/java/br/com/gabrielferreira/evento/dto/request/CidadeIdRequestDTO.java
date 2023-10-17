@@ -12,7 +12,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class CidadeRequestDTO implements Serializable {
+public class CidadeIdRequestDTO implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 958714108846456044L;

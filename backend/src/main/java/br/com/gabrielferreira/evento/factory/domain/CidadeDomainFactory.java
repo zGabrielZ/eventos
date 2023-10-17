@@ -1,7 +1,7 @@
 package br.com.gabrielferreira.evento.factory.domain;
 
 import br.com.gabrielferreira.evento.domain.CidadeDomain;
-import br.com.gabrielferreira.evento.dto.request.CidadeRequestDTO;
+import br.com.gabrielferreira.evento.dto.request.CidadeIdRequestDTO;
 import br.com.gabrielferreira.evento.entity.Cidade;
 
 import java.util.List;
@@ -10,10 +10,10 @@ public class CidadeDomainFactory {
 
     private CidadeDomainFactory(){}
 
-    public static CidadeDomain toCidadeDomain(CidadeRequestDTO cidadeRequestDTO){
-        if(cidadeRequestDTO != null){
+    public static CidadeDomain toCidadeDomain(CidadeIdRequestDTO cidadeIdRequestDTO){
+        if(cidadeIdRequestDTO != null){
             return CidadeDomain.builder()
-                    .id(cidadeRequestDTO.getId())
+                    .id(cidadeIdRequestDTO.getId())
                     .build();
         }
         return null;

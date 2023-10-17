@@ -33,5 +33,5 @@ public class EventoRequestDTO implements Serializable {
 
     @Valid
     @NotNull(message = "A cidade não pode ser vazia")
-    private CidadeRequestDTO cidade;
+    private CidadeIdRequestDTO cidade;
 }

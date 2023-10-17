@@ -2,7 +2,7 @@ package br.com.gabrielferreira.evento.tests;
 
 import br.com.gabrielferreira.evento.domain.CidadeDomain;
 import br.com.gabrielferreira.evento.domain.EventoDomain;
-import br.com.gabrielferreira.evento.dto.request.CidadeRequestDTO;
+import br.com.gabrielferreira.evento.dto.request.CidadeIdRequestDTO;
 import br.com.gabrielferreira.evento.dto.request.EventoRequestDTO;
 import br.com.gabrielferreira.evento.entity.Cidade;
 import br.com.gabrielferreira.evento.entity.Evento;
@@ -61,12 +61,12 @@ public class Factory {
     }
 
     public static EventoRequestDTO criarEventoInsertDto(){
-        CidadeRequestDTO cidadeRequestDTO = CidadeRequestDTO.builder().id(gerarCidade().getId()).build();
+        CidadeIdRequestDTO cidadeIdRequestDTO = CidadeIdRequestDTO.builder().id(gerarCidade().getId()).build();
         return EventoRequestDTO.builder()
                 .nome("evento teste")
                 .data(LocalDate.of(2022, 4, 22))
                 .url("https://www.google.com.br/?hl=pt-BR")
-                .cidade(cidadeRequestDTO)
+                .cidade(cidadeIdRequestDTO)
                 .build();
     }
 
@@ -93,12 +93,12 @@ public class Factory {
     }
 
     public static EventoRequestDTO criarEventoUpdateDto(){
-        CidadeRequestDTO cidadeRequestDTO = CidadeRequestDTO.builder().id(gerarCidade2().getId()).build();
+        CidadeIdRequestDTO cidadeIdRequestDTO = CidadeIdRequestDTO.builder().id(gerarCidade2().getId()).build();
         return EventoRequestDTO.builder()
                 .nome("evento teste atualizado")
                 .data(LocalDate.of(2023, 6, 22))
                 .url("teste url")
-                .cidade(cidadeRequestDTO)
+                .cidade(cidadeIdRequestDTO)
                 .build();
     }
 
@@ -126,12 +126,12 @@ public class Factory {
     }
 
     public static EventoRequestDTO criarEventoInsertDtoVazio(){
-        CidadeRequestDTO cidadeRequestDTO = CidadeRequestDTO.builder().id(null).build();
+        CidadeIdRequestDTO cidadeIdRequestDTO = CidadeIdRequestDTO.builder().id(null).build();
         return EventoRequestDTO.builder()
                 .nome(null)
                 .data(null)
                 .url(null)
-                .cidade(cidadeRequestDTO)
+                .cidade(cidadeIdRequestDTO)
                 .build();
     }
 }
