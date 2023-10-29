@@ -4,6 +4,7 @@ import br.com.gabrielferreira.evento.domain.EventoDomain;
 import br.com.gabrielferreira.evento.entity.Evento;
 import br.com.gabrielferreira.evento.exception.NaoEncontradoException;
 import br.com.gabrielferreira.evento.repository.EventoRepository;
+import br.com.gabrielferreira.evento.service.validation.EventoValidator;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -28,6 +29,9 @@ class EventoServiceTest {
 
     @Mock
     private EventoRepository eventoRepository;
+
+    @Mock
+    private EventoValidator eventoValidator;
 
     private EventoDomain eventoInsertDomain;
 
@@ -56,6 +60,9 @@ class EventoServiceTest {
     @DisplayName("Deve cadastrar evento quando informar valores corretos")
     @Order(1)
     void deveCadastrarEvento(){
+        doNothing().when(eventoValidator).validarCampos(eventoInsertDomain);
+        doNothing().when(eventoValidator).validarNome(eventoInsertDomain);
+        doNothing().when(eventoValidator).validarCidade(eventoInsertDomain);
         when(cidadeService.buscarCidadePorId(eventoInsertDomain.getCidade().getId())).thenReturn(gerarCidadeDomain());
         when(eventoRepository.save(any())).thenReturn(eventoInsert);
 
@@ -91,6 +98,9 @@ class EventoServiceTest {
     @DisplayName("Deve atualizar evento quando informar valores corretos")
     @Order(4)
     void deveAtualizarEventos() {
+        doNothing().when(eventoValidator).validarCampos(eventoUpdateDomain);
+        doNothing().when(eventoValidator).validarNome(eventoUpdateDomain);
+        doNothing().when(eventoValidator).validarCidade(eventoUpdateDomain);
         when(eventoRepository.buscarEventoPorId(idEventoExistente)).thenReturn(Optional.of(eventoInsert));
         when(cidadeService.buscarCidadePorId(eventoUpdateDomain.getCidade().getId())).thenReturn(gerarCidadeDomain2());
         when(eventoRepository.save(any())).thenReturn(eventoUpdate);
