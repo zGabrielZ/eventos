@@ -5,8 +5,6 @@ import br.com.gabrielferreira.evento.dto.request.EventoRequestDTO;
 import br.com.gabrielferreira.evento.entity.Evento;
 import org.springframework.data.domain.Page;
 
-import java.time.ZonedDateTime;
-
 import static br.com.gabrielferreira.evento.utils.DataUtils.*;
 import static br.com.gabrielferreira.evento.factory.domain.CidadeDomainFactory.*;
 
@@ -36,16 +34,14 @@ public class EventoDomainFactory {
 
     public static EventoDomain toEventoDomain(Evento evento){
         if(evento != null){
-            ZonedDateTime createdAt = evento.getCreatedAt() != null ? evento.getCreatedAt().withZoneSameInstant(FUSO_HORARIO_PADRAO_SISTEMA) : null;
-            ZonedDateTime updateAt = evento.getUpdatedAt() != null ? evento.getUpdatedAt().withZoneSameInstant(FUSO_HORARIO_PADRAO_SISTEMA) : null;
             return EventoDomain.builder()
                     .id(evento.getId())
                     .nome(evento.getNome())
                     .dataEvento(evento.getDataEvento())
                     .url(evento.getUrl())
                     .cidade(toCidadeDomain(evento.getCidade()))
-                    .createdAt(createdAt)
-                    .updatedAt(updateAt)
+                    .createdAt(toFusoPadraoSistema(evento.getCreatedAt()))
+                    .updatedAt(toFusoPadraoSistema(evento.getUpdatedAt()))
                     .build();
         }
         return null;

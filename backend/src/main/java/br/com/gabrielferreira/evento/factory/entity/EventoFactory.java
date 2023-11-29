@@ -30,7 +30,7 @@ public class EventoFactory {
                     .dataEvento(eventoDomainUpdate.getDataEvento())
                     .url(eventoDomainUpdate.getUrl())
                     .cidade(toCidade(eventoDomainUpdate.getCidade()))
-                    .createdAt(eventoDomainEncontrado.getCreatedAt().withZoneSameInstant(UTC))
+                    .createdAt(toUtc(eventoDomainEncontrado.getCreatedAt()))
                     .build();
         }
         return null;
