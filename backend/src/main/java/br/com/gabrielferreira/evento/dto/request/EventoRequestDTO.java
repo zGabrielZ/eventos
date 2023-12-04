@@ -8,6 +8,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.validator.constraints.URL;
+
 import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -28,6 +30,7 @@ public class EventoRequestDTO implements Serializable {
     @NotNull(message = "Data do evento não pode ser vazio")
     private LocalDate data;
 
+    @URL(message = "URL inválida")
     @Size(max = 250, message = "A url do evento deve ter no máximo 250 caracteres")
     private String url;
 
