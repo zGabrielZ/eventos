@@ -7,6 +7,16 @@ public class CidadeFactory {
 
     private CidadeFactory(){}
 
+    public static Cidade toCreateCidade(CidadeDomain cidadeDomain){
+        if(cidadeDomain != null){
+            return Cidade.builder()
+                    .nome(cidadeDomain.getNome())
+                    .codigo(cidadeDomain.getCodigo())
+                    .build();
+        }
+        return null;
+    }
+
     public static Cidade toCidade(CidadeDomain cidadeDomain){
         if(cidadeDomain != null){
             return Cidade.builder()
