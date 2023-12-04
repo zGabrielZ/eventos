@@ -3,6 +3,7 @@ package br.com.gabrielferreira.evento.tests;
 import br.com.gabrielferreira.evento.domain.CidadeDomain;
 import br.com.gabrielferreira.evento.domain.EventoDomain;
 import br.com.gabrielferreira.evento.dto.request.CidadeIdRequestDTO;
+import br.com.gabrielferreira.evento.dto.request.CidadeRequestDTO;
 import br.com.gabrielferreira.evento.dto.request.EventoRequestDTO;
 import br.com.gabrielferreira.evento.entity.Cidade;
 import br.com.gabrielferreira.evento.entity.Evento;
@@ -97,7 +98,7 @@ public class Factory {
         return EventoRequestDTO.builder()
                 .nome("evento teste atualizado")
                 .data(LocalDate.of(2023, 6, 22))
-                .url("teste url")
+                .url("https://google.com.br")
                 .cidade(cidadeIdRequestDTO)
                 .build();
     }
@@ -132,6 +133,27 @@ public class Factory {
                 .data(null)
                 .url(null)
                 .cidade(cidadeIdRequestDTO)
+                .build();
+    }
+
+    public static CidadeRequestDTO criarCidadeInsertDto(){
+        return CidadeRequestDTO.builder()
+                .nome("Ribeirão Preto")
+                .codigo("RIBEIRAO_PRETO")
+                .build();
+    }
+
+    public static CidadeDomain criarCidadeDomainInsert(CidadeRequestDTO cidadeRequestDTO){
+        return CidadeDomain.builder()
+                .nome(cidadeRequestDTO.getNome())
+                .codigo(cidadeRequestDTO.getCodigo())
+                .build();
+    }
+
+    public static Cidade criarCidadeInsert(CidadeDomain cidadeDomain){
+        return Cidade.builder()
+                .nome(cidadeDomain.getNome())
+                .codigo(cidadeDomain.getCodigo())
                 .build();
     }
 }

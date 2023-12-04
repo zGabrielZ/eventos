@@ -5,6 +5,7 @@ import br.com.gabrielferreira.evento.entity.Cidade;
 import br.com.gabrielferreira.evento.exception.MsgException;
 import br.com.gabrielferreira.evento.exception.NaoEncontradoException;
 import br.com.gabrielferreira.evento.repository.CidadeRepository;
+import br.com.gabrielferreira.evento.service.validation.CidadeValidator;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -27,6 +28,9 @@ class CidadeServiceTest {
     @Mock
     private CidadeRepository cidadeRepository;
 
+    @Mock
+    private CidadeValidator cidadeValidator;
+
     private Long idCidadeExistente;
 
     private Long idCidadeInexistente;
@@ -35,12 +39,19 @@ class CidadeServiceTest {
 
     private String codigoInexistente;
 
+    private CidadeDomain cidadeDomainInsert;
+
+    private Cidade cidadeInsert;
+
     @BeforeEach
     void setUp(){
         idCidadeExistente = 1L;
         idCidadeInexistente = -1L;
         codigoExistente = "MANAUS";
         codigoInexistente = "teste123";
+
+        cidadeDomainInsert = criarCidadeDomainInsert(criarCidadeInsertDto());
+        cidadeInsert = criarCidadeInsert(cidadeDomainInsert);
     }
 
     @Test
@@ -111,5 +122,20 @@ class CidadeServiceTest {
     void naoDeveBuscarCidadePorCodigoQuandoNaoInformar(){
         assertThrows(MsgException.class, () -> cidadeService.buscarCidadePorCodigo(null));
         verify(cidadeRepository, never()).buscarCidadePorCodigo(anyString());
+    }
+
+    @Test
+    @DisplayName("Deve cadastrar cidade quando informar corretamente")
+    @Order(7)
+    void deveCadastrarCidade(){
+        doNothing().when(cidadeValidator).validarCampos(cidadeDomainInsert);
+        doNothing().when(cidadeValidator).validarNome(cidadeDomainInsert);
+        doNothing().when(cidadeValidator).validarCodigo(cidadeDomainInsert);
+        when(cidadeRepository.save(any())).thenReturn(cidadeInsert);
+
+        CidadeDomain cidadeDomain = cidadeService.cadastrarCidade(cidadeDomainInsert);
+
+        assertNotNull(cidadeDomain);
+        verify(cidadeRepository, times(1)).save(any());
     }
 }
