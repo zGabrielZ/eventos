@@ -2,7 +2,6 @@ package br.com.gabrielferreira.evento.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.security.core.GrantedAuthority;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -15,7 +14,7 @@ import java.io.Serializable;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Entity
 @Table(name = "TB_PERFIL")
-public class Perfil implements Serializable, GrantedAuthority {
+public class Perfil implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 124441226725634777L;
@@ -30,9 +29,4 @@ public class Perfil implements Serializable, GrantedAuthority {
 
     @Column(name = "TIPO", nullable = false, unique = true)
     private String tipo;
-
-    @Override
-    public String getAuthority() {
-        return this.descricao;
-    }
 }
