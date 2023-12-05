@@ -23,6 +23,7 @@ class CidadeControllerIntegrationTest {
 
     private static final String URL = "/cidades";
     private static final MediaType MEDIA_TYPE_JSON = MediaType.APPLICATION_JSON;
+    private static final String CODIGO_REPETIDO = "SAO_PAULO";
 
     @Autowired
     protected MockMvc mockMvc;
@@ -210,7 +211,7 @@ class CidadeControllerIntegrationTest {
     @DisplayName("Não deve cadastrar uma cidade quando o código já estiver cadastrado")
     @Order(12)
     void naoDeveCadastrarCidadeQuandoCodigoJaEstiverCadastrado() throws Exception{
-        cidadeRequestDTO.setCodigo("SAO_PAULO");
+        cidadeRequestDTO.setCodigo(CODIGO_REPETIDO);
         String jsonBody = objectMapper.writeValueAsString(cidadeRequestDTO);
 
         ResultActions resultActions = mockMvc
