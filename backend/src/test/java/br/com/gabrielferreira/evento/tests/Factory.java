@@ -65,7 +65,7 @@ public class Factory {
         CidadeIdRequestDTO cidadeIdRequestDTO = CidadeIdRequestDTO.builder().id(gerarCidade().getId()).build();
         return EventoRequestDTO.builder()
                 .nome("evento teste")
-                .data(LocalDate.of(2022, 4, 22))
+                .data(LocalDate.now().plusDays(5L))
                 .url("https://www.google.com.br/?hl=pt-BR")
                 .cidade(cidadeIdRequestDTO)
                 .build();
@@ -97,7 +97,7 @@ public class Factory {
         CidadeIdRequestDTO cidadeIdRequestDTO = CidadeIdRequestDTO.builder().id(gerarCidade2().getId()).build();
         return EventoRequestDTO.builder()
                 .nome("evento teste atualizado")
-                .data(LocalDate.of(2023, 6, 22))
+                .data(LocalDate.now().plusMonths(1L))
                 .url("https://google.com.br")
                 .cidade(cidadeIdRequestDTO)
                 .build();

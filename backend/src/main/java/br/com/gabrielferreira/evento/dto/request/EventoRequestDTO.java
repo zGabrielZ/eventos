@@ -1,9 +1,7 @@
 package br.com.gabrielferreira.evento.dto.request;
 
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -27,6 +25,7 @@ public class EventoRequestDTO implements Serializable {
     @Size(max = 150, message = "O nome do evento deve ter no máximo 150 caracteres")
     private String nome;
 
+    @FutureOrPresent(message = "Data do evento deve ser no presente ou futuro")
     @NotNull(message = "Data do evento não pode ser vazio")
     private LocalDate data;
 
