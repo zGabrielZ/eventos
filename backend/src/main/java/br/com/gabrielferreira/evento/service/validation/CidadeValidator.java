@@ -6,8 +6,9 @@ import br.com.gabrielferreira.evento.repository.CidadeRepository;
 import br.com.gabrielferreira.evento.repository.projection.CidadeProjection;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-
 import java.util.Optional;
+
+import static br.com.gabrielferreira.evento.utils.ConstantesUtils.*;
 
 @Component
 @RequiredArgsConstructor
@@ -49,18 +50,5 @@ public class CidadeValidator {
         if(!isTodasLetrasMaiusculas){
             throw new MsgException(String.format("Não vai ser possível cadastrar esta cidade pois o código '%s' tem que ser toda maiúsculas", codigo));
         }
-    }
-
-    private boolean isEspacoEmBranco(String valor){
-        for (Character caractere : valor.toCharArray()) {
-            if (Character.isWhitespace(caractere)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private boolean isTodasLetrasMaiusculas(String valor){
-        return valor.equals(valor.toUpperCase());
     }
 }
