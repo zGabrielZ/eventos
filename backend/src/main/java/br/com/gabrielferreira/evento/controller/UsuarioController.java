@@ -7,10 +7,7 @@ import br.com.gabrielferreira.evento.service.UsuarioService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import java.net.URI;
 
@@ -31,5 +28,11 @@ public class UsuarioController {
         URI uri = ServletUriComponentsBuilder.fromCurrentRequestUri().path("/{id}")
                 .buildAndExpand(usuarioDomain.getId()).toUri();
         return ResponseEntity.created(uri).body(toUsuarioResponseDto(usuarioDomain));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<UsuarioResponseDTO> buscarUsuarioPorId(@PathVariable Long id){
+        UsuarioDomain usuarioDomain = usuarioService.buscarUsuarioPorId(id);
+        return ResponseEntity.ok().body(toUsuarioResponseDto(usuarioDomain));
     }
 }

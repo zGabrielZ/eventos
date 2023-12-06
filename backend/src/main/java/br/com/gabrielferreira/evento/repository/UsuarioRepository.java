@@ -15,4 +15,9 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
     @Query("SELECT u.id as id, u.email as email FROM Usuario u " +
             "WHERE u.email = :email")
     Optional<UsuarioProjection> existeEmailEvento(@Param("email") String email);
+
+    @Query("SELECT u FROM Usuario u " +
+            "JOIN FETCH u.perfis p " +
+            "WHERE u.id = :id")
+    Optional<Usuario> buscarPorId(@Param("id") Long id);
 }

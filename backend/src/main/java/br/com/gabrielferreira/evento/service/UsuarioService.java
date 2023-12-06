@@ -2,6 +2,7 @@ package br.com.gabrielferreira.evento.service;
 
 import br.com.gabrielferreira.evento.domain.UsuarioDomain;
 import br.com.gabrielferreira.evento.entity.Usuario;
+import br.com.gabrielferreira.evento.exception.NaoEncontradoException;
 import br.com.gabrielferreira.evento.repository.UsuarioRepository;
 import br.com.gabrielferreira.evento.service.validation.UsuarioValidator;
 import lombok.RequiredArgsConstructor;
@@ -32,6 +33,12 @@ public class UsuarioService {
         Usuario usuario = toCreateUsuario(usuarioDomain);
         usuario.setSenha(bCryptPasswordEncoder.encode(usuario.getSenha()));
         usuario = usuarioRepository.save(usuario);
+        return toUsuarioDomain(usuario);
+    }
+
+    public UsuarioDomain buscarUsuarioPorId(Long id){
+        Usuario usuario = usuarioRepository.buscarPorId(id)
+                .orElseThrow(() -> new NaoEncontradoException("Usuário não encontrado"));
         return toUsuarioDomain(usuario);
     }
 }
