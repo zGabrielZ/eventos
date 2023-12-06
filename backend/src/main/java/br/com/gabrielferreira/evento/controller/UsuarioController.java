@@ -42,4 +42,10 @@ public class UsuarioController {
         UsuarioDomain usuarioDomain = usuarioService.atualizarUsuario(toUpdateUsuarioDomain(id, usuarioUpdateResquestDTO));
         return ResponseEntity.ok().body(toUsuarioResponseDto(usuarioDomain));
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deletarUsuarioPorId(@PathVariable Long id){
+        usuarioService.deletarUsuarioPorId(id);
+        return ResponseEntity.noContent().build();
+    }
 }

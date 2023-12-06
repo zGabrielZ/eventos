@@ -54,4 +54,10 @@ public class UsuarioService {
         usuario = usuarioRepository.save(usuario);
         return toUsuarioDomain(usuario);
     }
+
+    @Transactional
+    public void deletarUsuarioPorId(Long id){
+        UsuarioDomain usuarioDomainEncontrado = buscarUsuarioPorId(id);
+        usuarioRepository.deleteById(usuarioDomainEncontrado.getId());
+    }
 }
