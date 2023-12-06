@@ -41,4 +41,17 @@ public class UsuarioService {
                 .orElseThrow(() -> new NaoEncontradoException("Usuário não encontrado"));
         return toUsuarioDomain(usuario);
     }
+
+    @Transactional
+    public UsuarioDomain atualizarUsuario(UsuarioDomain usuarioDomain){
+        usuarioValidator.validarCampo(usuarioDomain);
+        usuarioValidator.validarEmail(usuarioDomain);
+        usuarioValidator.validarPerfil(usuarioDomain);
+
+        UsuarioDomain usuarioDomainEncontrado = buscarUsuarioPorId(usuarioDomain.getId());
+
+        Usuario usuario = toUpdateUsuario(usuarioDomainEncontrado, usuarioDomain);
+        usuario = usuarioRepository.save(usuario);
+        return toUsuarioDomain(usuario);
+    }
 }

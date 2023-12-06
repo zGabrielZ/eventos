@@ -6,6 +6,7 @@ import br.com.gabrielferreira.evento.exception.MsgException;
 import br.com.gabrielferreira.evento.repository.UsuarioRepository;
 import br.com.gabrielferreira.evento.repository.projection.UsuarioProjection;
 import br.com.gabrielferreira.evento.service.PerfilService;
+import io.micrometer.common.util.StringUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -28,12 +29,13 @@ public class UsuarioValidator {
         usuarioDomain.setNome(usuarioDomain.getNome().trim());
         usuarioDomain.setEmail(usuarioDomain.getEmail().trim());
 
-        boolean isEspacoEmBranco = isEspacoEmBranco(usuarioDomain.getSenha());
-        if(isEspacoEmBranco){
-            throw new MsgException("Não vai ser possível cadastrar este usuário pois a senha possui espaço em branco");
+        if(StringUtils.isNotBlank(usuarioDomain.getSenha())){
+            boolean isEspacoEmBranco = isEspacoEmBranco(usuarioDomain.getSenha());
+            if(isEspacoEmBranco){
+                throw new MsgException("Não vai ser possível cadastrar este usuário pois a senha possui espaço em branco");
+            }
+            usuarioDomain.setSenha(usuarioDomain.getSenha().trim());
         }
-
-        usuarioDomain.setSenha(usuarioDomain.getSenha().trim());
 
         List<Long> idsPerfis = usuarioDomain.getPerfis().stream().map(PerfilDomain::getId).toList();
         idsPerfis.forEach(idPerfil -> {

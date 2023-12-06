@@ -2,6 +2,7 @@ package br.com.gabrielferreira.evento.factory.domain;
 
 import br.com.gabrielferreira.evento.domain.UsuarioDomain;
 import br.com.gabrielferreira.evento.dto.request.UsuarioResquestDTO;
+import br.com.gabrielferreira.evento.dto.request.UsuarioUpdateResquestDTO;
 import br.com.gabrielferreira.evento.entity.Usuario;
 
 import static br.com.gabrielferreira.evento.utils.DataUtils.*;
@@ -18,6 +19,18 @@ public class UsuarioDomainFactory {
                     .email(usuarioResquestDTO.getEmail())
                     .senha(usuarioResquestDTO.getSenha())
                     .perfis(toCreatePerfisDomains(usuarioResquestDTO.getPerfis()))
+                    .build();
+        }
+        return null;
+    }
+
+    public static UsuarioDomain toUpdateUsuarioDomain(Long id, UsuarioUpdateResquestDTO usuarioUpdateResquestDTO){
+        if(usuarioUpdateResquestDTO != null){
+            return UsuarioDomain.builder()
+                    .id(id)
+                    .nome(usuarioUpdateResquestDTO.getNome())
+                    .email(usuarioUpdateResquestDTO.getEmail())
+                    .perfis(toCreatePerfisDomains(usuarioUpdateResquestDTO.getPerfis()))
                     .build();
         }
         return null;
