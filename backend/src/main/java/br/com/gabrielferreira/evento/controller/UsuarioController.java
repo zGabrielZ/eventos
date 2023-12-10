@@ -19,7 +19,6 @@ import java.net.URI;
 
 import static br.com.gabrielferreira.evento.factory.domain.UsuarioDomainFactory.*;
 import static br.com.gabrielferreira.evento.factory.dto.UsuarioDTOFactory.*;
-import static br.com.gabrielferreira.evento.utils.PageUtils.*;
 import static br.com.gabrielferreira.evento.factory.filter.UsuarioFilterFactory.*;
 
 
@@ -56,11 +55,10 @@ public class UsuarioController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/avancada")
-    public ResponseEntity<Page<UsuarioResponseDTO>> buscarUsuariosAvancados(UsuarioParamsDTO params, @PageableDefault(size = 5) Pageable pageable){
-        validarPropriedadeInformada(pageable.getSort(), UsuarioResponseDTO.class);
+    @GetMapping
+    public ResponseEntity<Page<UsuarioResponseDTO>> buscarUsuarios(UsuarioParamsDTO params, @PageableDefault(size = 5) Pageable pageable){
         UsuarioFilters usuarioFilters = toUsuarioFilters(params);
-        Page<UsuarioDomain> usuarioDomains = usuarioService.buscarUsuariosAvancados(usuarioFilters, pageable);
+        Page<UsuarioDomain> usuarioDomains = usuarioService.buscarUsuarios(usuarioFilters, pageable);
         return ResponseEntity.ok().body(toUsuariosResponsesDtos(usuarioDomains));
     }
 }

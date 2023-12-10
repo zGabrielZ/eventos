@@ -4,6 +4,7 @@ import br.com.gabrielferreira.evento.domain.UsuarioDomain;
 import br.com.gabrielferreira.evento.dto.request.UsuarioResquestDTO;
 import br.com.gabrielferreira.evento.dto.request.UsuarioUpdateResquestDTO;
 import br.com.gabrielferreira.evento.entity.Usuario;
+import org.springframework.data.domain.Page;
 
 import static br.com.gabrielferreira.evento.utils.DataUtils.*;
 import static br.com.gabrielferreira.evento.factory.domain.PerfilDomainFactory.*;
@@ -49,5 +50,9 @@ public class UsuarioDomainFactory {
                     .build();
         }
         return null;
+    }
+
+    public static Page<UsuarioDomain> toUsuariosDomains(Page<Usuario> usuarios){
+        return usuarios.map(UsuarioDomainFactory::toUsuarioDomain);
     }
 }
