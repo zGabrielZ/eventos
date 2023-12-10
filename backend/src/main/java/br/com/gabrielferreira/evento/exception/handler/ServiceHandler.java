@@ -57,7 +57,7 @@ public class ServiceHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErroPadrao> exception(Exception e, HttpServletRequest request){
         HttpStatus httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
-        ErroPadrao erroPadrao = gerarErroPadrao(httpStatus, ZonedDateTime.now(FUSO_HORARIO_PADRAO_SISTEMA), e.getMessage(), "Erro, tente mais tarde", request.getRequestURI());
+        ErroPadrao erroPadrao = gerarErroPadrao(httpStatus, ZonedDateTime.now(FUSO_HORARIO_PADRAO_SISTEMA), "Ocorreu erro no sistema, tente mais tarde", "Erro, tente mais tarde", request.getRequestURI());
         return ResponseEntity.status(httpStatus).body(erroPadrao);
     }
 

@@ -5,16 +5,15 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class PageUtils {
 
     private PageUtils(){}
 
-    // FIXME: ARRUMAR QUANDO TIVER UMA LISTA FAZENDO COMPOSICAO
     public static void validarPropriedadeInformada(Sort sorts, Class<?> classe){
         if(!sorts.isEmpty()){
             List<String> propriedadesInformadas = sorts.stream().map(Sort.Order::getProperty).toList();
@@ -54,9 +53,18 @@ public class PageUtils {
             String nomeCampo = prefixo.concat(campo.getName());
             campos.add(nomeCampo);
 
-            if(!campo.getType().isPrimitive() && !campo.getType().getName().startsWith("java.")){
+            if(!campo.getType().isPrimitive() && (!campo.getType().getName().startsWith("java."))){
                 campos.remove(nomeCampo);
                 listarAtributosRecursivamente(campos, nomeCampo.concat("."), campo.getType());
+            } else if(List.class.isAssignableFrom(campo.getType())){
+                Type genericType = campo.getGenericType();
+                if (genericType instanceof ParameterizedType parameterizedType) {
+                    Type elementType = parameterizedType.getActualTypeArguments()[0];
+                    if (elementType instanceof Class<?> classeList) {
+                        campos.remove(nomeCampo);
+                        listarAtributosRecursivamente(campos, nomeCampo.concat("."), classeList);
+                    }
+                }
             }
         }
         return campos;
