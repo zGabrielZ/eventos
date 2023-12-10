@@ -4,11 +4,15 @@ import br.com.gabrielferreira.evento.domain.UsuarioDomain;
 import br.com.gabrielferreira.evento.entity.Usuario;
 import br.com.gabrielferreira.evento.exception.NaoEncontradoException;
 import br.com.gabrielferreira.evento.repository.UsuarioRepository;
+import br.com.gabrielferreira.evento.repository.filter.UsuarioFilters;
 import br.com.gabrielferreira.evento.service.validation.UsuarioValidator;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import java.util.HashMap;
 
 import static br.com.gabrielferreira.evento.factory.entity.UsuarioFactory.*;
 import static br.com.gabrielferreira.evento.factory.domain.UsuarioDomainFactory.*;
@@ -22,6 +26,8 @@ public class UsuarioService {
     private final UsuarioValidator usuarioValidator;
 
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
+
+    private final ConsultaAvancadaService consultaAvancadaService;
 
     @Transactional
     public UsuarioDomain cadastrarUsuario(UsuarioDomain usuarioDomain){
@@ -59,5 +65,9 @@ public class UsuarioService {
     public void deletarUsuarioPorId(Long id){
         UsuarioDomain usuarioDomainEncontrado = buscarUsuarioPorId(id);
         usuarioRepository.deleteById(usuarioDomainEncontrado.getId());
+    }
+
+    public Page<UsuarioDomain> buscarUsuariosAvancados(UsuarioFilters usuarioFilters, Pageable pageable){
+        return consultaAvancadaService.buscarUsuarios(usuarioFilters, pageable, new HashMap<>());
     }
 }

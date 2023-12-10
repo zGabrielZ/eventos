@@ -5,15 +5,18 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
 import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class EventoFilters implements Serializable {
+public class UsuarioFilters implements Serializable {
 
     @Serial
     private static final long serialVersionUID = -3550554456478798801L;
@@ -22,11 +25,9 @@ public class EventoFilters implements Serializable {
 
     private String nome;
 
-    private LocalDate data;
+    private String email;
 
-    private String url;
-
-    private Long idCidade;
+    private List<Long> idsPerfis = new ArrayList<>();
 
     private LocalDate createdAt;
 
@@ -40,16 +41,12 @@ public class EventoFilters implements Serializable {
         return StringUtils.isNotBlank(this.nome);
     }
 
-    public boolean isDataExistente(){
-        return this.data != null;
+    public boolean isEmailExistente(){
+        return StringUtils.isNotBlank(this.email);
     }
 
-    public boolean isUrlExistente(){
-        return StringUtils.isNotBlank(this.url);
-    }
-
-    public boolean isIdCidadeExistente(){
-        return this.idCidade != null;
+    public boolean isIdsPerfisExistente(){
+        return !this.idsPerfis.isEmpty();
     }
 
     public boolean isCreatedAtExistente(){

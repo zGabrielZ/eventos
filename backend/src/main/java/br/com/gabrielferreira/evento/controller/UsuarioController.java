@@ -1,12 +1,17 @@
 package br.com.gabrielferreira.evento.controller;
 
 import br.com.gabrielferreira.evento.domain.UsuarioDomain;
+import br.com.gabrielferreira.evento.dto.params.UsuarioParamsDTO;
 import br.com.gabrielferreira.evento.dto.request.UsuarioResquestDTO;
 import br.com.gabrielferreira.evento.dto.request.UsuarioUpdateResquestDTO;
 import br.com.gabrielferreira.evento.dto.response.UsuarioResponseDTO;
+import br.com.gabrielferreira.evento.repository.filter.UsuarioFilters;
 import br.com.gabrielferreira.evento.service.UsuarioService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -14,6 +19,8 @@ import java.net.URI;
 
 import static br.com.gabrielferreira.evento.factory.domain.UsuarioDomainFactory.*;
 import static br.com.gabrielferreira.evento.factory.dto.UsuarioDTOFactory.*;
+import static br.com.gabrielferreira.evento.utils.PageUtils.*;
+import static br.com.gabrielferreira.evento.factory.filter.UsuarioFilterFactory.*;
 
 
 @RestController
@@ -47,5 +54,13 @@ public class UsuarioController {
     public ResponseEntity<Void> deletarUsuarioPorId(@PathVariable Long id){
         usuarioService.deletarUsuarioPorId(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/avancada")
+    public ResponseEntity<Page<UsuarioResponseDTO>> buscarUsuariosAvancados(UsuarioParamsDTO params, @PageableDefault(size = 5) Pageable pageable){
+        validarPropriedadeInformada(pageable.getSort(), UsuarioResponseDTO.class);
+        UsuarioFilters usuarioFilters = toUsuarioFilters(params);
+        Page<UsuarioDomain> usuarioDomains = usuarioService.buscarUsuariosAvancados(usuarioFilters, pageable);
+        return ResponseEntity.ok().body(toUsuariosResponsesDtos(usuarioDomains));
     }
 }

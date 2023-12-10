@@ -14,6 +14,7 @@ public class PageUtils {
 
     private PageUtils(){}
 
+    // FIXME: ARRUMAR QUANDO TIVER UMA LISTA FAZENDO COMPOSICAO
     public static void validarPropriedadeInformada(Sort sorts, Class<?> classe){
         if(!sorts.isEmpty()){
             List<String> propriedadesInformadas = sorts.stream().map(Sort.Order::getProperty).toList();
