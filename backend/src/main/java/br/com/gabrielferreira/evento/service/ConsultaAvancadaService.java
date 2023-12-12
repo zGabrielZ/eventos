@@ -56,7 +56,7 @@ public class ConsultaAvancadaService {
                 ))).from(qEvento)
                 .innerJoin(qEvento.cidade)
                 .where(booleanBuilder)
-                .orderBy(getOrder(pageable.getSort(), Evento.class, propriedadesPerfis()))
+                .orderBy(getOrder(pageable.getSort(), Evento.class))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
@@ -88,7 +88,7 @@ public class ConsultaAvancadaService {
                 .distinct()
                 .innerJoin(qUsuario.perfis, qPerfil)
                 .where(booleanBuilder)
-                .orderBy(getOrder(pageable.getSort(), Usuario.class, propriedadesUsuario()))
+                .orderBy(getOrder(pageable.getSort(), Usuario.class))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
@@ -161,14 +161,12 @@ public class ConsultaAvancadaService {
         }
     }
 
-    private OrderSpecifier<?>[] getOrder(Sort sorts, Class<?> classe, List<String> propriedades){
+    private OrderSpecifier<?>[] getOrder(Sort sorts, Class<?> classe){
         List<OrderSpecifier<?>> orderSpecifiers = new ArrayList<>();
         PathBuilder<?> entityPath = new PathBuilder<>(classe, classe.getSimpleName().toLowerCase());
         for (Sort.Order sort : sorts) {
             String propriedade = sort.getProperty();
             String direcao = sort.getDirection().name();
-
-            validarPropriedade(propriedades, propriedade);
 
             OrderSpecifier<?> orderSpecifier = "asc".equalsIgnoreCase(direcao)
                     ? entityPath.getString(propriedade).asc()

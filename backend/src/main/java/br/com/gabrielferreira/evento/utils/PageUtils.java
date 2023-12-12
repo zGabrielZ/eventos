@@ -11,9 +11,12 @@ public class PageUtils {
 
     private PageUtils(){}
 
-    public static void validarPropriedade(List<String> propriedades, String propriedade){
-        if(!propriedades.contains(propriedade)){
-            throw new MsgException(String.format("A propriedade informada '%s' não existe", propriedade));
+    public static void validarPropriedade(List<String> propriedades, Sort sorts){
+        for (Sort.Order sort : sorts) {
+            String propriedade = sort.getProperty();
+            if(!propriedades.contains(propriedade)){
+                throw new MsgException(String.format("A propriedade informada '%s' não existe", propriedade));
+            }
         }
     }
 
@@ -21,7 +24,7 @@ public class PageUtils {
         return Arrays.asList("id", "nome", "email", "createdAt", "updatedAt");
     }
 
-    public static List<String> propriedadesPerfis(){
+    public static List<String> propriedadesEvento(){
         return Arrays.asList("id", "nome", "data", "url", "cidade.id", "cidade.nome", "cidade.codigo", "createdAt", "updatedAt");
     }
 

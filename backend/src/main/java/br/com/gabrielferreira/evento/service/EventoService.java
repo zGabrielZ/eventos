@@ -65,12 +65,14 @@ public class EventoService {
     }
 
     public Page<EventoDomain> buscarEventos(Pageable pageable){
+        validarPropriedade(propriedadesEvento(), pageable.getSort());
         pageable = validarOrderBy(pageable, atributoDtoToEntity());
         Page<Evento> eventoDomains = eventoRepository.buscarEventos(pageable);
         return toEventosDomains(eventoDomains);
     }
 
     public Page<EventoDomain> buscarEventosAvancados(EventoFilters eventoFilters, Pageable pageable){
+        validarPropriedade(propriedadesEvento(), pageable.getSort());
         return consultaAvancadaService.buscarEventos(eventoFilters, pageable, atributoDtoToEntity());
     }
 

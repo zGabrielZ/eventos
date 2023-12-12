@@ -129,7 +129,7 @@ class CidadeControllerIntegrationTest {
                         .accept(MEDIA_TYPE_JSON));
 
         resultActions.andExpect(status().isInternalServerError());
-        resultActions.andExpect(jsonPath("$.erro").value("Required request parameter 'codigo' for method parameter type String is not present"));
+        resultActions.andExpect(jsonPath("$.mensagem").value("Parâmetro requerido 'codigo' do tipo 'String' não está presente"));
     }
 
     @Test

@@ -17,6 +17,7 @@ import java.util.HashMap;
 
 import static br.com.gabrielferreira.evento.factory.entity.UsuarioFactory.*;
 import static br.com.gabrielferreira.evento.factory.domain.UsuarioDomainFactory.*;
+import static br.com.gabrielferreira.evento.utils.PageUtils.*;
 
 @Service
 @RequiredArgsConstructor
@@ -69,6 +70,7 @@ public class UsuarioService {
     }
 
     public Page<UsuarioDomain> buscarUsuarios(UsuarioFilters usuarioFilters, Pageable pageable){
+        validarPropriedade(propriedadesUsuario(), pageable.getSort());
         return consultaAvancadaService.buscarUsuarios(usuarioFilters, pageable, new HashMap<>());
     }
 }

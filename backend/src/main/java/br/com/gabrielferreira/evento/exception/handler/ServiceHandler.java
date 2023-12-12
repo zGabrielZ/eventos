@@ -9,6 +9,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import java.time.ZonedDateTime;
@@ -57,7 +58,11 @@ public class ServiceHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErroPadrao> exception(Exception e, HttpServletRequest request){
         HttpStatus httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
-        ErroPadrao erroPadrao = gerarErroPadrao(httpStatus, ZonedDateTime.now(FUSO_HORARIO_PADRAO_SISTEMA), "Ocorreu erro no sistema, tente mais tarde", "Erro, tente mais tarde", request.getRequestURI());
+        String mensagem = e.getMessage();
+        if(e instanceof MissingServletRequestParameterException parameterException){
+            mensagem = "Parâmetro requerido '" + parameterException.getParameterName() + "' do tipo '" + parameterException.getParameterType() + "' não está presente";
+        }
+        ErroPadrao erroPadrao = gerarErroPadrao(httpStatus, ZonedDateTime.now(FUSO_HORARIO_PADRAO_SISTEMA), "Ocorreu erro no sistema, tente mais tarde", mensagem, request.getRequestURI());
         return ResponseEntity.status(httpStatus).body(erroPadrao);
     }
 

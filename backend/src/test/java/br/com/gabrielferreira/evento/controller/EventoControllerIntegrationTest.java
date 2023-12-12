@@ -186,7 +186,7 @@ class EventoControllerIntegrationTest {
                         .accept(MEDIA_TYPE_JSON));
 
         resultActions.andExpect(status().isBadRequest());
-        resultActions.andExpect(jsonPath("$.mensagem").value("A propriedade informada iddd não existe"));
+        resultActions.andExpect(jsonPath("$.mensagem").value("A propriedade informada 'iddd' não existe"));
     }
 
     @Test
