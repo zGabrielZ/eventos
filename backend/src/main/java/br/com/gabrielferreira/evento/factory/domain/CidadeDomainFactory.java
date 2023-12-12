@@ -4,8 +4,9 @@ import br.com.gabrielferreira.evento.domain.CidadeDomain;
 import br.com.gabrielferreira.evento.dto.request.CidadeIdRequestDTO;
 import br.com.gabrielferreira.evento.dto.request.CidadeRequestDTO;
 import br.com.gabrielferreira.evento.entity.Cidade;
-
 import java.util.List;
+
+import static br.com.gabrielferreira.evento.utils.DataUtils.*;
 
 public class CidadeDomainFactory {
 
@@ -36,6 +37,8 @@ public class CidadeDomainFactory {
                     .id(cidade.getId())
                     .nome(cidade.getNome())
                     .codigo(cidade.getCodigo())
+                    .createdAt(toFusoPadraoSistema(cidade.getCreatedAt()))
+                    .updatedAt(toFusoPadraoSistema(cidade.getUpdatedAt()))
                     .build();
         }
         return null;

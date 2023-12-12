@@ -49,7 +49,9 @@ public class ConsultaAvancadaService {
                                 CidadeDomain.class,
                                 qEvento.cidade.id,
                                 qEvento.cidade.nome,
-                                qEvento.cidade.codigo
+                                qEvento.cidade.codigo,
+                                qEvento.createdAt,
+                                qEvento.updatedAt
                         ),
                         qEvento.createdAt,
                         qEvento.updatedAt
@@ -64,6 +66,8 @@ public class ConsultaAvancadaService {
         eventoDomains.forEach(eventoDomain -> {
             eventoDomain.setCreatedAt(toFusoPadraoSistema(eventoDomain.getCreatedAt()));
             eventoDomain.setUpdatedAt(toFusoPadraoSistema(eventoDomain.getUpdatedAt()));
+            eventoDomain.getCidade().setCreatedAt(toFusoPadraoSistema(eventoDomain.getCidade().getCreatedAt()));
+            eventoDomain.getCidade().setUpdatedAt(toFusoPadraoSistema(eventoDomain.getCidade().getUpdatedAt()));
         });
 
         return new PageImpl<>(eventoDomains, pageable, eventoDomains.size());

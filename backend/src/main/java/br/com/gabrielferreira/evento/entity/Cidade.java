@@ -4,6 +4,9 @@ import jakarta.persistence.*;
 import lombok.*;
 import java.io.Serial;
 import java.io.Serializable;
+import java.time.ZonedDateTime;
+
+import static br.com.gabrielferreira.evento.utils.DataUtils.UTC;
 
 @Data
 @AllArgsConstructor
@@ -28,4 +31,20 @@ public class Cidade implements Serializable {
 
     @Column(name = "CODIGO", nullable = false, unique = true)
     private String codigo;
+
+    @Column(name = "CREATED_AT", nullable = false)
+    private ZonedDateTime createdAt;
+
+    @Column(name = "UPDATED_AT")
+    private ZonedDateTime updatedAt;
+
+    @PrePersist
+    public void prePersist(){
+        createdAt = ZonedDateTime.now(UTC);
+    }
+
+    @PreUpdate
+    public void preUpdate(){
+        updatedAt = ZonedDateTime.now(UTC);
+    }
 }

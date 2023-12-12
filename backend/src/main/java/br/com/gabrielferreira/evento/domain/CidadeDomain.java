@@ -3,6 +3,7 @@ package br.com.gabrielferreira.evento.domain;
 import lombok.*;
 import java.io.Serial;
 import java.io.Serializable;
+import java.time.ZonedDateTime;
 
 @Data
 @AllArgsConstructor
@@ -20,4 +21,8 @@ public class CidadeDomain implements Serializable {
     private String nome;
 
     private String codigo;
+
+    private ZonedDateTime createdAt;
+
+    private ZonedDateTime updatedAt;
 }

@@ -68,6 +68,7 @@ class CidadeControllerIntegrationTest {
         resultActions.andExpect(jsonPath("$.id").exists());
         resultActions.andExpect(jsonPath("$.nome").exists());
         resultActions.andExpect(jsonPath("$.codigo").exists());
+        resultActions.andExpect(jsonPath("$.createdAt").exists());
     }
 
     @Test
@@ -94,6 +95,7 @@ class CidadeControllerIntegrationTest {
         resultActions.andExpect(jsonPath("$.id").exists());
         resultActions.andExpect(jsonPath("$.nome").exists());
         resultActions.andExpect(jsonPath("$.codigo").exists());
+        resultActions.andExpect(jsonPath("$.createdAt").exists());
     }
 
     @Test
@@ -151,6 +153,7 @@ class CidadeControllerIntegrationTest {
         resultActions.andExpect(jsonPath("$.id").exists());
         resultActions.andExpect(jsonPath("$.nome").value(nomeEsperado));
         resultActions.andExpect(jsonPath("$.codigo").value(codigoEsperado));
+        resultActions.andExpect(jsonPath("$.createdAt").exists());
     }
 
     @Test

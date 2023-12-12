@@ -11,7 +11,7 @@ public class CidadeDTOFactory {
 
     public static CidadeResponseDTO toCidadeResponseDto(CidadeDomain cidadeDomain){
         if(cidadeDomain != null){
-            return new CidadeResponseDTO(cidadeDomain.getId(), cidadeDomain.getNome(), cidadeDomain.getCodigo());
+            return new CidadeResponseDTO(cidadeDomain.getId(), cidadeDomain.getNome(), cidadeDomain.getCodigo(), cidadeDomain.getCreatedAt(), cidadeDomain.getUpdatedAt());
         }
         return null;
     }
