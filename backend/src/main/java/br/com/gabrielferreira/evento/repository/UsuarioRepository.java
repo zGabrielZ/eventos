@@ -2,9 +2,6 @@ package br.com.gabrielferreira.evento.repository;
 
 import br.com.gabrielferreira.evento.entity.Usuario;
 import br.com.gabrielferreira.evento.repository.projection.UsuarioProjection;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -23,6 +20,4 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
             "JOIN FETCH u.perfis p " +
             "WHERE u.id = :id")
     Optional<Usuario> buscarPorId(@Param("id") Long id);
-
-    Page<Usuario> findAll(Specification<Usuario> spec, Pageable pageable);
 }

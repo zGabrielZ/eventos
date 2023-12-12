@@ -4,9 +4,6 @@ import br.com.gabrielferreira.evento.exception.MsgException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import java.lang.reflect.Field;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -14,17 +11,18 @@ public class PageUtils {
 
     private PageUtils(){}
 
-    public static void validarPropriedadeInformada(Sort sorts, Class<?> classe){
-        if(!sorts.isEmpty()){
-            List<String> propriedadesInformadas = sorts.stream().map(Sort.Order::getProperty).toList();
-            List<String> campos = listarAtributosRecursivamente(new ArrayList<>(), "", classe);
-
-            propriedadesInformadas.forEach(propriedadeInformada -> {
-                if(!campos.contains(propriedadeInformada)){
-                    throw new MsgException(String.format("A propriedade informada %s não existe", propriedadeInformada));
-                }
-            });
+    public static void validarPropriedade(List<String> propriedades, String propriedade){
+        if(!propriedades.contains(propriedade)){
+            throw new MsgException(String.format("A propriedade informada '%s' não existe", propriedade));
         }
+    }
+
+    public static List<String> propriedadesUsuario(){
+        return Arrays.asList("id", "nome", "email", "createdAt", "updatedAt");
+    }
+
+    public static List<String> propriedadesPerfis(){
+        return Arrays.asList("id", "nome", "data", "url", "cidade.id", "cidade.nome", "cidade.codigo", "createdAt", "updatedAt");
     }
 
     public static Pageable validarOrderBy(Pageable pageable, Map<String, String> atributoDtoToEntity){
@@ -46,27 +44,5 @@ public class PageUtils {
         }
 
         return pageable;
-    }
-
-    private static List<String> listarAtributosRecursivamente(List<String> campos, String prefixo, Class<?> classe) {
-        for (Field campo : classe.getDeclaredFields()) {
-            String nomeCampo = prefixo.concat(campo.getName());
-            campos.add(nomeCampo);
-
-            if(!campo.getType().isPrimitive() && (!campo.getType().getName().startsWith("java."))){
-                campos.remove(nomeCampo);
-                listarAtributosRecursivamente(campos, nomeCampo.concat("."), campo.getType());
-            } else if(List.class.isAssignableFrom(campo.getType())){
-                Type genericType = campo.getGenericType();
-                if (genericType instanceof ParameterizedType parameterizedType) {
-                    Type elementType = parameterizedType.getActualTypeArguments()[0];
-                    if (elementType instanceof Class<?> classeList) {
-                        campos.remove(nomeCampo);
-                        listarAtributosRecursivamente(campos, nomeCampo.concat("."), classeList);
-                    }
-                }
-            }
-        }
-        return campos;
     }
 }

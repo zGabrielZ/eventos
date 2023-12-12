@@ -36,6 +36,14 @@ public class UsuarioDomain implements Serializable, UserDetails {
 
     private ZonedDateTime updatedAt;
 
+    public UsuarioDomain(Long id, String nome, String email, ZonedDateTime createdAt, ZonedDateTime updatedAt) {
+        this.id = id;
+        this.nome = nome;
+        this.email = email;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return this.perfis;

@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import java.net.URI;
 
-import static br.com.gabrielferreira.evento.utils.PageUtils.*;
 import static br.com.gabrielferreira.evento.factory.dto.EventoDTOFactory.*;
 import static br.com.gabrielferreira.evento.factory.domain.EventoDomainFactory.*;
 import static br.com.gabrielferreira.evento.factory.filter.EventoFilterFactory.*;
@@ -56,14 +55,12 @@ public class EventoController {
 
     @GetMapping
     public ResponseEntity<Page<EventoResponseDTO>> buscarEventos(@PageableDefault(size = 5) Pageable pageable){
-        validarPropriedadeInformada(pageable.getSort(), EventoResponseDTO.class);
         Page<EventoDomain> eventoDomains = eventoService.buscarEventos(pageable);
         return ResponseEntity.ok().body(toEventosResponsesDtos(eventoDomains));
     }
 
     @GetMapping("/avancada")
     public ResponseEntity<Page<EventoResponseDTO>> buscarEventosAvancados(EventoParamsDTO params, @PageableDefault(size = 5) Pageable pageable){
-        validarPropriedadeInformada(pageable.getSort(), EventoResponseDTO.class);
         EventoFilters eventoFilters = toEventoFilters(params);
         Page<EventoDomain> eventoDomains = eventoService.buscarEventosAvancados(eventoFilters, pageable);
         return ResponseEntity.ok().body(toEventosResponsesDtos(eventoDomains));

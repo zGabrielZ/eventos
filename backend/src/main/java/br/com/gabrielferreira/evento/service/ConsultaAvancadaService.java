@@ -3,8 +3,10 @@ package br.com.gabrielferreira.evento.service;
 import br.com.gabrielferreira.evento.dao.QueryDslDAO;
 import br.com.gabrielferreira.evento.domain.CidadeDomain;
 import br.com.gabrielferreira.evento.domain.EventoDomain;
+import br.com.gabrielferreira.evento.domain.UsuarioDomain;
 import br.com.gabrielferreira.evento.entity.*;
 import br.com.gabrielferreira.evento.repository.filter.EventoFilters;
+import br.com.gabrielferreira.evento.repository.filter.UsuarioFilters;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Projections;
@@ -54,17 +56,49 @@ public class ConsultaAvancadaService {
                 ))).from(qEvento)
                 .innerJoin(qEvento.cidade)
                 .where(booleanBuilder)
-                .orderBy(getOrder(pageable.getSort(), Evento.class))
+                .orderBy(getOrder(pageable.getSort(), Evento.class, propriedadesPerfis()))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
 
         eventoDomains.forEach(eventoDomain -> {
-            eventoDomain.setCreatedAt(eventoDomain.getCreatedAt());
-            eventoDomain.setUpdatedAt(eventoDomain.getUpdatedAt());
+            eventoDomain.setCreatedAt(toFusoPadraoSistema(eventoDomain.getCreatedAt()));
+            eventoDomain.setUpdatedAt(toFusoPadraoSistema(eventoDomain.getUpdatedAt()));
         });
 
         return new PageImpl<>(eventoDomains, pageable, eventoDomains.size());
+    }
+
+    public Page<UsuarioDomain> buscarUsuarios(UsuarioFilters filtros, Pageable pageable, Map<String, String> atributoDtoToEntity){
+        pageable = validarOrderBy(pageable, atributoDtoToEntity);
+
+        QUsuario qUsuario = QUsuario.usuario;
+        QPerfil qPerfil = QPerfil.perfil;
+        BooleanBuilder booleanBuilder = new BooleanBuilder();
+        validarFiltroUsuario(filtros, booleanBuilder, qUsuario, qPerfil);
+
+        List<UsuarioDomain> usuarios = queryDslDAO.query(q -> q.select(Projections.constructor(
+                        UsuarioDomain.class,
+                        qUsuario.id,
+                        qUsuario.nome,
+                        qUsuario.email,
+                        qUsuario.createdAt,
+                        qUsuario.updatedAt
+                ))).from(qUsuario)
+                .distinct()
+                .innerJoin(qUsuario.perfis, qPerfil)
+                .where(booleanBuilder)
+                .orderBy(getOrder(pageable.getSort(), Usuario.class, propriedadesUsuario()))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        usuarios.forEach(usuarioDomain -> {
+            usuarioDomain.setCreatedAt(toFusoPadraoSistema(usuarioDomain.getCreatedAt()));
+            usuarioDomain.setUpdatedAt(toFusoPadraoSistema(usuarioDomain.getCreatedAt()));
+        });
+
+        return new PageImpl<>(usuarios, pageable, usuarios.size());
     }
 
     private void validarFiltroEventos(EventoFilters filtros, BooleanBuilder booleanBuilder, QEvento qEvento){
@@ -99,12 +133,42 @@ public class ConsultaAvancadaService {
         }
     }
 
-    private OrderSpecifier<?>[] getOrder(Sort sorts, Class<?> classe){
+    private void validarFiltroUsuario(UsuarioFilters filtros, BooleanBuilder booleanBuilder, QUsuario qUsuario, QPerfil qPerfil){
+        if(filtros.isIdExistente()){
+            booleanBuilder.and(qUsuario.id.eq(filtros.getId()));
+        }
+
+        if(filtros.isNomeExistente()){
+            booleanBuilder.and(qUsuario.nome.likeIgnoreCase(Expressions.asString("%").concat(filtros.getNome().trim()).concat("%")));
+        }
+
+        if(filtros.isEmailExistente()){
+            booleanBuilder.and(qUsuario.email.eq(filtros.getEmail()));
+        }
+
+        if(filtros.isIdsPerfisExistente()){
+            booleanBuilder.and(qPerfil.id.in(filtros.getIdsPerfis()));
+        }
+
+        if(filtros.isCreatedAtExistente()){
+            ZonedDateTime createdAt = filtros.getCreatedAt().atStartOfDay(UTC);
+            booleanBuilder.and(qUsuario.createdAt.goe(createdAt));
+        }
+
+        if(filtros.isUpdatedAtExistente()){
+            ZonedDateTime updatedAt = filtros.getUpdatedAt().atStartOfDay(UTC);
+            booleanBuilder.and(qUsuario.updatedAt.goe(updatedAt));
+        }
+    }
+
+    private OrderSpecifier<?>[] getOrder(Sort sorts, Class<?> classe, List<String> propriedades){
         List<OrderSpecifier<?>> orderSpecifiers = new ArrayList<>();
         PathBuilder<?> entityPath = new PathBuilder<>(classe, classe.getSimpleName().toLowerCase());
         for (Sort.Order sort : sorts) {
             String propriedade = sort.getProperty();
             String direcao = sort.getDirection().name();
+
+            validarPropriedade(propriedades, propriedade);
 
             OrderSpecifier<?> orderSpecifier = "asc".equalsIgnoreCase(direcao)
                     ? entityPath.getString(propriedade).asc()

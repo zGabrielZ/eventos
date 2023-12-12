@@ -4,6 +4,7 @@ import br.com.gabrielferreira.evento.domain.UsuarioDomain;
 import br.com.gabrielferreira.evento.dto.params.UsuarioParamsDTO;
 import br.com.gabrielferreira.evento.dto.request.UsuarioResquestDTO;
 import br.com.gabrielferreira.evento.dto.request.UsuarioUpdateResquestDTO;
+import br.com.gabrielferreira.evento.dto.response.UsuarioPaginacaoResponseDTO;
 import br.com.gabrielferreira.evento.dto.response.UsuarioResponseDTO;
 import br.com.gabrielferreira.evento.repository.filter.UsuarioFilters;
 import br.com.gabrielferreira.evento.service.UsuarioService;
@@ -56,7 +57,7 @@ public class UsuarioController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<UsuarioResponseDTO>> buscarUsuarios(UsuarioParamsDTO params, @PageableDefault(size = 5) Pageable pageable){
+    public ResponseEntity<Page<UsuarioPaginacaoResponseDTO>> buscarUsuarios(UsuarioParamsDTO params, @PageableDefault(size = 5) Pageable pageable){
         UsuarioFilters usuarioFilters = toUsuarioFilters(params);
         Page<UsuarioDomain> usuarioDomains = usuarioService.buscarUsuarios(usuarioFilters, pageable);
         return ResponseEntity.ok().body(toUsuariosResponsesDtos(usuarioDomains));
