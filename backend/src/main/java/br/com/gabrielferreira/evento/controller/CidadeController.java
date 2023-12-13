@@ -48,4 +48,16 @@ public class CidadeController {
         CidadeDomain cidadeDomain = cidadeService.buscarCidadePorCodigo(codigo);
         return ResponseEntity.ok().body(toCidadeResponseDto(cidadeDomain));
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<CidadeResponseDTO> atualizarCidade(@PathVariable Long id, @Valid @RequestBody CidadeRequestDTO cidadeRequestDTO){
+        CidadeDomain cidadeDomain = cidadeService.atualizarCidade(toUpdateCidadeDomain(id, cidadeRequestDTO));
+        return ResponseEntity.ok().body(toCidadeResponseDto(cidadeDomain));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deletarCidadePorId(@PathVariable Long id){
+        cidadeService.deletarCidadePorId(id);
+        return ResponseEntity.noContent().build();
+    }
 }

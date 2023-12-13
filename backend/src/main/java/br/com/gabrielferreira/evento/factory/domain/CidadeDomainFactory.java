@@ -22,6 +22,15 @@ public class CidadeDomainFactory {
         return null;
     }
 
+    public static CidadeDomain toUpdateCidadeDomain(Long id, CidadeRequestDTO cidadeRequestDTO){
+        if(cidadeRequestDTO != null){
+            CidadeDomain cidadeDomain = toCreateCidadeDomain(cidadeRequestDTO);
+            cidadeDomain.setId(id);
+            return cidadeDomain;
+        }
+        return null;
+    }
+
     public static CidadeDomain toCidadeDomain(CidadeIdRequestDTO cidadeIdRequestDTO){
         if(cidadeIdRequestDTO != null){
             return CidadeDomain.builder()

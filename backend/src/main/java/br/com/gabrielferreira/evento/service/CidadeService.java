@@ -8,6 +8,7 @@ import br.com.gabrielferreira.evento.repository.CidadeRepository;
 import br.com.gabrielferreira.evento.service.validation.CidadeValidator;
 import io.micrometer.common.util.StringUtils;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -54,5 +55,27 @@ public class CidadeService {
         Cidade cidade = cidadeRepository.buscarCidadePorCodigo(codigo)
                 .orElseThrow(() -> new NaoEncontradoException("Cidade não encontrada"));
         return toCidadeDomain(cidade);
+    }
+
+    @Transactional
+    public CidadeDomain atualizarCidade(CidadeDomain cidadeDomain){
+        cidadeValidator.validarCampos(cidadeDomain);
+        cidadeValidator.validarNome(cidadeDomain);
+        cidadeValidator.validarCodigo(cidadeDomain);
+
+        CidadeDomain cidadeDomainEncontrado = buscarCidadePorId(cidadeDomain.getId());
+
+        Cidade cidade = toUpdateCidade(cidadeDomainEncontrado, cidadeDomain);
+        cidade = cidadeRepository.save(cidade);
+        return toCidadeDomain(cidade);
+    }
+
+    public void deletarCidadePorId(Long id){
+        try {
+            CidadeDomain cidadeDomain = buscarCidadePorId(id);
+            cidadeRepository.deleteById(cidadeDomain.getId());
+        } catch (DataIntegrityViolationException e){
+            throw new MsgException("Violação de integridade, Cidade possui algum tipo de relacionamento");
+        }
     }
 }
