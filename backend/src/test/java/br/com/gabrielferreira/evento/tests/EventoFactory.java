@@ -3,27 +3,22 @@ package br.com.gabrielferreira.evento.tests;
 import br.com.gabrielferreira.evento.domain.CidadeDomain;
 import br.com.gabrielferreira.evento.domain.EventoDomain;
 import br.com.gabrielferreira.evento.dto.request.CidadeIdRequestDTO;
-import br.com.gabrielferreira.evento.dto.request.CidadeRequestDTO;
 import br.com.gabrielferreira.evento.dto.request.EventoRequestDTO;
 import br.com.gabrielferreira.evento.entity.Cidade;
 import br.com.gabrielferreira.evento.entity.Evento;
 
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 import static br.com.gabrielferreira.evento.utils.DataUtils.UTC;
+import static br.com.gabrielferreira.evento.tests.CidadeFactory.*;
 
-public class Factory {
+public class EventoFactory {
 
-    private Factory(){}
-
-
+    private EventoFactory(){}
 
     public static CidadeDomain gerarCidadeDomain(){
-        //Cidade cidade = gerarCidade();
-        Cidade cidade = null;
+        Cidade cidade = gerarCidade();
         return CidadeDomain.builder()
                 .id(cidade.getId())
                 .nome(cidade.getNome())
@@ -49,8 +44,7 @@ public class Factory {
     }
 
     public static EventoRequestDTO criarEventoInsertDto(){
-        //CidadeIdRequestDTO cidadeIdRequestDTO = CidadeIdRequestDTO.builder().id(gerarCidade().getId()).build();
-        CidadeIdRequestDTO cidadeIdRequestDTO = CidadeIdRequestDTO.builder().id(new Cidade().getId()).build();
+        CidadeIdRequestDTO cidadeIdRequestDTO = CidadeIdRequestDTO.builder().id(gerarCidade().getId()).build();
         return EventoRequestDTO.builder()
                 .nome("evento teste")
                 .data(LocalDate.now().plusDays(5L))
@@ -123,10 +117,4 @@ public class Factory {
                 .cidade(cidadeIdRequestDTO)
                 .build();
     }
-
-
-
-
-
-
 }

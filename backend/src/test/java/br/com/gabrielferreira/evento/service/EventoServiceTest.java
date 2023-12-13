@@ -12,10 +12,9 @@ import org.mockito.Mock;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import java.util.Optional;
 
-import static br.com.gabrielferreira.evento.tests.Factory.*;
-import static br.com.gabrielferreira.evento.tests.Factory.criarEventoInsertDto;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
+import static br.com.gabrielferreira.evento.tests.EventoFactory.*;
 
 @ExtendWith(SpringExtension.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)

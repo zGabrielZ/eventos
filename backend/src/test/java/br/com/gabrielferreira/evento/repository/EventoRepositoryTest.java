@@ -1,6 +1,7 @@
 package br.com.gabrielferreira.evento.repository;
 
 import br.com.gabrielferreira.evento.entity.Evento;
+import br.com.gabrielferreira.evento.repository.projection.EventoProjection;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -44,5 +45,14 @@ class EventoRepositoryTest {
         Optional<Evento> evento = eventoRepository.buscarEventoPorId(-1L);
 
         assertFalse(evento.isPresent());
+    }
+
+    @Test
+    @DisplayName("Deve existir evento por nome quando informar")
+    @Order(4)
+    void deveExistirEventoPorNome(){
+        Optional<EventoProjection> evento = eventoRepository.existeNomeEvento("Feira do Software");
+
+        assertTrue(evento.isPresent());
     }
 }

@@ -15,7 +15,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static br.com.gabrielferreira.evento.tests.Factory.*;
+import static br.com.gabrielferreira.evento.tests.EventoFactory.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
