@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.mockito.Mockito.*;
-import static br.com.gabrielferreira.evento.tests.Factory.*;
+import static br.com.gabrielferreira.evento.tests.CidadeFactory.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(SpringExtension.class)
@@ -41,7 +41,11 @@ class CidadeServiceTest {
 
     private CidadeDomain cidadeDomainInsert;
 
+    private CidadeDomain cidadeDomainUpdate;
+
     private Cidade cidadeInsert;
+
+    private Cidade cidadeUpdate;
 
     @BeforeEach
     void setUp(){
@@ -51,7 +55,10 @@ class CidadeServiceTest {
         codigoInexistente = "teste123";
 
         cidadeDomainInsert = criarCidadeDomainInsert(criarCidadeInsertDto());
+        cidadeDomainUpdate = criarCidadeDomainUpdate(idCidadeExistente, criarCidadeUpdateDto());
+
         cidadeInsert = criarCidadeInsert(cidadeDomainInsert);
+        cidadeUpdate = criarCidadeUpdate(cidadeDomainUpdate);
     }
 
     @Test
@@ -137,5 +144,32 @@ class CidadeServiceTest {
 
         assertNotNull(cidadeDomain);
         verify(cidadeRepository, times(1)).save(any());
+    }
+
+    @Test
+    @DisplayName("Deve atualizar cidade quando informar valores corretos")
+    @Order(8)
+    void deveAtualizarCidade() {
+        doNothing().when(cidadeValidator).validarCampos(cidadeDomainUpdate);
+        doNothing().when(cidadeValidator).validarNome(cidadeDomainUpdate);
+        doNothing().when(cidadeValidator).validarCodigo(cidadeDomainUpdate);
+        when(cidadeRepository.findById(idCidadeExistente)).thenReturn(Optional.of(cidadeInsert));
+        when(cidadeRepository.save(any())).thenReturn(cidadeUpdate);
+
+        CidadeDomain cidadeDomain = cidadeService.atualizarCidade(cidadeDomainUpdate);
+
+        assertNotNull(cidadeDomain);
+        verify(cidadeRepository, times(1)).save(any());
+    }
+
+    @Test
+    @DisplayName("Deve deletar cidade quando informar id existente")
+    @Order(9)
+    void deveDeletarCidade() {
+        when(cidadeRepository.findById(idCidadeExistente)).thenReturn(Optional.of(cidadeInsert));
+        doNothing().when(cidadeRepository).deleteById(cidadeInsert.getId());
+
+        assertDoesNotThrow(() -> cidadeService.deletarCidadePorId(idCidadeExistente));
+        verify(cidadeRepository, times(1)).deleteById(any());
     }
 }

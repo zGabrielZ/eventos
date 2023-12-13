@@ -19,24 +19,11 @@ public class Factory {
 
     private Factory(){}
 
-    public static List<Cidade> gerarCidades(){
-        List<Cidade> cidades = new ArrayList<>();
-        cidades.add(Cidade.builder().id(1L).nome("Manaus").codigo("MANAUS").build());
-        cidades.add(Cidade.builder().id(2L).nome("Campinas").codigo("CAMPINAS").build());
-        cidades.add(Cidade.builder().id(3L).nome("Belo Horizonte").codigo("BELO_HORIZONTE").build());
-        return cidades;
-    }
 
-    public static Cidade gerarCidade(){
-        return Cidade.builder()
-                .id(1L)
-                .nome("Manaus")
-                .codigo("MANAUS")
-                .build();
-    }
 
     public static CidadeDomain gerarCidadeDomain(){
-        Cidade cidade = gerarCidade();
+        //Cidade cidade = gerarCidade();
+        Cidade cidade = null;
         return CidadeDomain.builder()
                 .id(cidade.getId())
                 .nome(cidade.getNome())
@@ -62,7 +49,8 @@ public class Factory {
     }
 
     public static EventoRequestDTO criarEventoInsertDto(){
-        CidadeIdRequestDTO cidadeIdRequestDTO = CidadeIdRequestDTO.builder().id(gerarCidade().getId()).build();
+        //CidadeIdRequestDTO cidadeIdRequestDTO = CidadeIdRequestDTO.builder().id(gerarCidade().getId()).build();
+        CidadeIdRequestDTO cidadeIdRequestDTO = CidadeIdRequestDTO.builder().id(new Cidade().getId()).build();
         return EventoRequestDTO.builder()
                 .nome("evento teste")
                 .data(LocalDate.now().plusDays(5L))
@@ -136,24 +124,9 @@ public class Factory {
                 .build();
     }
 
-    public static CidadeRequestDTO criarCidadeInsertDto(){
-        return CidadeRequestDTO.builder()
-                .nome("Ribeirão Preto")
-                .codigo("RIBEIRAO_PRETO")
-                .build();
-    }
 
-    public static CidadeDomain criarCidadeDomainInsert(CidadeRequestDTO cidadeRequestDTO){
-        return CidadeDomain.builder()
-                .nome(cidadeRequestDTO.getNome())
-                .codigo(cidadeRequestDTO.getCodigo())
-                .build();
-    }
 
-    public static Cidade criarCidadeInsert(CidadeDomain cidadeDomain){
-        return Cidade.builder()
-                .nome(cidadeDomain.getNome())
-                .codigo(cidadeDomain.getCodigo())
-                .build();
-    }
+
+
+
 }

@@ -9,11 +9,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static br.com.gabrielferreira.evento.tests.Factory.*;
+import static br.com.gabrielferreira.evento.tests.CidadeFactory.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -23,7 +24,8 @@ class CidadeControllerIntegrationTest {
 
     private static final String URL = "/cidades";
     private static final MediaType MEDIA_TYPE_JSON = MediaType.APPLICATION_JSON;
-    private static final String CODIGO_REPETIDO = "SAO_PAULO";
+    private static final String NOME_REPETIDO = "Rio de Janeiro";
+    private static final String CODIGO_REPETIDO = "RIO_DE_JANEIRO";
 
     @Autowired
     protected MockMvc mockMvc;
@@ -37,12 +39,18 @@ class CidadeControllerIntegrationTest {
 
     private CidadeRequestDTO cidadeRequestDTO;
 
+    private CidadeRequestDTO cidadeUpdateDTO;
+
+    private Long idCidadeSemRelacionamento;
+
     @BeforeEach
     void setUp(){
         idCidadeExistente = 1L;
         idCidadeInexistente = -1L;
+        idCidadeSemRelacionamento = 5L;
 
         cidadeRequestDTO = criarCidadeInsertDto();
+        cidadeUpdateDTO = criarCidadeUpdateDto();
     }
 
     @Test
@@ -225,6 +233,90 @@ class CidadeControllerIntegrationTest {
 
         resultActions.andExpect(status().isBadRequest());
         resultActions.andExpect(jsonPath("$.erro").value("Erro personalizado"));
-        resultActions.andExpect(jsonPath("$.mensagem").value("Não vai ser possível cadastrar esta cidade pois o código 'SAO_PAULO' já foi cadastrado"));
+        resultActions.andExpect(jsonPath("$.mensagem").value("Não vai ser possível cadastrar esta cidade pois o código 'RIO_DE_JANEIRO' já foi cadastrado"));
+    }
+
+    @Test
+    @DisplayName("Não deve atualizar uma cidade quando o nome já estiver cadastrado")
+    @Order(13)
+    void naoDeveAtualizarCidadeQuandoNomeJaEstiverCadastrado() throws Exception{
+        cidadeRequestDTO.setNome(NOME_REPETIDO);
+        String jsonBody = objectMapper.writeValueAsString(cidadeRequestDTO);
+
+        ResultActions resultActions = mockMvc
+                .perform(put(URL.concat("/{id}"), idCidadeExistente)
+                        .content(jsonBody)
+                        .contentType(MEDIA_TYPE_JSON)
+                        .accept(MEDIA_TYPE_JSON));
+
+        resultActions.andExpect(status().isBadRequest());
+        resultActions.andExpect(jsonPath("$.erro").value("Erro personalizado"));
+        resultActions.andExpect(jsonPath("$.mensagem").value("Não vai ser possível atualizar esta cidade pois o nome 'Rio de Janeiro' já foi cadastrado"));
+    }
+
+    @Test
+    @DisplayName("Não deve atualizar uma cidade quando o código já estiver cadastrado")
+    @Order(14)
+    void naoDeveAtualizarCidadeQuandoCodigoJaEstiverCadastrado() throws Exception{
+        cidadeRequestDTO.setCodigo(CODIGO_REPETIDO);
+        String jsonBody = objectMapper.writeValueAsString(cidadeRequestDTO);
+
+        ResultActions resultActions = mockMvc
+                .perform(put(URL.concat("/{id}"), idCidadeExistente)
+                        .content(jsonBody)
+                        .contentType(MEDIA_TYPE_JSON)
+                        .accept(MEDIA_TYPE_JSON));
+
+        resultActions.andExpect(status().isBadRequest());
+        resultActions.andExpect(jsonPath("$.erro").value("Erro personalizado"));
+        resultActions.andExpect(jsonPath("$.mensagem").value("Não vai ser possível atualizar esta cidade pois o código 'RIO_DE_JANEIRO' já foi cadastrado"));
+    }
+
+    @Test
+    @DisplayName("Deve atualizar cidade quando informar valores corretos")
+    @Order(15)
+    void deveAtualizarCidade() throws Exception{
+        String jsonBody = objectMapper.writeValueAsString(cidadeUpdateDTO);
+
+        Long idEsperado = idCidadeExistente;
+        String nomeEsperado = cidadeUpdateDTO.getNome();
+        String codigoEsperado = cidadeUpdateDTO.getCodigo();
+
+        ResultActions resultActions = mockMvc
+                .perform(put(URL.concat("/{id}"), idCidadeExistente)
+                        .content(jsonBody)
+                        .contentType(MEDIA_TYPE_JSON)
+                        .accept(MEDIA_TYPE_JSON));
+
+        resultActions.andExpect(status().isOk());
+        resultActions.andExpect(jsonPath("$.id").value(idEsperado));
+        resultActions.andExpect(jsonPath("$.nome").value(nomeEsperado));
+        resultActions.andExpect(jsonPath("$.codigo").value(codigoEsperado));
+        resultActions.andExpect(jsonPath("$.createdAt").exists());
+    }
+
+    @Test
+    @DisplayName("Deve deletar cidade quando existir")
+    @Order(16)
+    void deveDeletarCidade() throws Exception {
+        ResultActions resultActions = mockMvc
+                .perform(delete(URL.concat("/{id}"), idCidadeSemRelacionamento)
+                        .accept(MEDIA_TYPE_JSON));
+
+        resultActions.andExpect(status().isNoContent());
+    }
+
+    @Test
+    @DisplayName("Não deve deletar cidade quando tiver relacionamento com outra tabela")
+    @Order(17)
+    @Transactional(propagation = Propagation.NEVER)
+    void naoDeveDeletarCidadeQuandoCidadeTiverRelacionamento() throws Exception {
+        ResultActions resultActions = mockMvc
+                .perform(delete(URL.concat("/{id}"), idCidadeExistente)
+                        .accept(MEDIA_TYPE_JSON));
+
+        resultActions.andExpect(status().isBadRequest());
+        resultActions.andExpect(jsonPath("$.erro").value("Erro personalizado"));
+        resultActions.andExpect(jsonPath("$.mensagem").value("Violação de integridade, Cidade possui algum tipo de relacionamento"));
     }
 }
