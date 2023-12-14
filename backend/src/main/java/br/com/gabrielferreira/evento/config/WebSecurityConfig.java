@@ -25,7 +25,8 @@ public class WebSecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth.requestMatchers(new MvcRequestMatcher(introspector, "/usuarios/**")).permitAll()
                         .requestMatchers(new MvcRequestMatcher(introspector, "/cidades/**")).permitAll()
-                        .requestMatchers(new MvcRequestMatcher(introspector, "/eventos/**")).permitAll())
+                        .requestMatchers(new MvcRequestMatcher(introspector, "/eventos/**")).permitAll()
+                        .requestMatchers(new MvcRequestMatcher(introspector, "/perfis/**")).permitAll())
                 .build();
     }
 
