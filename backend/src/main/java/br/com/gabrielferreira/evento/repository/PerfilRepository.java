@@ -15,7 +15,7 @@ public interface PerfilRepository extends JpaRepository<Perfil, Long> {
     List<Perfil> buscarPerfil();
 
     @Query("SELECT p FROM Perfil p WHERE p.descricao = :descricao")
-    Optional<Perfil> buscarPerfilPorDescricao(@Param("descricao") String codigo);
+    Optional<Perfil> buscarPerfilPorDescricao(@Param("descricao") String descricao);
 
     @Query("SELECT p FROM Usuario u " +
             "JOIN u.perfis p " +
