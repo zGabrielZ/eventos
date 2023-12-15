@@ -66,7 +66,7 @@ public class UsuarioValidator {
     }
 
     public void validarEmail(UsuarioDomain usuarioDomain){
-        Optional<UsuarioProjection> usuarioEncontrado = usuarioRepository.existeEmailEvento(usuarioDomain.getEmail());
+        Optional<UsuarioProjection> usuarioEncontrado = usuarioRepository.existeEmailUsuario(usuarioDomain.getEmail());
         if(usuarioDomain.getId() == null && usuarioEncontrado.isPresent()){
             throw new MsgException(String.format("Não vai ser possível cadastrar este usuário pois o email '%s' já foi cadastrado", usuarioDomain.getEmail()));
         } else if(usuarioDomain.getId() != null && usuarioEncontrado.isPresent() && !usuarioDomain.getId().equals(usuarioEncontrado.get().getId())){
