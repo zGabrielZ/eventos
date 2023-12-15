@@ -1,7 +1,11 @@
 package br.com.gabrielferreira.evento.config;
 
+import br.com.gabrielferreira.evento.service.security.UsuarioAutenticacaoService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
@@ -15,7 +19,10 @@ import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class WebSecurityConfig {
+
+    private final UsuarioAutenticacaoService usuarioAutenticacaoService;
 
     //Config seguranca
     @Bean
@@ -23,13 +30,16 @@ public class WebSecurityConfig {
         return http
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(auth -> auth.requestMatchers(new MvcRequestMatcher(introspector, "/usuarios/**")).permitAll()
-                        .requestMatchers(new MvcRequestMatcher(introspector, "/cidades/**")).permitAll()
-                        .requestMatchers(new MvcRequestMatcher(introspector, "/eventos/**")).permitAll()
-                        .requestMatchers(new MvcRequestMatcher(introspector, "/perfis/**")).permitAll())
+                .authenticationProvider(new AppAuthenticationProvider(usuarioAutenticacaoService, passwordEncoder()))
+                .authorizeHttpRequests(auth -> auth.requestMatchers(new MvcRequestMatcher(introspector, "/login/**")).permitAll())
                 .build();
     }
 
+    // Config a partir da autenticação
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+        return authenticationConfiguration.getAuthenticationManager();
+    }
 
     // Config de recurso estaticos
     @Bean

@@ -20,4 +20,9 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
             "JOIN FETCH u.perfis p " +
             "WHERE u.id = :id")
     Optional<Usuario> buscarPorId(@Param("id") Long id);
+
+    @Query("SELECT u FROM Usuario u " +
+            "JOIN FETCH u.perfis p " +
+            "WHERE u.email = :email")
+    Optional<Usuario> buscarPorEmail(@Param("email") String email);
 }
