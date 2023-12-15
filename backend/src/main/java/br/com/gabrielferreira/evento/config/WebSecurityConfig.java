@@ -33,14 +33,12 @@ public class WebSecurityConfig {
     @Bean
     protected SecurityFilterChain securityFilterChain(HttpSecurity http, HandlerMappingIntrospector introspector) throws Exception {
         return http
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Não é pra criar sessão
                 .csrf(AbstractHttpConfigurer::disable)
                 .authenticationProvider(new AppAuthenticationProvider(usuarioAutenticacaoService, passwordEncoder()))
                 .authorizeHttpRequests(auth -> auth.requestMatchers(new MvcRequestMatcher(introspector, "/login/**")).permitAll())
-                .exceptionHandling(eh -> {
-                    eh.authenticationEntryPoint(new ServiceHandlerAutenticacao(objectMapper)) // Mensagem personalizada quando não for autenticado
-                            .accessDeniedHandler(new ServiceHandlerPermissao(objectMapper)); // Mensagem personalizada quando não tiver permissão
-                })
+                .exceptionHandling(eh -> eh.authenticationEntryPoint(new ServiceHandlerAutenticacao(objectMapper)) // Mensagem personalizada quando não for autenticado
+                        .accessDeniedHandler(new ServiceHandlerPermissao(objectMapper))) // Mensagem personalizada quando não tiver permissão
                 .build();
     }
 
