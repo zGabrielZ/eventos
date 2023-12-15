@@ -1,6 +1,9 @@
 package br.com.gabrielferreira.evento.config;
 
+import br.com.gabrielferreira.evento.exception.handler.ServiceHandlerAutenticacao;
+import br.com.gabrielferreira.evento.exception.handler.ServiceHandlerPermissao;
 import br.com.gabrielferreira.evento.service.security.UsuarioAutenticacaoService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,6 +27,8 @@ public class WebSecurityConfig {
 
     private final UsuarioAutenticacaoService usuarioAutenticacaoService;
 
+    private final ObjectMapper objectMapper;
+
     //Config seguranca
     @Bean
     protected SecurityFilterChain securityFilterChain(HttpSecurity http, HandlerMappingIntrospector introspector) throws Exception {
@@ -32,6 +37,10 @@ public class WebSecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authenticationProvider(new AppAuthenticationProvider(usuarioAutenticacaoService, passwordEncoder()))
                 .authorizeHttpRequests(auth -> auth.requestMatchers(new MvcRequestMatcher(introspector, "/login/**")).permitAll())
+                .exceptionHandling(eh -> {
+                    eh.authenticationEntryPoint(new ServiceHandlerAutenticacao(objectMapper)) // Mensagem personalizada quando não for autenticado
+                            .accessDeniedHandler(new ServiceHandlerPermissao(objectMapper)); // Mensagem personalizada quando não tiver permissão
+                })
                 .build();
     }
 
