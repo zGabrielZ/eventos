@@ -2,6 +2,8 @@ package br.com.gabrielferreira.evento.config;
 
 import br.com.gabrielferreira.evento.exception.handler.ServiceHandlerAutenticacao;
 import br.com.gabrielferreira.evento.exception.handler.ServiceHandlerPermissao;
+import br.com.gabrielferreira.evento.filter.JWTValidatorTokenFilter;
+import br.com.gabrielferreira.evento.service.security.TokenService;
 import br.com.gabrielferreira.evento.service.security.UsuarioAutenticacaoService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +18,7 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.servlet.util.matcher.MvcRequestMatcher;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
@@ -29,14 +32,18 @@ public class WebSecurityConfig {
 
     private final ObjectMapper objectMapper;
 
+    private final TokenService tokenService;
+
     //Config seguranca
     @Bean
     protected SecurityFilterChain securityFilterChain(HttpSecurity http, HandlerMappingIntrospector introspector) throws Exception {
         return http
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Não é pra criar sessão
                 .csrf(AbstractHttpConfigurer::disable)
+                .addFilterBefore(new JWTValidatorTokenFilter(tokenService, usuarioAutenticacaoService), UsernamePasswordAuthenticationFilter.class) // Verificar se o token está valido cada requisição
                 .authenticationProvider(new AppAuthenticationProvider(usuarioAutenticacaoService, passwordEncoder()))
-                .authorizeHttpRequests(auth -> auth.requestMatchers(new MvcRequestMatcher(introspector, "/login/**")).permitAll())
+                .authorizeHttpRequests(auth -> auth.requestMatchers(new MvcRequestMatcher(introspector, "/login/**")).permitAll()
+                        .anyRequest().authenticated())
                 .exceptionHandling(eh -> eh.authenticationEntryPoint(new ServiceHandlerAutenticacao(objectMapper)) // Mensagem personalizada quando não for autenticado
                         .accessDeniedHandler(new ServiceHandlerPermissao(objectMapper))) // Mensagem personalizada quando não tiver permissão
                 .build();

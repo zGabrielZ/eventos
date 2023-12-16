@@ -36,4 +36,14 @@ public class UsuarioAutenticacaoService implements UserDetailsService {
         log.info("Usuário do e-mail {} encontrado", email);
         return toUsuarioDomain(usuarioOpt.get());
     }
+
+    public UsuarioDomain buscarUsuarioPorId(Long id){
+        Optional<Usuario> usuarioOpt = usuarioRepository.buscarPorId(id);
+        if(usuarioOpt.isEmpty()){
+            log.warn("Usuário do id {} não encontrado", id);
+            throw new NaoEncontradoException(String.format("Id %s não encontrado", id));
+        }
+        log.info("Usuário do id {} encontrado", id);
+        return toUsuarioDomain(usuarioOpt.get());
+    }
 }
