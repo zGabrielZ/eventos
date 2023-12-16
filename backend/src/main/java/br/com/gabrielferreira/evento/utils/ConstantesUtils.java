@@ -6,6 +6,13 @@ public class ConstantesUtils {
 
     private ConstantesUtils(){}
 
+    public static final String API_CIDADES = "/cidades/**";
+    public static final String API_EVENTOS = "/eventos/**";
+    public static final String API_USUARIOS = "/usuarios/**";
+    public static final String API_PERFIS = "/perfis/**";
+    public static final String ADMIN = "ADMIN";
+    public static final String CLIENT = "CLIENT";
+
     public static boolean isEspacoEmBranco(String valor){
         for (Character caractere : valor.toCharArray()) {
             if (Character.isWhitespace(caractere)) {

@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -22,6 +23,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.security.web.servlet.util.matcher.MvcRequestMatcher;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
+
+import static br.com.gabrielferreira.evento.utils.ConstantesUtils.*;
 
 @Configuration
 @EnableWebSecurity
@@ -37,15 +40,26 @@ public class WebSecurityConfig {
     //Config seguranca
     @Bean
     protected SecurityFilterChain securityFilterChain(HttpSecurity http, HandlerMappingIntrospector introspector) throws Exception {
+        MvcRequestMatcher.Builder mvcMatcherBuilder = new MvcRequestMatcher.Builder(introspector);
         return http
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Não é pra criar sessão
                 .csrf(AbstractHttpConfigurer::disable)
                 .addFilterBefore(new JWTValidatorTokenFilter(tokenService, usuarioAutenticacaoService), UsernamePasswordAuthenticationFilter.class) // Verificar se o token está valido cada requisição
                 .authenticationProvider(new AppAuthenticationProvider(usuarioAutenticacaoService, passwordEncoder()))
-                .authorizeHttpRequests(auth -> auth.requestMatchers(new MvcRequestMatcher(introspector, "/login/**")).permitAll()
+                .authorizeHttpRequests(auth -> auth.requestMatchers(mvcMatcherBuilder.pattern(HttpMethod.POST, "/login/**")).permitAll()
+                        .requestMatchers(mvcMatcherBuilder.pattern(HttpMethod.GET, API_CIDADES)).permitAll()
+                        .requestMatchers(mvcMatcherBuilder.pattern(HttpMethod.GET, API_EVENTOS)).permitAll()
+                        .requestMatchers(mvcMatcherBuilder.pattern(HttpMethod.POST, API_CIDADES)).hasRole(ADMIN)
+                        .requestMatchers(mvcMatcherBuilder.pattern(HttpMethod.PUT, API_CIDADES)).hasRole(ADMIN)
+                        .requestMatchers(mvcMatcherBuilder.pattern(HttpMethod.DELETE, API_CIDADES)).hasRole(ADMIN)
+                        .requestMatchers(mvcMatcherBuilder.pattern(HttpMethod.POST, API_EVENTOS)).hasAnyRole(ADMIN, CLIENT)
+                        .requestMatchers(mvcMatcherBuilder.pattern(HttpMethod.PUT, API_EVENTOS)).hasAnyRole(ADMIN, CLIENT)
+                        .requestMatchers(mvcMatcherBuilder.pattern(HttpMethod.DELETE, API_EVENTOS)).hasAnyRole(ADMIN, CLIENT)
+                        .requestMatchers(new MvcRequestMatcher(introspector, API_USUARIOS)).hasRole(ADMIN)
+                        .requestMatchers(new MvcRequestMatcher(introspector, API_PERFIS)).hasRole(ADMIN)
                         .anyRequest().authenticated())
                 .exceptionHandling(eh -> eh.authenticationEntryPoint(new ServiceHandlerAutenticacao(objectMapper)) // Mensagem personalizada quando não for autenticado
-                        .accessDeniedHandler(new ServiceHandlerPermissao(objectMapper))) // Mensagem personalizada quando não tiver permissão
+                .accessDeniedHandler(new ServiceHandlerPermissao(objectMapper))) // Mensagem personalizada quando não tiver permissão
                 .build();
     }
 
