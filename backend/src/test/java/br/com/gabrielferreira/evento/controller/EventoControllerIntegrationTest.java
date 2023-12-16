@@ -1,6 +1,7 @@
 package br.com.gabrielferreira.evento.controller;
 
 import br.com.gabrielferreira.evento.dto.request.EventoRequestDTO;
+import br.com.gabrielferreira.evento.utils.TokenUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +33,9 @@ class EventoControllerIntegrationTest {
     @Autowired
     protected ObjectMapper objectMapper;
 
+    @Autowired
+    protected TokenUtils tokenUtils;
+
     private Long idEventoExistente;
 
     private Long idEventoInexistente;
@@ -40,12 +44,16 @@ class EventoControllerIntegrationTest {
 
     private EventoRequestDTO eventoUpdateDTO;
 
+    private String tokenAdmin;
+
     @BeforeEach
     void setUp(){
         idEventoExistente = 1L;
         idEventoInexistente = -1L;
         eventoRequestDTO = criarEventoInsertDto();
         eventoUpdateDTO = criarEventoUpdateDto();
+
+        tokenAdmin = tokenUtils.gerarToken(mockMvc, "teste@email.com", "123");
     }
 
     @Test
@@ -59,6 +67,7 @@ class EventoControllerIntegrationTest {
 
         ResultActions resultActions = mockMvc
                 .perform(post(URL)
+                        .header("Authorization", "Bearer " + tokenAdmin)
                         .content(jsonBody)
                         .contentType(MEDIA_TYPE_JSON)
                         .accept(MEDIA_TYPE_JSON));
@@ -113,6 +122,7 @@ class EventoControllerIntegrationTest {
 
         ResultActions resultActions = mockMvc
                 .perform(put(URL.concat("/{id}"), idEventoExistente)
+                        .header("Authorization", "Bearer " + tokenAdmin)
                         .content(jsonBody)
                         .contentType(MEDIA_TYPE_JSON)
                         .accept(MEDIA_TYPE_JSON));
@@ -134,6 +144,7 @@ class EventoControllerIntegrationTest {
 
         ResultActions resultActions = mockMvc
                 .perform(put(URL.concat("/{id}"), idEventoInexistente)
+                        .header("Authorization", "Bearer " + tokenAdmin)
                         .content(jsonBody)
                         .contentType(MEDIA_TYPE_JSON)
                         .accept(MEDIA_TYPE_JSON));
@@ -148,6 +159,7 @@ class EventoControllerIntegrationTest {
     void deveDeletarEvento() throws Exception {
         ResultActions resultActions = mockMvc
                 .perform(delete(URL.concat("/{id}"), idEventoExistente)
+                        .header("Authorization", "Bearer " + tokenAdmin)
                         .accept(MEDIA_TYPE_JSON));
 
         resultActions.andExpect(status().isNoContent());
@@ -159,6 +171,7 @@ class EventoControllerIntegrationTest {
     void naoDeveDeletarEvento() throws Exception {
         ResultActions resultActions = mockMvc
                 .perform(delete(URL.concat("/{id}"), idEventoInexistente)
+                        .header("Authorization", "Bearer " + tokenAdmin)
                         .accept(MEDIA_TYPE_JSON));
 
         resultActions.andExpect(status().isNotFound());
@@ -225,6 +238,7 @@ class EventoControllerIntegrationTest {
 
         ResultActions resultActions = mockMvc
                 .perform(post(URL)
+                        .header("Authorization", "Bearer " + tokenAdmin)
                         .content(jsonBody)
                         .contentType(MEDIA_TYPE_JSON)
                         .accept(MEDIA_TYPE_JSON));
@@ -244,6 +258,7 @@ class EventoControllerIntegrationTest {
 
         ResultActions resultActions = mockMvc
                 .perform(post(URL)
+                        .header("Authorization", "Bearer " + tokenAdmin)
                         .content(jsonBody)
                         .contentType(MEDIA_TYPE_JSON)
                         .accept(MEDIA_TYPE_JSON));
@@ -262,6 +277,7 @@ class EventoControllerIntegrationTest {
 
         ResultActions resultActions = mockMvc
                 .perform(put(URL.concat("/{id}"), idEventoExistente)
+                        .header("Authorization", "Bearer " + tokenAdmin)
                         .content(jsonBody)
                         .contentType(MEDIA_TYPE_JSON)
                         .accept(MEDIA_TYPE_JSON));

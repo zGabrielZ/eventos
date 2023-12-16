@@ -1,6 +1,6 @@
 package br.com.gabrielferreira.evento.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import br.com.gabrielferreira.evento.utils.TokenUtils;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -27,7 +27,7 @@ class PerfilControllerIntegrationTest {
     protected MockMvc mockMvc;
 
     @Autowired
-    protected ObjectMapper objectMapper;
+    protected TokenUtils tokenUtils;
 
     private Long idPerfilExistente;
 
@@ -39,6 +39,10 @@ class PerfilControllerIntegrationTest {
 
     private Long idUsuarioExistente;
 
+    private String tokenAdmin;
+
+    private String tokenClient;
+
     @BeforeEach
     void setUp(){
         idPerfilExistente = 1L;
@@ -46,6 +50,9 @@ class PerfilControllerIntegrationTest {
         descricaoExistente = "ROLE_ADMIN";
         descricaoInexistente = "ROLE";
         idUsuarioExistente = 1L;
+
+        tokenAdmin = tokenUtils.gerarToken(mockMvc, "teste@email.com", "123");
+        tokenClient = tokenUtils.gerarToken(mockMvc, "gabriel123@email.com", "123");
     }
 
     @Test
@@ -54,6 +61,7 @@ class PerfilControllerIntegrationTest {
     void deveBuscarPerfil() throws Exception {
         ResultActions resultActions = mockMvc
                 .perform(get(URL.concat("/{id}"), idPerfilExistente)
+                        .header("Authorization", "Bearer " + tokenAdmin)
                         .accept(MEDIA_TYPE_JSON));
 
         resultActions.andExpect(status().isOk());
@@ -68,6 +76,7 @@ class PerfilControllerIntegrationTest {
     void naoDeveBuscarPerfil() throws Exception {
         ResultActions resultActions = mockMvc
                 .perform(get(URL.concat("/{id}"), idPerfilInexistente)
+                        .header("Authorization", "Bearer " + tokenAdmin)
                         .accept(MEDIA_TYPE_JSON));
 
         resultActions.andExpect(status().isNotFound());
@@ -80,6 +89,7 @@ class PerfilControllerIntegrationTest {
     void deveBuscarListaDePerfis() throws Exception {
         ResultActions resultActions = mockMvc
                 .perform(get(URL)
+                        .header("Authorization", "Bearer " + tokenAdmin)
                         .accept(MEDIA_TYPE_JSON));
 
         resultActions.andExpect(status().isOk());
@@ -91,6 +101,7 @@ class PerfilControllerIntegrationTest {
     void deveBuscarPerfilViaDescricao() throws Exception {
         ResultActions resultActions = mockMvc
                 .perform(get(URL.concat("/buscar?descricao=".concat(descricaoExistente)))
+                        .header("Authorization", "Bearer " + tokenAdmin)
                         .accept(MEDIA_TYPE_JSON));
 
         resultActions.andExpect(status().isOk());
@@ -105,6 +116,7 @@ class PerfilControllerIntegrationTest {
     void naoDeveBuscarPerfilViaDescricao() throws Exception {
         ResultActions resultActions = mockMvc
                 .perform(get(URL.concat("/buscar?descricao=".concat(descricaoInexistente)))
+                        .header("Authorization", "Bearer " + tokenAdmin)
                         .accept(MEDIA_TYPE_JSON));
 
         resultActions.andExpect(status().isNotFound());
@@ -117,6 +129,7 @@ class PerfilControllerIntegrationTest {
     void naoDeveBuscarPerfilNaoInformarDescricao() throws Exception {
         ResultActions resultActions = mockMvc
                 .perform(get(URL.concat("/buscar?descricao="))
+                        .header("Authorization", "Bearer " + tokenAdmin)
                         .accept(MEDIA_TYPE_JSON));
 
         resultActions.andExpect(status().isBadRequest());
@@ -129,8 +142,23 @@ class PerfilControllerIntegrationTest {
     void deveBuscarListaDePerfisPorUsuario() throws Exception {
         ResultActions resultActions = mockMvc
                 .perform(get(URL.concat("/usuarios/{idUsuario}"), idUsuarioExistente)
+                        .header("Authorization", "Bearer " + tokenAdmin)
                         .accept(MEDIA_TYPE_JSON));
 
         resultActions.andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("Não deve buscar lista de perfis quando informar for client")
+    @Order(8)
+    void naoDeveBuscarListaDePerfisPorUsuarioQuandoForClient() throws Exception {
+        ResultActions resultActions = mockMvc
+                .perform(get(URL.concat("/usuarios/{idUsuario}"), idUsuarioExistente)
+                        .header("Authorization", "Bearer " + tokenClient)
+                        .accept(MEDIA_TYPE_JSON));
+
+        resultActions.andExpect(status().isForbidden());
+        resultActions.andExpect(jsonPath("$.erro").value("Proibido"));
+        resultActions.andExpect(jsonPath("$.mensagem").value("Você não tem a permissão de realizar esta ação"));
     }
 }

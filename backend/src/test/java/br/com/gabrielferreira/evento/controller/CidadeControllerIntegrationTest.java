@@ -1,6 +1,7 @@
 package br.com.gabrielferreira.evento.controller;
 
 import br.com.gabrielferreira.evento.dto.request.CidadeRequestDTO;
+import br.com.gabrielferreira.evento.utils.TokenUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +34,9 @@ class CidadeControllerIntegrationTest {
     @Autowired
     protected ObjectMapper objectMapper;
 
+    @Autowired
+    protected TokenUtils tokenUtils;
+
     private Long idCidadeExistente;
 
     private Long idCidadeInexistente;
@@ -43,6 +47,10 @@ class CidadeControllerIntegrationTest {
 
     private Long idCidadeSemRelacionamento;
 
+    private String tokenAdmin;
+
+    private String tokenClient;
+
     @BeforeEach
     void setUp(){
         idCidadeExistente = 1L;
@@ -51,6 +59,9 @@ class CidadeControllerIntegrationTest {
 
         cidadeRequestDTO = criarCidadeInsertDto();
         cidadeUpdateDTO = criarCidadeUpdateDto();
+
+        tokenAdmin = tokenUtils.gerarToken(mockMvc, "teste@email.com", "123");
+        tokenClient = tokenUtils.gerarToken(mockMvc, "gabriel123@email.com", "123");
     }
 
     @Test
@@ -153,6 +164,7 @@ class CidadeControllerIntegrationTest {
 
         ResultActions resultActions = mockMvc
                 .perform(post(URL)
+                        .header("Authorization", "Bearer " + tokenAdmin)
                         .content(jsonBody)
                         .contentType(MEDIA_TYPE_JSON)
                         .accept(MEDIA_TYPE_JSON));
@@ -173,6 +185,7 @@ class CidadeControllerIntegrationTest {
 
         ResultActions resultActions = mockMvc
                 .perform(post(URL)
+                        .header("Authorization", "Bearer " + tokenAdmin)
                         .content(jsonBody)
                         .contentType(MEDIA_TYPE_JSON)
                         .accept(MEDIA_TYPE_JSON));
@@ -191,6 +204,7 @@ class CidadeControllerIntegrationTest {
 
         ResultActions resultActions = mockMvc
                 .perform(post(URL)
+                        .header("Authorization", "Bearer " + tokenAdmin)
                         .content(jsonBody)
                         .contentType(MEDIA_TYPE_JSON)
                         .accept(MEDIA_TYPE_JSON));
@@ -209,6 +223,7 @@ class CidadeControllerIntegrationTest {
 
         ResultActions resultActions = mockMvc
                 .perform(post(URL)
+                        .header("Authorization", "Bearer " + tokenAdmin)
                         .content(jsonBody)
                         .contentType(MEDIA_TYPE_JSON)
                         .accept(MEDIA_TYPE_JSON));
@@ -227,6 +242,7 @@ class CidadeControllerIntegrationTest {
 
         ResultActions resultActions = mockMvc
                 .perform(post(URL)
+                        .header("Authorization", "Bearer " + tokenAdmin)
                         .content(jsonBody)
                         .contentType(MEDIA_TYPE_JSON)
                         .accept(MEDIA_TYPE_JSON));
@@ -245,6 +261,7 @@ class CidadeControllerIntegrationTest {
 
         ResultActions resultActions = mockMvc
                 .perform(put(URL.concat("/{id}"), idCidadeExistente)
+                        .header("Authorization", "Bearer " + tokenAdmin)
                         .content(jsonBody)
                         .contentType(MEDIA_TYPE_JSON)
                         .accept(MEDIA_TYPE_JSON));
@@ -263,6 +280,7 @@ class CidadeControllerIntegrationTest {
 
         ResultActions resultActions = mockMvc
                 .perform(put(URL.concat("/{id}"), idCidadeExistente)
+                        .header("Authorization", "Bearer " + tokenAdmin)
                         .content(jsonBody)
                         .contentType(MEDIA_TYPE_JSON)
                         .accept(MEDIA_TYPE_JSON));
@@ -284,6 +302,7 @@ class CidadeControllerIntegrationTest {
 
         ResultActions resultActions = mockMvc
                 .perform(put(URL.concat("/{id}"), idCidadeExistente)
+                        .header("Authorization", "Bearer " + tokenAdmin)
                         .content(jsonBody)
                         .contentType(MEDIA_TYPE_JSON)
                         .accept(MEDIA_TYPE_JSON));
@@ -301,6 +320,7 @@ class CidadeControllerIntegrationTest {
     void deveDeletarCidade() throws Exception {
         ResultActions resultActions = mockMvc
                 .perform(delete(URL.concat("/{id}"), idCidadeSemRelacionamento)
+                        .header("Authorization", "Bearer " + tokenAdmin)
                         .accept(MEDIA_TYPE_JSON));
 
         resultActions.andExpect(status().isNoContent());
@@ -313,10 +333,38 @@ class CidadeControllerIntegrationTest {
     void naoDeveDeletarCidadeQuandoCidadeTiverRelacionamento() throws Exception {
         ResultActions resultActions = mockMvc
                 .perform(delete(URL.concat("/{id}"), idCidadeExistente)
+                        .header("Authorization", "Bearer " + tokenAdmin)
                         .accept(MEDIA_TYPE_JSON));
 
         resultActions.andExpect(status().isBadRequest());
         resultActions.andExpect(jsonPath("$.erro").value("Erro personalizado"));
         resultActions.andExpect(jsonPath("$.mensagem").value("Violação de integridade, Cidade possui algum tipo de relacionamento"));
+    }
+
+    @Test
+    @DisplayName("Não deve deletar cidade quando não tiver autenticado")
+    @Order(18)
+    void naoDeveDeletarCidadeQuandoNaoTiverAutenticado() throws Exception {
+        ResultActions resultActions = mockMvc
+                .perform(delete(URL.concat("/{id}"), idCidadeSemRelacionamento)
+                        .accept(MEDIA_TYPE_JSON));
+
+        resultActions.andExpect(status().isUnauthorized());
+        resultActions.andExpect(jsonPath("$.erro").value("Não autorizado"));
+        resultActions.andExpect(jsonPath("$.mensagem").value("Você precisa fazer login primeiro para executar esta função"));
+    }
+
+    @Test
+    @DisplayName("Não deve deletar cidade quando for cliente")
+    @Order(19)
+    void naoDeveDeletarCidadeQuandoForCliente() throws Exception {
+        ResultActions resultActions = mockMvc
+                .perform(delete(URL.concat("/{id}"), idCidadeSemRelacionamento)
+                        .header("Authorization", "Bearer " + tokenClient)
+                        .accept(MEDIA_TYPE_JSON));
+
+        resultActions.andExpect(status().isForbidden());
+        resultActions.andExpect(jsonPath("$.erro").value("Proibido"));
+        resultActions.andExpect(jsonPath("$.mensagem").value("Você não tem a permissão de realizar esta ação"));
     }
 }

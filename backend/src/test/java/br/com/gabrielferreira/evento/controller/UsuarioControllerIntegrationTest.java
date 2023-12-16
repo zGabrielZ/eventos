@@ -3,6 +3,7 @@ package br.com.gabrielferreira.evento.controller;
 import br.com.gabrielferreira.evento.dto.request.PerfilIdResquestDTO;
 import br.com.gabrielferreira.evento.dto.request.UsuarioResquestDTO;
 import br.com.gabrielferreira.evento.dto.request.UsuarioUpdateResquestDTO;
+import br.com.gabrielferreira.evento.utils.TokenUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +42,9 @@ class UsuarioControllerIntegrationTest {
     @Autowired
     protected ObjectMapper objectMapper;
 
+    @Autowired
+    protected TokenUtils tokenUtils;
+
     private Long idUsuarioExistente;
 
     private Long idUsuarioInexistente;
@@ -49,6 +53,10 @@ class UsuarioControllerIntegrationTest {
 
     private UsuarioUpdateResquestDTO usuarioUpdateResquestDTO;
 
+    private String tokenAdmin;
+
+    private String tokenClient;
+
     @BeforeEach
     void setUp(){
         idUsuarioExistente = 1L;
@@ -56,6 +64,9 @@ class UsuarioControllerIntegrationTest {
 
         usuarioResquestDTO = criarUsuarioInsertDto();
         usuarioUpdateResquestDTO = criarUsuarioUpdateDto();
+
+        tokenAdmin = tokenUtils.gerarToken(mockMvc, "teste@email.com", "123");
+        tokenClient = tokenUtils.gerarToken(mockMvc, "gabriel123@email.com", "123");
     }
 
     @Test
@@ -69,6 +80,7 @@ class UsuarioControllerIntegrationTest {
 
         ResultActions resultActions = mockMvc
                 .perform(post(URL)
+                        .header("Authorization", "Bearer " + tokenAdmin)
                         .content(jsonBody)
                         .contentType(MEDIA_TYPE_JSON)
                         .accept(MEDIA_TYPE_JSON));
@@ -89,6 +101,7 @@ class UsuarioControllerIntegrationTest {
 
         ResultActions resultActions = mockMvc
                 .perform(post(URL)
+                        .header("Authorization", "Bearer " + tokenAdmin)
                         .content(jsonBody)
                         .contentType(MEDIA_TYPE_JSON)
                         .accept(MEDIA_TYPE_JSON));
@@ -108,6 +121,7 @@ class UsuarioControllerIntegrationTest {
 
         ResultActions resultActions = mockMvc
                 .perform(post(URL)
+                        .header("Authorization", "Bearer " + tokenAdmin)
                         .content(jsonBody)
                         .contentType(MEDIA_TYPE_JSON)
                         .accept(MEDIA_TYPE_JSON));
@@ -126,6 +140,7 @@ class UsuarioControllerIntegrationTest {
 
         ResultActions resultActions = mockMvc
                 .perform(post(URL)
+                        .header("Authorization", "Bearer " + tokenAdmin)
                         .content(jsonBody)
                         .contentType(MEDIA_TYPE_JSON)
                         .accept(MEDIA_TYPE_JSON));
@@ -144,6 +159,7 @@ class UsuarioControllerIntegrationTest {
 
         ResultActions resultActions = mockMvc
                 .perform(post(URL)
+                        .header("Authorization", "Bearer " + tokenAdmin)
                         .content(jsonBody)
                         .contentType(MEDIA_TYPE_JSON)
                         .accept(MEDIA_TYPE_JSON));
@@ -162,6 +178,7 @@ class UsuarioControllerIntegrationTest {
 
         ResultActions resultActions = mockMvc
                 .perform(post(URL)
+                        .header("Authorization", "Bearer " + tokenAdmin)
                         .content(jsonBody)
                         .contentType(MEDIA_TYPE_JSON)
                         .accept(MEDIA_TYPE_JSON));
@@ -180,6 +197,7 @@ class UsuarioControllerIntegrationTest {
 
         ResultActions resultActions = mockMvc
                 .perform(post(URL)
+                        .header("Authorization", "Bearer " + tokenAdmin)
                         .content(jsonBody)
                         .contentType(MEDIA_TYPE_JSON)
                         .accept(MEDIA_TYPE_JSON));
@@ -198,6 +216,7 @@ class UsuarioControllerIntegrationTest {
 
         ResultActions resultActions = mockMvc
                 .perform(post(URL)
+                        .header("Authorization", "Bearer " + tokenAdmin)
                         .content(jsonBody)
                         .contentType(MEDIA_TYPE_JSON)
                         .accept(MEDIA_TYPE_JSON));
@@ -217,6 +236,7 @@ class UsuarioControllerIntegrationTest {
 
         ResultActions resultActions = mockMvc
                 .perform(post(URL)
+                        .header("Authorization", "Bearer " + tokenAdmin)
                         .content(jsonBody)
                         .contentType(MEDIA_TYPE_JSON)
                         .accept(MEDIA_TYPE_JSON));
@@ -232,6 +252,7 @@ class UsuarioControllerIntegrationTest {
     void deveBuscarUsuario() throws Exception{
         ResultActions resultActions = mockMvc
                 .perform(get(URL.concat("/{id}"), idUsuarioExistente)
+                        .header("Authorization", "Bearer " + tokenAdmin)
                         .accept(MEDIA_TYPE_JSON));
 
         resultActions.andExpect(status().isOk());
@@ -247,6 +268,7 @@ class UsuarioControllerIntegrationTest {
     void naoDeveBuscarUsuario() throws Exception{
         ResultActions resultActions = mockMvc
                 .perform(get(URL.concat("/{id}"), idUsuarioInexistente)
+                        .header("Authorization", "Bearer " + tokenAdmin)
                         .accept(MEDIA_TYPE_JSON));
 
         resultActions.andExpect(status().isNotFound());
@@ -266,6 +288,7 @@ class UsuarioControllerIntegrationTest {
 
         ResultActions resultActions = mockMvc
                 .perform(put(URL.concat("/{id}"), idUsuarioExistente)
+                        .header("Authorization", "Bearer " + tokenAdmin)
                         .content(jsonBody)
                         .contentType(MEDIA_TYPE_JSON)
                         .accept(MEDIA_TYPE_JSON));
@@ -281,18 +304,19 @@ class UsuarioControllerIntegrationTest {
     @DisplayName("Não deve atualizar um usuário quando informar email já cadastrado")
     @Order(13)
     void naoDeveAtualizarUsuarioQuandoInformarEmailJaCadastrado() throws Exception{
-        usuarioUpdateResquestDTO.setEmail("ferreiragabriel2612@gmail.com");
+        usuarioUpdateResquestDTO.setEmail("gabriel123@email.com");
         String jsonBody = objectMapper.writeValueAsString(usuarioUpdateResquestDTO);
 
         ResultActions resultActions = mockMvc
                 .perform(put(URL.concat("/{id}"), idUsuarioExistente)
+                        .header("Authorization", "Bearer " + tokenAdmin)
                         .content(jsonBody)
                         .contentType(MEDIA_TYPE_JSON)
                         .accept(MEDIA_TYPE_JSON));
 
         resultActions.andExpect(status().isBadRequest());
         resultActions.andExpect(jsonPath("$.erro").value("Erro personalizado"));
-        resultActions.andExpect(jsonPath("$.mensagem").value("Não vai ser possível atualizar este usuário pois o email 'ferreiragabriel2612@gmail.com' já foi cadastrado"));
+        resultActions.andExpect(jsonPath("$.mensagem").value("Não vai ser possível atualizar este usuário pois o email 'gabriel123@email.com' já foi cadastrado"));
     }
 
     @Test
@@ -301,6 +325,7 @@ class UsuarioControllerIntegrationTest {
     void deveDeletarUsuario() throws Exception{
         ResultActions resultActions = mockMvc
                 .perform(delete(URL.concat("/{id}"), idUsuarioExistente)
+                        .header("Authorization", "Bearer " + tokenAdmin)
                         .accept(MEDIA_TYPE_JSON));
 
         resultActions.andExpect(status().isNoContent());
@@ -315,9 +340,27 @@ class UsuarioControllerIntegrationTest {
 
         ResultActions resultActions = mockMvc
                 .perform(get(URL.concat(filtro))
+                        .header("Authorization", "Bearer " + tokenAdmin)
                         .accept(MEDIA_TYPE_JSON));
 
         resultActions.andExpect(status().isOk());
         resultActions.andExpect(jsonPath("$.content").exists());
+    }
+
+    @Test
+    @DisplayName("Não deve buscar usuários paginados quando for client")
+    @Order(16)
+    void naoDeveBuscarUsuariosPaginadosQuandoForClient() throws Exception {
+        String filtro = "?page=0&size=5&sort=id,desc&id=4&nome=Teste&data=2021-05-03" +
+                "&idsPerfis=1,2";
+
+        ResultActions resultActions = mockMvc
+                .perform(get(URL.concat(filtro))
+                        .header("Authorization", "Bearer " + tokenClient)
+                        .accept(MEDIA_TYPE_JSON));
+
+        resultActions.andExpect(status().isForbidden());
+        resultActions.andExpect(jsonPath("$.erro").value("Proibido"));
+        resultActions.andExpect(jsonPath("$.mensagem").value("Você não tem a permissão de realizar esta ação"));
     }
 }
