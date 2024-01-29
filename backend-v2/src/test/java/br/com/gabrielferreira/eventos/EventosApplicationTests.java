@@ -1,4 +1,4 @@
-package br.com.gabrielferreira.eventos.eventos;
+package br.com.gabrielferreira.eventos;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

@@ -1,0 +1,9 @@
+server:
+  port: 8081
+
+spring:
+  profiles:
+    active:
+      - ${APP_PROFILE:test}
+  jpa:
+    open-in-view: true
