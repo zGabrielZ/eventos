@@ -41,6 +41,10 @@ public class Evento implements Serializable {
     @JoinColumn(name = "ID_CIDADE", nullable = false)
     private Cidade cidade;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "ID_USUARIO", nullable = false)
+    private Usuario usuario;
+
     @Column(name = "DATA_CADASTRO", nullable = false)
     private ZonedDateTime dataCadastro;
 

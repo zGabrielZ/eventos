@@ -44,6 +44,9 @@ public class Usuario implements Serializable {
             inverseJoinColumns = @JoinColumn(name = "ID_PERFIL", referencedColumnName = "ID", table = "TB_PERFIL"))
     private List<Perfil> perfis = new ArrayList<>();
 
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, mappedBy = "usuario")
+    private List<Evento> eventos = new ArrayList<>();
+
     @Column(name = "DATA_CADASTRO", nullable = false)
     private ZonedDateTime dataCadastro;
 
