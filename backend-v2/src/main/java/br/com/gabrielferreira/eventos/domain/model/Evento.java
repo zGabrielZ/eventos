@@ -5,6 +5,7 @@ import lombok.*;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.time.ZonedDateTime;
 
 import static br.com.gabrielferreira.eventos.common.utils.DataUtils.*;
@@ -13,49 +14,32 @@ import static br.com.gabrielferreira.eventos.common.utils.DataUtils.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@ToString
+@ToString(exclude = {"cidade"})
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Entity
-@Table(name = "TB_CIDADE")
-public class Cidade implements Serializable {
+@Table(name = "TB_EVENTO")
+public class Evento implements Serializable {
 
     @Serial
-    private static final long serialVersionUID = 124441226725634777L;
+    private static final long serialVersionUID = 1167877349138602363L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @EqualsAndHashCode.Include
     private Long id;
 
-    @Column(name = "CEP", nullable = false)
-    private String cep;
+    @Column(name = "NOME", nullable = false)
+    private String nome;
 
-    @Column(name = "LOGRADOURO", nullable = false)
-    private String logradouro;
+    @Column(name = "DATA_EVENTO", nullable = false)
+    private LocalDate dataEvento;
 
-    @Column(name = "COMPLEMENTO")
-    private String complemento;
+    @Column(name = "URL", nullable = false)
+    private String url;
 
-    @Column(name = "BAIRRO", nullable = false)
-    private String bairro;
-
-    @Column(name = "LOCALIDADE", nullable = false)
-    private String localidade;
-
-    @Column(name = "UF")
-    private String uf;
-
-    @Column(name = "IBGE")
-    private String ibge;
-
-    @Column(name = "GIA")
-    private String gia;
-
-    @Column(name = "DDD")
-    private String ddd;
-
-    @Column(name = "SIAFI")
-    private String siafi;
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "ID_CIDADE", nullable = false)
+    private Cidade cidade;
 
     @Column(name = "DATA_CADASTRO", nullable = false)
     private ZonedDateTime dataCadastro;
