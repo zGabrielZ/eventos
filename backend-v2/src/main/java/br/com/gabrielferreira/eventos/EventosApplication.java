@@ -1,4 +1,4 @@
-package br.com.gabrielferreira.eventos.eventos;
+package br.com.gabrielferreira.eventos;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
