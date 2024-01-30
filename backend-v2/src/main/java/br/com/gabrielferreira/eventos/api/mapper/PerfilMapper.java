@@ -2,22 +2,16 @@ package br.com.gabrielferreira.eventos.api.mapper;
 
 import br.com.gabrielferreira.eventos.api.model.PerfilModel;
 import br.com.gabrielferreira.eventos.domain.model.Perfil;
-import org.springframework.stereotype.Component;
+import org.mapstruct.Mapper;
 
 import java.util.List;
 
-@Component
-public class PerfilMapper {
+@Mapper(componentModel = "spring")
+public interface PerfilMapper {
 
-    public PerfilModel toPerfilModel(Perfil perfil){
-        return PerfilModel.builder()
-                .id(perfil.getId())
-                .descricao(perfil.getDescricao())
-                .autoriedade(perfil.getAutoriedade())
-                .build();
-    }
+    PerfilModel toPerfilModel(Perfil perfil);
 
-    public List<PerfilModel> toPerfisModels(List<Perfil> perfis){
+    default List<PerfilModel> toPerfisModels(List<Perfil> perfis){
         return perfis.stream().map(this::toPerfilModel).toList();
     }
 }
