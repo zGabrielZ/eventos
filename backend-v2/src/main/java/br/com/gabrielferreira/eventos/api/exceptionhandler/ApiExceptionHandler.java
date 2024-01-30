@@ -8,6 +8,7 @@ import br.com.gabrielferreira.eventos.domain.exception.model.ErroPadraoFormulari
 import br.com.gabrielferreira.eventos.domain.exception.model.ErroPadraoModel;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpStatus;
@@ -22,6 +23,7 @@ import static br.com.gabrielferreira.eventos.common.utils.DataUtils.*;
 
 @ControllerAdvice
 @RequiredArgsConstructor
+@Slf4j
 public class ApiExceptionHandler {
 
     private final ErroPadraoMapper erroPadraoMapper;
@@ -53,5 +55,13 @@ public class ApiExceptionHandler {
         erroPadraoCamposModel.setCampos(campos);
 
         return ResponseEntity.status(httpStatus).body(erroPadraoCamposModel);
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErroPadraoModel> erroException(Exception e, HttpServletRequest request){
+        log.error(e.getMessage(), e);
+        HttpStatus httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
+        ErroPadraoModel erroPadraoModel = erroPadraoMapper.toErroPadrao(toFusoPadraoSistema(ZonedDateTime.now()), httpStatus.value(), "Erro inesperado", "Ocorreu um erro inesperado no sistema, tente mais tarde", request.getRequestURI());
+        return ResponseEntity.status(httpStatus).body(erroPadraoModel);
     }
 }
