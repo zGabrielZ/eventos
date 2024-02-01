@@ -1,5 +1,6 @@
 package br.com.gabrielferreira.eventos.domain.service;
 
+import br.com.gabrielferreira.eventos.domain.exception.NaoEncontradoException;
 import br.com.gabrielferreira.eventos.domain.model.Usuario;
 import br.com.gabrielferreira.eventos.domain.repository.UsuarioRepository;
 import br.com.gabrielferreira.eventos.domain.service.validator.UsuarioValidator;
@@ -24,5 +25,10 @@ public class UsuarioService {
 
         usuario = usuarioRepository.save(usuario);
         return usuario;
+    }
+
+    public Usuario buscarUsuarioPorId(Long id){
+        return usuarioRepository.buscarPorId(id)
+                .orElseThrow(() -> new NaoEncontradoException("Usuário não encontrado"));
     }
 }

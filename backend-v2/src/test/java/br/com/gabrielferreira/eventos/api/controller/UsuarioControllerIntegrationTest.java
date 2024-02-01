@@ -16,6 +16,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static br.com.gabrielferreira.eventos.tests.UsuarioFactory.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -40,9 +41,15 @@ class UsuarioControllerIntegrationTest {
 
     private UsuarioInputModel input;
 
+    private Long idUsuarioExistente;
+
+    private Long idUsuarioInexsitente;
+
     @BeforeEach
     void setUp(){
         input = criarUsuarioInput();
+        idUsuarioExistente = 1L;
+        idUsuarioInexsitente = -1L;
     }
 
     @Test
@@ -226,5 +233,33 @@ class UsuarioControllerIntegrationTest {
         resultActions.andExpect(status().isNotFound());
         resultActions.andExpect(jsonPath("$.titulo").value("Não encontrado"));
         resultActions.andExpect(jsonPath("$.mensagem").value("Perfil não encontrado"));
+    }
+
+    @Test
+    @DisplayName("Deve buscar usuário por id quando existir dado informado")
+    @Order(10)
+    void deveBuscarUsuarioPorId() throws Exception {
+        ResultActions resultActions = mockMvc
+                .perform(get(URL.concat("/{id}"), idUsuarioExistente)
+                        .accept(MEDIA_TYPE_JSON));
+
+        resultActions.andExpect(status().isOk());
+        resultActions.andExpect(jsonPath("$.id").exists());
+        resultActions.andExpect(jsonPath("$.nome").exists());
+        resultActions.andExpect(jsonPath("$.email").exists());
+        resultActions.andExpect(jsonPath("$.perfis").exists());
+        resultActions.andExpect(jsonPath("$.dataCadastro").exists());
+    }
+
+    @Test
+    @DisplayName("Não deve buscar usuário por id quando não existir dado informado")
+    @Order(11)
+    void naoDeveBuscarUsuarioPorId() throws Exception {
+        ResultActions resultActions = mockMvc
+                .perform(get(URL.concat("/{id}"), idUsuarioInexsitente)
+                        .accept(MEDIA_TYPE_JSON));
+
+        resultActions.andExpect(status().isNotFound());
+        resultActions.andExpect(jsonPath("$.mensagem").value("Usuário não encontrado"));
     }
 }
