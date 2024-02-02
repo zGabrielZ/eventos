@@ -50,6 +50,12 @@ public class UsuarioService {
         return usuarioEncontrado;
     }
 
+    @Transactional
+    public void deletarUsuarioPorId(Long id){
+        Usuario usuarioEncontrado = buscarUsuarioPorId(id);
+        usuarioRepository.delete(usuarioEncontrado);
+    }
+
     private void preencherCamposUsuario(Usuario usuarioEncontrado, Usuario usuario){
         usuarioEncontrado.setNome(usuario.getNome());
         usuarioEncontrado.setEmail(usuario.getEmail());
