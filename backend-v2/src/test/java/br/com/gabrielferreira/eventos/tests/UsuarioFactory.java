@@ -22,4 +22,16 @@ public class UsuarioFactory {
                 .perfis(perfis)
                 .build();
     }
+
+    public static UsuarioInputModel criarUsuarioInputAtualizar(){
+        List<PerfilIdInputModel> perfis = new ArrayList<>();
+        perfis.add(PerfilIdInputModel.builder().id(1L).build());
+
+        return UsuarioInputModel.builder()
+                .nome("Teste nome editado")
+                .email("testeeditado@email.com")
+                .senha("Abc@123413241413")
+                .perfis(perfis)
+                .build();
+    }
 }

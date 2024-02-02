@@ -40,4 +40,13 @@ public class UsuarioController {
 
         return ResponseEntity.ok().body(usuarioModel);
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<UsuarioModel> atualizarUsuarioPorId(@PathVariable Long id, @Valid @RequestBody UsuarioInputModel usuarioInputModel){
+        Usuario usuario = usuarioMapper.toUsuario(usuarioInputModel);
+        Usuario usuarioAtualizado = usuarioService.atualizarUsuarioPorId(id, usuario);
+        UsuarioModel usuarioModel = usuarioMapper.toUsuarioModel(usuarioAtualizado);
+
+        return ResponseEntity.ok().body(usuarioModel);
+    }
 }

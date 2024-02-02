@@ -16,8 +16,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static br.com.gabrielferreira.eventos.tests.UsuarioFactory.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -45,11 +44,14 @@ class UsuarioControllerIntegrationTest {
 
     private Long idUsuarioInexsitente;
 
+    private UsuarioInputModel inputAtualizar;
+
     @BeforeEach
     void setUp(){
         input = criarUsuarioInput();
         idUsuarioExistente = 1L;
         idUsuarioInexsitente = -1L;
+        inputAtualizar = criarUsuarioInputAtualizar();
     }
 
     @Test
@@ -261,5 +263,46 @@ class UsuarioControllerIntegrationTest {
 
         resultActions.andExpect(status().isNotFound());
         resultActions.andExpect(jsonPath("$.mensagem").value("Usuário não encontrado"));
+    }
+
+    @Test
+    @DisplayName("Deve atualizar usuário quando informar dados")
+    @Order(12)
+    void deveAtualizarUsuarioQuandoInformarDados() throws Exception{
+        String jsonBody = objectMapper.writeValueAsString(inputAtualizar);
+
+        Long idEsperado = idUsuarioExistente;
+        String nomeEsperado = inputAtualizar.getNome();
+        String emailEsperado = inputAtualizar.getEmail();
+
+        ResultActions resultActions = mockMvc
+                .perform(put(URL.concat("/{id}"), idUsuarioExistente)
+                        .content(jsonBody)
+                        .contentType(MEDIA_TYPE_JSON)
+                        .accept(MEDIA_TYPE_JSON));
+
+        resultActions.andExpect(status().isOk());
+        resultActions.andExpect(jsonPath("$.id").value(idEsperado));
+        resultActions.andExpect(jsonPath("$.nome").value(nomeEsperado));
+        resultActions.andExpect(jsonPath("$.email").value(emailEsperado));
+        resultActions.andExpect(jsonPath("$.perfis").exists());
+        resultActions.andExpect(jsonPath("$.dataCadastro").exists());
+    }
+
+    @Test
+    @DisplayName("Não deve atualizar usuário quando informar email já existente")
+    @Order(13)
+    void naoDeveAtualizarUsuarioQuandoInformarEmailJaExistente() throws Exception{
+        inputAtualizar.setEmail("marcos@email.com");
+        String jsonBody = objectMapper.writeValueAsString(inputAtualizar);
+
+        ResultActions resultActions = mockMvc
+                .perform(put(URL.concat("/{id}"), idUsuarioExistente)
+                        .content(jsonBody)
+                        .contentType(MEDIA_TYPE_JSON)
+                        .accept(MEDIA_TYPE_JSON));
+
+        resultActions.andExpect(status().isBadRequest());
+        resultActions.andExpect(jsonPath("$.mensagem").value("Este e-mail 'marcos@email.com' já foi cadastrado"));
     }
 }

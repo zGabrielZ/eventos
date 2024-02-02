@@ -5,6 +5,7 @@ import lombok.*;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -29,4 +30,12 @@ public class Perfil implements Serializable {
 
     @Column(name = "AUTORIEDADE", nullable = false, unique = true)
     private String autoriedade;
+
+    public boolean isContemPerfil(List<Perfil> perfis){
+        return perfis.stream().anyMatch(p -> p.getId().equals(this.id));
+    }
+
+    public boolean isNaoContemPerfil(List<Perfil> perfis){
+        return !isContemPerfil(perfis);
+    }
 }
