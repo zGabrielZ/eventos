@@ -56,6 +56,14 @@ public class UsuarioService {
         usuarioRepository.delete(usuarioEncontrado);
     }
 
+    public boolean isUsuarioExistente(Long id){
+        return usuarioRepository.buscarUsuarioExistente(id);
+    }
+
+    public boolean isUsuarioNaoExistente(Long id){
+        return !isUsuarioExistente(id);
+    }
+
     private void preencherCamposUsuario(Usuario usuarioEncontrado, Usuario usuario){
         usuarioEncontrado.setNome(usuario.getNome());
         usuarioEncontrado.setEmail(usuario.getEmail());

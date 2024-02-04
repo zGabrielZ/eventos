@@ -5,6 +5,7 @@ import lombok.*;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -30,6 +31,9 @@ public class Perfil implements Serializable {
 
     @Column(name = "AUTORIEDADE", nullable = false, unique = true)
     private String autoriedade;
+
+    @ManyToMany(mappedBy = "perfis", fetch = FetchType.LAZY)
+    private List<Usuario> usuarios = new ArrayList<>();
 
     public boolean isContemPerfil(List<Perfil> perfis){
         return perfis.stream().anyMatch(p -> p.getId().equals(this.id));
