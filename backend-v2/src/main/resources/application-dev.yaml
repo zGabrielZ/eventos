@@ -15,3 +15,6 @@ logging:
   level:
     org:
       flywaydb: DEBUG
+
+via:
+  cep: https://viacep.com.br/ws/

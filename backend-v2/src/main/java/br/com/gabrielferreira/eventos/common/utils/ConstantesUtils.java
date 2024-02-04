@@ -1,5 +1,7 @@
 package br.com.gabrielferreira.eventos.common.utils;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.regex.Pattern;
 
 public class ConstantesUtils {
@@ -51,5 +53,9 @@ public class ConstantesUtils {
             }
         }
         return isPossuiCaractereDigito;
+    }
+
+    public static boolean isNumerico(String valor){
+        return StringUtils.isNumeric(valor);
     }
 }
