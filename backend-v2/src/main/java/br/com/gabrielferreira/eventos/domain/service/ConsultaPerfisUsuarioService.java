@@ -74,8 +74,7 @@ public class ConsultaPerfisUsuarioService {
     private OrderSpecifier<?>[] montarOrderBy(Sort sorts, QPerfil qPerfil){
         List<OrderSpecifier<?>> orderSpecifiers = new ArrayList<>();
         if(sorts.isEmpty()){
-            OrderSpecifier<?> orderSpecifier = qPerfil.descricao.asc();
-            orderSpecifiers.add(orderSpecifier);
+            orderSpecifiers.add(orderByDescricaoAsc(qPerfil));
         } else {
             sorts.forEach(sort -> {
                 String propriedade = sort.getProperty();
@@ -83,19 +82,39 @@ public class ConsultaPerfisUsuarioService {
 
                 Order order = "asc".equalsIgnoreCase(direcao)? Order.ASC : Order.DESC;
                 if(propriedade.equals("id")){
-                    orderSpecifiers.add(new OrderSpecifier<>(order, qPerfil.id));
+                    orderSpecifiers.add(orderById(order, qPerfil));
                 }
 
                 if(propriedade.equals("descricao")){
-                    orderSpecifiers.add(new OrderSpecifier<>(order, qPerfil.descricao));
+                    orderSpecifiers.add(orderByDescricao(order, qPerfil));
                 }
 
                 if(propriedade.equals("autoriedade")){
-                    orderSpecifiers.add(new OrderSpecifier<>(order, qPerfil.autoriedade));
+                    orderSpecifiers.add(orderByAutoriedade(order, qPerfil));
                 }
             });
         }
 
+        if(orderSpecifiers.isEmpty()){
+            orderSpecifiers.add(orderByDescricaoAsc(qPerfil));
+        }
+
         return orderSpecifiers.toArray(OrderSpecifier[]::new);
+    }
+
+    private OrderSpecifier<?> orderByDescricaoAsc(QPerfil qPerfil){
+        return qPerfil.descricao.asc();
+    }
+
+    private OrderSpecifier<?> orderById(Order order, QPerfil qPerfil){
+        return new OrderSpecifier<>(order, qPerfil.id);
+    }
+
+    private OrderSpecifier<?> orderByDescricao(Order order, QPerfil qPerfil){
+        return new OrderSpecifier<>(order, qPerfil.descricao);
+    }
+
+    private OrderSpecifier<?> orderByAutoriedade(Order order, QPerfil qPerfil){
+        return new OrderSpecifier<>(order, qPerfil.autoriedade);
     }
 }
