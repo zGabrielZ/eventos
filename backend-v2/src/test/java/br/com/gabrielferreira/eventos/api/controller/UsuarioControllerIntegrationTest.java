@@ -12,6 +12,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 
@@ -327,5 +328,33 @@ class UsuarioControllerIntegrationTest {
 
         resultActions.andExpect(status().isNotFound());
         resultActions.andExpect(jsonPath("$.mensagem").value("Usuário não encontrado"));
+    }
+
+    @Test
+    @DisplayName("Deve buscar usuários paginados")
+    @Order(16)
+    void deveBuscarUsuariosPaginados() throws Exception {
+        String filtro = URL.concat("?page=0&size=5&sort=id,desc&sort=nome,desc&sort=email,desc&sort=dataCadastro,desc&sort=dataAtualizacao,desc");
+
+        ResultActions resultActions = mockMvc
+                .perform(get(filtro)
+                        .accept(MEDIA_TYPE_JSON));
+
+        resultActions.andExpect(status().isOk());
+        resultActions.andExpect(jsonPath("$.content").exists());
+    }
+
+    @Test
+    @DisplayName("Deve buscar usuários quando filtros existente")
+    @Order(17)
+    void deveBuscarUsuariosPaginadosComFiltros() throws Exception {
+        String filtro = URL.concat("?page=0&size=5&id=1&nome=Jos&email=jose@email.com&dataCadastro="+LocalDate.now());
+
+        ResultActions resultActions = mockMvc
+                .perform(get(filtro)
+                        .accept(MEDIA_TYPE_JSON));
+
+        resultActions.andExpect(status().isOk());
+        resultActions.andExpect(jsonPath("$.content").exists());
     }
 }
