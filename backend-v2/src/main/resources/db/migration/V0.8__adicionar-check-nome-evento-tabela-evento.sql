@@ -1,0 +1,1 @@
+alter table TB_EVENTO add constraint CK_EVENTO_NOME unique(NOME);

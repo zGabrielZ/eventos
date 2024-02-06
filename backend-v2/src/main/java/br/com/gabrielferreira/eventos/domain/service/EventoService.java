@@ -28,6 +28,8 @@ public class EventoService {
         Usuario usuario = usuarioService.buscarUsuarioPorId(idUsuario);
 
         eventoValidator.validarCampos(evento);
+        eventoValidator.validarNomeEvento(evento.getId(), evento.getNome());
+
         CepIntegrationModel cepIntegrationModel = enderecoService.buscarCep(evento.getCidade().getCep());
         preencherCamposCep(cepIntegrationModel, evento.getCidade());
 
