@@ -9,14 +9,9 @@ import br.com.gabrielferreira.eventos.domain.dao.projection.UsuarioProjection;
 import br.com.gabrielferreira.eventos.domain.model.Usuario;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.Named;
 import org.springframework.data.domain.Page;
 
-import java.time.ZonedDateTime;
-
-import static br.com.gabrielferreira.eventos.common.utils.DataUtils.*;
-
-@Mapper(componentModel = "spring", uses = PerfilMapper.class)
+@Mapper(componentModel = "spring", uses = {PerfilMapper.class, ObjectMapper.class})
 public interface UsuarioMapper {
 
     Usuario toUsuario(UsuarioInputModel usuarioInputModel);
@@ -25,16 +20,15 @@ public interface UsuarioMapper {
     @Mapping(target = "dataAtualizacao", qualifiedByName = "formatData")
     UsuarioModel toUsuarioModel(Usuario usuario);
 
-    @Named("formatData")
-    default ZonedDateTime formatDate(ZonedDateTime data){
-        return toFusoPadraoSistema(data);
-    }
-
     UsuarioFilterModel toUsuarioFilterModel(UsuarioParamsModel usuarioParamsModel);
 
     @Mapping(target = "dataCadastro", qualifiedByName = "formatData")
     @Mapping(target = "dataAtualizacao", qualifiedByName = "formatData")
     UsuarioResumidoModel toUsuarioResumidoModel(UsuarioProjection usuarioProjection);
+
+    @Mapping(target = "dataCadastro", qualifiedByName = "formatData")
+    @Mapping(target = "dataAtualizacao", qualifiedByName = "formatData")
+    UsuarioResumidoModel toUsuarioResumidoModel(Usuario usuario);
 
     default Page<UsuarioResumidoModel> toUsuarioResumidosModels(Page<UsuarioProjection> usuarioProjections){
         return usuarioProjections.map(this::toUsuarioResumidoModel);
