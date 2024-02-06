@@ -32,4 +32,12 @@ public class EventoController {
                 .buildAndExpand(eventoModel.getId()).toUri();
         return ResponseEntity.created(uri).body(eventoModel);
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<EventoModel> buscarEventoPorId(@PathVariable Long idUsuario, @PathVariable Long id){
+        Evento evento = eventoService.buscarEventoPorId(idUsuario, id);
+        EventoModel eventoModel = eventoMapper.toEventoModel(evento);
+
+        return ResponseEntity.ok().body(eventoModel);
+    }
 }

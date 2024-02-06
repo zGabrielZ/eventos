@@ -14,6 +14,8 @@ public class CidadeModel extends CepModel {
     @Serial
     private static final long serialVersionUID = 2651757834786988277L;
 
+    private Long id;
+
     private ZonedDateTime dataCadastro;
 
     private ZonedDateTime dataAtualizacao;

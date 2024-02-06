@@ -15,4 +15,11 @@ public interface EventoRepository extends JpaRepository<Evento, Long> {
     @Query("SELECT e.id as id, e.nome as nome FROM Evento e " +
             "WHERE e.nome = :nome")
     Optional<EventoMinProjection> buscarPorNome(@Param("nome") String nome);
+
+    @Query("SELECT e FROM Evento e " +
+            "JOIN FETCH e.cidade c " +
+            "JOIN FETCH e.usuario u " +
+            "JOIN FETCH u.perfis p " +
+            "WHERE u.id = :idUsuario AND e.id = :id")
+    Optional<Evento> buscarPorId(@Param("idUsuario") Long idUsuario, @Param("id") Long id);
 }

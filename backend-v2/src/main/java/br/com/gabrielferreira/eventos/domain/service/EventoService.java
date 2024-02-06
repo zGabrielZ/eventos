@@ -1,5 +1,6 @@
 package br.com.gabrielferreira.eventos.domain.service;
 
+import br.com.gabrielferreira.eventos.domain.exception.NaoEncontradoException;
 import br.com.gabrielferreira.eventos.domain.model.Cidade;
 import br.com.gabrielferreira.eventos.domain.model.Evento;
 import br.com.gabrielferreira.eventos.domain.model.Usuario;
@@ -36,6 +37,11 @@ public class EventoService {
         evento.setUsuario(usuario);
         evento = eventoRepository.save(evento);
         return evento;
+    }
+
+    public Evento buscarEventoPorId(Long idUsuario, Long id){
+        return eventoRepository.buscarPorId(idUsuario, id)
+                .orElseThrow(() -> new NaoEncontradoException("Evento não encontrado"));
     }
 
     private void preencherCamposCep(CepIntegrationModel cepIntegrationModel, Cidade cidade){

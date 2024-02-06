@@ -35,10 +35,16 @@ class EventoControllerIntegrationTest {
 
     private Long idUsuarioExistente;
 
+    private Long idEventoExistente;
+
+    private Long idEventoInexistente;
+
     @BeforeEach
     void setUp(){
         eventoInput = criarEventoInput();
         idUsuarioExistente = 1L;
+        idEventoExistente = 1L;
+        idEventoInexistente = -1L;
     }
 
     @Test
@@ -85,34 +91,34 @@ class EventoControllerIntegrationTest {
         resultActions.andExpect(jsonPath("$.mensagem").value("Não vai ser possível cadastrar este evento pois o nome 'Feira do Software' já foi cadastrado"));
     }
 
-//    @Test
-//    @DisplayName("Deve buscar evento quando existir")
-//    @Order(2)
-//    void deveBuscarEvento() throws Exception {
-//        ResultActions resultActions = mockMvc
-//                .perform(get(URL.concat("/{id}"), idEventoExistente)
-//                        .accept(MEDIA_TYPE_JSON));
-//
-//        resultActions.andExpect(status().isOk());
-//        resultActions.andExpect(jsonPath("$.id").exists());
-//        resultActions.andExpect(jsonPath("$.nome").exists());
-//        resultActions.andExpect(jsonPath("$.data").exists());
-//        resultActions.andExpect(jsonPath("$.url").exists());
-//        resultActions.andExpect(jsonPath("$.cidade.id").exists());
-//        resultActions.andExpect(jsonPath("$.createdAt").exists());
-//    }
-//
-//    @Test
-//    @DisplayName("Não deve buscar evento quando não existir")
-//    @Order(3)
-//    void naoDeveBuscarEvento() throws Exception {
-//        ResultActions resultActions = mockMvc
-//                .perform(get(URL.concat("/{id}"), idEventoInexistente)
-//                        .accept(MEDIA_TYPE_JSON));
-//
-//        resultActions.andExpect(status().isNotFound());
-//        resultActions.andExpect(jsonPath("$.mensagem").value("Evento não encontrado"));
-//    }
+    @Test
+    @DisplayName("Deve buscar evento quando existir")
+    @Order(3)
+    void deveBuscarEvento() throws Exception {
+        ResultActions resultActions = mockMvc
+                .perform(get(URL.concat("{idUsuario}/eventos/{idEvento}"), idUsuarioExistente, idEventoExistente)
+                        .accept(MEDIA_TYPE_JSON));
+
+        resultActions.andExpect(status().isOk());
+        resultActions.andExpect(jsonPath("$.id").exists());
+        resultActions.andExpect(jsonPath("$.nome").exists());
+        resultActions.andExpect(jsonPath("$.data").exists());
+        resultActions.andExpect(jsonPath("$.url").exists());
+        resultActions.andExpect(jsonPath("$.cidade.id").exists());
+        resultActions.andExpect(jsonPath("$.dataCadastro").exists());
+    }
+
+    @Test
+    @DisplayName("Não deve buscar evento quando não existir")
+    @Order(4)
+    void naoDeveBuscarEvento() throws Exception {
+        ResultActions resultActions = mockMvc
+                .perform(get(URL.concat("{idUsuario}/eventos/{idEvento}"), idUsuarioExistente, idEventoInexistente)
+                        .accept(MEDIA_TYPE_JSON));
+
+        resultActions.andExpect(status().isNotFound());
+        resultActions.andExpect(jsonPath("$.mensagem").value("Evento não encontrado"));
+    }
 //
 //    @Test
 //    @DisplayName("Deve alterar evento quando existir")
