@@ -9,8 +9,6 @@ import static br.com.gabrielferreira.eventos.common.utils.ConstantesUtils.*;
 public class EnderecoValidator {
 
     public void validarCep(String cep){
-        cep = cep.trim();
-
         if(cep.length() != 8){
             throw new RegraDeNegocioException("O cep tem que ter no máximo de 8 caracteres");
         }

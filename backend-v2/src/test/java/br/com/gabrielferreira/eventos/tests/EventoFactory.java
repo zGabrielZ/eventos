@@ -21,4 +21,17 @@ public class EventoFactory {
                 .cidade(cidadeInputModel)
                 .build();
     }
+
+    public static EventoInputModel criarEventoInputAtualizar(){
+        CidadeInputModel cidadeInputModel = CidadeInputModel.builder()
+                .cep("01001000")
+                .build();
+
+        return EventoInputModel.builder()
+                .nome("Teste evento editado")
+                .data(LocalDate.now().plusDays(10L))
+                .url("https://www.youtube.com/")
+                .cidade(cidadeInputModel)
+                .build();
+    }
 }

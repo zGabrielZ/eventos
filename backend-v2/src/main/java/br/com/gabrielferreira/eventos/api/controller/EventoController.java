@@ -40,4 +40,13 @@ public class EventoController {
 
         return ResponseEntity.ok().body(eventoModel);
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<EventoModel> atualizarEventoPorId(@PathVariable Long idUsuario, @PathVariable Long id, @Valid @RequestBody EventoInputModel eventoInputModel){
+        Evento evento = eventoMapper.toEvento(eventoInputModel);
+        Evento eventoAtualizado = eventoService.atualizarEventoPorId(idUsuario, id, evento);
+        EventoModel eventoModel = eventoMapper.toEventoModel(eventoAtualizado);
+
+        return ResponseEntity.ok().body(eventoModel);
+    }
 }

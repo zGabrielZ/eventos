@@ -15,6 +15,7 @@ public class EnderecoService {
     private final EnderecoValidator enderecoValidator;
 
     public CepIntegrationModel buscarCep(String cep){
+        cep = cep.trim();
         enderecoValidator.validarCep(cep);
         CepIntegrationModel cepIntegrationModel = viaCepClient.buscarCep(cep);
         cepIntegrationModel.setCep(cepIntegrationModel.getCep().replaceAll("[^\\d ]", ""));

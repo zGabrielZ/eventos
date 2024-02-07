@@ -39,12 +39,15 @@ class EventoControllerIntegrationTest {
 
     private Long idEventoInexistente;
 
+    private EventoInputModel eventoInputAtualizar;
+
     @BeforeEach
     void setUp(){
         eventoInput = criarEventoInput();
         idUsuarioExistente = 1L;
         idEventoExistente = 1L;
         idEventoInexistente = -1L;
+        eventoInputAtualizar = criarEventoInputAtualizar();
     }
 
     @Test
@@ -119,49 +122,69 @@ class EventoControllerIntegrationTest {
         resultActions.andExpect(status().isNotFound());
         resultActions.andExpect(jsonPath("$.mensagem").value("Evento não encontrado"));
     }
-//
-//    @Test
-//    @DisplayName("Deve alterar evento quando existir")
-//    @Order(4)
-//    void deveAlterarEvento() throws Exception {
-//        String jsonBody = objectMapper.writeValueAsString(eventoUpdateDTO);
-//
-//        Long idEsperado = idEventoExistente;
-//        String nomeEsperado = eventoUpdateDTO.getNome();
-//        String dataEsperado = eventoUpdateDTO.getData().toString();
-//
-//        ResultActions resultActions = mockMvc
-//                .perform(put(URL.concat("/{id}"), idEventoExistente)
-//                        .header("Authorization", "Bearer " + tokenAdmin)
-//                        .content(jsonBody)
-//                        .contentType(MEDIA_TYPE_JSON)
-//                        .accept(MEDIA_TYPE_JSON));
-//
-//        resultActions.andExpect(status().isOk());
-//        resultActions.andExpect(jsonPath("$.id").value(idEsperado));
-//        resultActions.andExpect(jsonPath("$.nome").value(nomeEsperado));
-//        resultActions.andExpect(jsonPath("$.data").value(dataEsperado));
-//        resultActions.andExpect(jsonPath("$.url").exists());
-//        resultActions.andExpect(jsonPath("$.cidade.id").exists());
-//        resultActions.andExpect(jsonPath("$.createdAt").exists());
-//    }
-//
-//    @Test
-//    @DisplayName("Não deve alterar evento quando não existir")
-//    @Order(5)
-//    void naoDeveAlterarEvento() throws Exception {
-//        String jsonBody = objectMapper.writeValueAsString(eventoUpdateDTO);
-//
-//        ResultActions resultActions = mockMvc
-//                .perform(put(URL.concat("/{id}"), idEventoInexistente)
-//                        .header("Authorization", "Bearer " + tokenAdmin)
-//                        .content(jsonBody)
-//                        .contentType(MEDIA_TYPE_JSON)
-//                        .accept(MEDIA_TYPE_JSON));
-//
-//        resultActions.andExpect(status().isNotFound());
-//        resultActions.andExpect(jsonPath("$.mensagem").value("Evento não encontrado"));
-//    }
+
+    @Test
+    @DisplayName("Deve alterar evento quando existir")
+    @Order(5)
+    void deveAlterarEvento() throws Exception {
+        String jsonBody = objectMapper.writeValueAsString(eventoInputAtualizar);
+
+        Long idEsperado = idEventoExistente;
+        String nomeEsperado = eventoInputAtualizar.getNome();
+        String dataEsperado = eventoInputAtualizar.getData().toString();
+        String cepEsperado = eventoInputAtualizar.getCidade().getCep();
+        String bairroEsperado = "Sé";
+
+        ResultActions resultActions = mockMvc
+                .perform(put(URL.concat("{idUsuario}/eventos/{idEvento}"), idUsuarioExistente, idEventoExistente)
+                        .content(jsonBody)
+                        .contentType(MEDIA_TYPE_JSON)
+                        .accept(MEDIA_TYPE_JSON));
+
+        resultActions.andExpect(status().isOk());
+        resultActions.andExpect(jsonPath("$.id").value(idEsperado));
+        resultActions.andExpect(jsonPath("$.nome").value(nomeEsperado));
+        resultActions.andExpect(jsonPath("$.data").value(dataEsperado));
+        resultActions.andExpect(jsonPath("$.url").exists());
+        resultActions.andExpect(jsonPath("$.cidade.id").exists());
+        resultActions.andExpect(jsonPath("$.cidade.cep").value(cepEsperado));
+        resultActions.andExpect(jsonPath("$.cidade.bairro").value(bairroEsperado));
+        resultActions.andExpect(jsonPath("$.dataCadastro").exists());
+    }
+
+    @Test
+    @DisplayName("Não deve alterar evento quando não existir")
+    @Order(6)
+    void naoDeveAlterarEvento() throws Exception {
+        String jsonBody = objectMapper.writeValueAsString(eventoInputAtualizar);
+
+        ResultActions resultActions = mockMvc
+                .perform(put(URL.concat("{idUsuario}/eventos/{idEvento}"), idUsuarioExistente, idEventoInexistente)
+                        .content(jsonBody)
+                        .contentType(MEDIA_TYPE_JSON)
+                        .accept(MEDIA_TYPE_JSON));
+
+        resultActions.andExpect(status().isNotFound());
+        resultActions.andExpect(jsonPath("$.mensagem").value("Evento não encontrado"));
+    }
+
+    @Test
+    @DisplayName("Não deve alterar evento quando informar nome já existente")
+    @Order(7)
+    void naoDeveAlterarEventoQuandoTiverNomeEventoJaExistente() throws Exception {
+        eventoInputAtualizar.setNome("CCXP");
+        String jsonBody = objectMapper.writeValueAsString(eventoInputAtualizar);
+
+        ResultActions resultActions = mockMvc
+                .perform(put(URL.concat("{idUsuario}/eventos/{idEvento}"), idUsuarioExistente, idEventoExistente)
+                        .content(jsonBody)
+                        .contentType(MEDIA_TYPE_JSON)
+                        .accept(MEDIA_TYPE_JSON));
+
+        resultActions.andExpect(status().isBadRequest());
+        resultActions.andExpect(jsonPath("$.titulo").value("Regra de negócio"));
+        resultActions.andExpect(jsonPath("$.mensagem").value("Não vai ser possível cadastrar este evento pois o nome 'CCXP' já foi cadastrado"));
+    }
 //
 //    @Test
 //    @DisplayName("Deve deletar evento quando existir")
@@ -237,24 +260,5 @@ class EventoControllerIntegrationTest {
 //
 //        resultActions.andExpect(status().isOk());
 //        resultActions.andExpect(jsonPath("$.content").exists());
-//    }
-
-//    @Test
-//    @DisplayName("Não deve alterar evento quando informar nome já existente")
-//    @Order(14)
-//    void naoDeveAlterarEventoQuandoTiverNomeEventoJaExistente() throws Exception {
-//        eventoUpdateDTO.setNome("CCXP");
-//        String jsonBody = objectMapper.writeValueAsString(eventoUpdateDTO);
-//
-//        ResultActions resultActions = mockMvc
-//                .perform(put(URL.concat("/{id}"), idEventoExistente)
-//                        .header("Authorization", "Bearer " + tokenAdmin)
-//                        .content(jsonBody)
-//                        .contentType(MEDIA_TYPE_JSON)
-//                        .accept(MEDIA_TYPE_JSON));
-//
-//        resultActions.andExpect(status().isBadRequest());
-//        resultActions.andExpect(jsonPath("$.erro").value("Erro personalizado"));
-//        resultActions.andExpect(jsonPath("$.mensagem").value("Não vai ser possível atualizar este evento pois o nome 'CCXP' já foi cadastrado"));
 //    }
 }

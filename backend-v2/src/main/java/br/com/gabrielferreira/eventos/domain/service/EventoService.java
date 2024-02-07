@@ -44,6 +44,19 @@ public class EventoService {
                 .orElseThrow(() -> new NaoEncontradoException("Evento não encontrado"));
     }
 
+    @Transactional
+    public Evento atualizarEventoPorId(Long idUsuario, Long id, Evento evento){
+        Evento eventoEncontrado = buscarEventoPorId(idUsuario, id);
+
+        eventoValidator.validarCampos(evento);
+        eventoValidator.validarNomeEvento(eventoEncontrado.getId(), evento.getNome());
+
+        preencherCamposEvento(eventoEncontrado, evento);
+
+        eventoEncontrado = eventoRepository.save(eventoEncontrado);
+        return eventoEncontrado;
+    }
+
     private void preencherCamposCep(CepIntegrationModel cepIntegrationModel, Cidade cidade){
         cidade.setLogradouro(cepIntegrationModel.getLogradouro());
         cidade.setComplemento(StringUtils.isNotBlank(cidade.getComplemento()) ? cidade.getComplemento() : cepIntegrationModel.getComplemento());
@@ -54,5 +67,31 @@ public class EventoService {
         cidade.setGia(cepIntegrationModel.getGia());
         cidade.setDdd(cepIntegrationModel.getDdd());
         cidade.setSiafi(cepIntegrationModel.getSiafi());
+    }
+
+    private void preencherCamposEvento(Evento eventoEncontrado, Evento evento){
+        eventoEncontrado.setNome(evento.getNome());
+        eventoEncontrado.setDataEvento(evento.getDataEvento());
+        eventoEncontrado.setUrl(evento.getUrl());
+        eventoEncontrado.getCidade().setComplemento(StringUtils.isNotBlank(evento.getCidade().getComplemento()) ? evento.getCidade().getComplemento() : eventoEncontrado.getCidade().getComplemento());
+
+        if(!eventoEncontrado.getCidade().getCep().equals(evento.getCidade().getCep())){
+            CepIntegrationModel cepIntegrationModel = enderecoService.buscarCep(evento.getCidade().getCep());
+            preencherCamposCep(cepIntegrationModel, evento.getCidade());
+            preencherCamposCidade(eventoEncontrado.getCidade(), evento.getCidade());
+        }
+    }
+
+    private void preencherCamposCidade(Cidade cidadeEncontrado, Cidade cidade){
+        cidadeEncontrado.setCep(cidade.getCep());
+        cidadeEncontrado.setLogradouro(cidade.getLogradouro());
+        cidadeEncontrado.setComplemento(cidade.getComplemento());
+        cidadeEncontrado.setBairro(cidade.getBairro());
+        cidadeEncontrado.setLocalidade(cidade.getLocalidade());
+        cidadeEncontrado.setUf(cidade.getUf());
+        cidadeEncontrado.setIbge(cidade.getIbge());
+        cidadeEncontrado.setGia(cidade.getGia());
+        cidadeEncontrado.setDdd(cidade.getDdd());
+        cidadeEncontrado.setSiafi(cidade.getSiafi());
     }
 }
