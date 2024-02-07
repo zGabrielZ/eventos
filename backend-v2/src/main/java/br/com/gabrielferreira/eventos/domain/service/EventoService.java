@@ -57,6 +57,12 @@ public class EventoService {
         return eventoEncontrado;
     }
 
+    @Transactional
+    public void deletarEventoPorId(Long idUsuario, Long id){
+        Evento eventoEncontrado = buscarEventoPorId(idUsuario, id);
+        eventoRepository.delete(eventoEncontrado);
+    }
+
     private void preencherCamposCep(CepIntegrationModel cepIntegrationModel, Cidade cidade){
         cidade.setLogradouro(cepIntegrationModel.getLogradouro());
         cidade.setComplemento(StringUtils.isNotBlank(cidade.getComplemento()) ? cidade.getComplemento() : cepIntegrationModel.getComplemento());

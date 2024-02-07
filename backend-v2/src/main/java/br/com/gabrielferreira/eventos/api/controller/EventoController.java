@@ -49,4 +49,10 @@ public class EventoController {
 
         return ResponseEntity.ok().body(eventoModel);
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deletarEventoPorId(@PathVariable Long idUsuario, @PathVariable Long id){
+        eventoService.deletarEventoPorId(idUsuario, id);
+        return ResponseEntity.noContent().build();
+    }
 }

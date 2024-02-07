@@ -185,31 +185,29 @@ class EventoControllerIntegrationTest {
         resultActions.andExpect(jsonPath("$.titulo").value("Regra de negócio"));
         resultActions.andExpect(jsonPath("$.mensagem").value("Não vai ser possível cadastrar este evento pois o nome 'CCXP' já foi cadastrado"));
     }
-//
-//    @Test
-//    @DisplayName("Deve deletar evento quando existir")
-//    @Order(6)
-//    void deveDeletarEvento() throws Exception {
-//        ResultActions resultActions = mockMvc
-//                .perform(delete(URL.concat("/{id}"), idEventoExistente)
-//                        .header("Authorization", "Bearer " + tokenAdmin)
-//                        .accept(MEDIA_TYPE_JSON));
-//
-//        resultActions.andExpect(status().isNoContent());
-//    }
-//
-//    @Test
-//    @DisplayName("Não deve deletar evento quando não existir")
-//    @Order(7)
-//    void naoDeveDeletarEvento() throws Exception {
-//        ResultActions resultActions = mockMvc
-//                .perform(delete(URL.concat("/{id}"), idEventoInexistente)
-//                        .header("Authorization", "Bearer " + tokenAdmin)
-//                        .accept(MEDIA_TYPE_JSON));
-//
-//        resultActions.andExpect(status().isNotFound());
-//        resultActions.andExpect(jsonPath("$.mensagem").value("Evento não encontrado"));
-//    }
+
+    @Test
+    @DisplayName("Deve deletar evento quando existir")
+    @Order(8)
+    void deveDeletarEvento() throws Exception {
+        ResultActions resultActions = mockMvc
+                .perform(delete(URL.concat("{idUsuario}/eventos/{idEvento}"), idUsuarioExistente, idEventoExistente)
+                        .accept(MEDIA_TYPE_JSON));
+
+        resultActions.andExpect(status().isNoContent());
+    }
+
+    @Test
+    @DisplayName("Não deve deletar evento quando não existir")
+    @Order(9)
+    void naoDeveDeletarEvento() throws Exception {
+        ResultActions resultActions = mockMvc
+                .perform(delete(URL.concat("{idUsuario}/eventos/{idEvento}"), idUsuarioExistente, idEventoInexistente)
+                        .accept(MEDIA_TYPE_JSON));
+
+        resultActions.andExpect(status().isNotFound());
+        resultActions.andExpect(jsonPath("$.mensagem").value("Evento não encontrado"));
+    }
 //
 //    @Test
 //    @DisplayName("Deve buscar eventos paginados quando existir")
