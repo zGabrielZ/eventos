@@ -11,6 +11,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+
 import static br.com.gabrielferreira.eventos.tests.EventoFactory.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -208,55 +210,49 @@ class EventoControllerIntegrationTest {
         resultActions.andExpect(status().isNotFound());
         resultActions.andExpect(jsonPath("$.mensagem").value("Evento não encontrado"));
     }
-//
-//    @Test
-//    @DisplayName("Deve buscar eventos paginados quando existir")
-//    @Order(8)
-//    void deveBuscarEventosPaginados() throws Exception {
-//        ResultActions resultActions = mockMvc
-//                .perform(get(URL.concat("?page=0&size=5&sort=id,desc"))
-//                        .accept(MEDIA_TYPE_JSON));
-//
-//        resultActions.andExpect(status().isOk());
-//        resultActions.andExpect(jsonPath("$.content").exists());
-//    }
-//
-//    @Test
-//    @DisplayName("Não deve buscar eventos paginados quando informar propriedade incorreta")
-//    @Order(9)
-//    void naoDeveBuscarEventosPaginadosQuandoInformarPropriedadesIncorreta() throws Exception {
-//        ResultActions resultActions = mockMvc
-//                .perform(get(URL.concat("?page=0&size=5&sort=iddd,desc"))
-//                        .accept(MEDIA_TYPE_JSON));
-//
-//        resultActions.andExpect(status().isBadRequest());
-//        resultActions.andExpect(jsonPath("$.mensagem").value("A propriedade informada 'iddd' não existe"));
-//    }
-//
-//    @Test
-//    @DisplayName("Deve buscar eventos paginados quando informar propriedade diferente do dto com a entidade")
-//    @Order(10)
-//    void deveBuscarEventosPaginadosPropriedadeDiferente() throws Exception {
-//        ResultActions resultActions = mockMvc
-//                .perform(get(URL.concat("?page=0&size=5&sort=data,desc"))
-//                        .accept(MEDIA_TYPE_JSON));
-//
-//        resultActions.andExpect(status().isOk());
-//        resultActions.andExpect(jsonPath("$.content").exists());
-//    }
-//
-//    @Test
-//    @DisplayName("Deve buscar eventos avançados paginados quando existir")
-//    @Order(11)
-//    void deveBuscarEventosAvancadosPaginados() throws Exception {
-//        String filtro = "/avancada?page=0&size=5&sort=id,desc&id=4&nome=Semana&data=2021-05-03" +
-//                "&url=https://devsuperior.com.br&idCidade=3&createdAt=2023-09-26&updatedAt=";
-//
-//        ResultActions resultActions = mockMvc
-//                .perform(get(URL.concat(filtro))
-//                        .accept(MEDIA_TYPE_JSON));
-//
-//        resultActions.andExpect(status().isOk());
-//        resultActions.andExpect(jsonPath("$.content").exists());
-//    }
+
+    @Test
+    @DisplayName("Deve buscar eventos paginados quando existir")
+    @Order(10)
+    void deveBuscarEventosPaginados() throws Exception {
+        String filtro = URL.concat("1/eventos?page=0&size=5")
+                .concat("&sort=id,desc&sort=nome,desc&sort=data,desc&sort=url,desc&sort=dataCadastro,desc&sort=dataAtualizacao,desc")
+                .concat("&sort=cidade.cep,desc&sort=cidade.logradouro,desc&sort=cidade.complemento,desc&sort=cidade.bairro,desc")
+                .concat("&sort=cidade.localidade,desc&sort=cidade.uf,desc&sort=cidade.id,desc&sort=cidade.dataCadastro,desc")
+                .concat("&sort=cidade.dataAtualizacao,desc");
+        ResultActions resultActions = mockMvc
+                .perform(get(filtro)
+                        .accept(MEDIA_TYPE_JSON));
+
+        resultActions.andExpect(status().isOk());
+        resultActions.andExpect(jsonPath("$.content").exists());
+    }
+
+    @Test
+    @DisplayName("Deve buscar eventos paginados quando existir filtros")
+    @Order(11)
+    void deveBuscarEventosPaginadosComFiltros() throws Exception {
+        String filtro = URL.concat("1/eventos?page=0&size=5")
+                .concat("id=1&nome=Feira&data=2024-05-16&url=https://feiradosoftware.com&dataCadastro=").concat(LocalDate.now().toString())
+                .concat("&localidade=São Paulo&uf=SP");
+        ResultActions resultActions = mockMvc
+                .perform(get(filtro)
+                        .accept(MEDIA_TYPE_JSON));
+
+        resultActions.andExpect(status().isOk());
+        resultActions.andExpect(jsonPath("$.content").exists());
+    }
+
+    @Test
+    @DisplayName("Não deve buscar eventos paginados quando não existir usuário")
+    @Order(12)
+    void naoDeveBuscarEventosPaginados() throws Exception {
+        String filtro = URL.concat("-1/eventos?page=0&size=5");
+        ResultActions resultActions = mockMvc
+                .perform(get(filtro)
+                        .accept(MEDIA_TYPE_JSON));
+
+        resultActions.andExpect(status().isNotFound());
+        resultActions.andExpect(jsonPath("$.mensagem").value("Usuário não encontrado"));
+    }
 }
