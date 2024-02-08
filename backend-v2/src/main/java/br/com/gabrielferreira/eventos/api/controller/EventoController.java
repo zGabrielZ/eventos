@@ -2,11 +2,19 @@ package br.com.gabrielferreira.eventos.api.controller;
 
 import br.com.gabrielferreira.eventos.api.mapper.EventoMapper;
 import br.com.gabrielferreira.eventos.api.model.EventoModel;
+import br.com.gabrielferreira.eventos.api.model.EventoResumidoModel;
 import br.com.gabrielferreira.eventos.api.model.input.EventoInputModel;
+import br.com.gabrielferreira.eventos.api.model.params.EventoParamsModel;
+import br.com.gabrielferreira.eventos.domain.dao.filter.EventoFilterModel;
+import br.com.gabrielferreira.eventos.domain.dao.projection.EventoProjection;
 import br.com.gabrielferreira.eventos.domain.model.Evento;
+import br.com.gabrielferreira.eventos.domain.service.ConsultaEventoService;
 import br.com.gabrielferreira.eventos.domain.service.EventoService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -19,6 +27,8 @@ import java.net.URI;
 public class EventoController {
 
     private final EventoService eventoService;
+
+    private final ConsultaEventoService consultaEventoService;
 
     private final EventoMapper eventoMapper;
 
@@ -54,5 +64,14 @@ public class EventoController {
     public ResponseEntity<Void> deletarEventoPorId(@PathVariable Long idUsuario, @PathVariable Long id){
         eventoService.deletarEventoPorId(idUsuario, id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping
+    public ResponseEntity<Page<EventoResumidoModel>> buscarEventosPaginados(@PathVariable Long idUsuario, @PageableDefault(size = 5) Pageable pageable, @Valid EventoParamsModel params){
+        EventoFilterModel eventoFilterModel = eventoMapper.toEventoFilterModel(params);
+        Page<EventoProjection> eventoProjections = consultaEventoService.buscarEventosPaginados(idUsuario, pageable, eventoFilterModel);
+        Page<EventoResumidoModel> eventoResumidoModels = eventoMapper.toEventosResumidosModels(eventoProjections);
+
+        return ResponseEntity.ok().body(eventoResumidoModels);
     }
 }
