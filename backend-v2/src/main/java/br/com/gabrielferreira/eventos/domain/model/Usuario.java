@@ -2,11 +2,14 @@ package br.com.gabrielferreira.eventos.domain.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.io.Serial;
 import java.io.Serializable;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import static br.com.gabrielferreira.eventos.common.utils.DataUtils.*;
@@ -19,7 +22,7 @@ import static br.com.gabrielferreira.eventos.common.utils.DataUtils.*;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Entity
 @Table(name = "TB_USUARIO")
-public class Usuario implements Serializable {
+public class Usuario implements Serializable, UserDetails {
 
     @Serial
     private static final long serialVersionUID = 124441226725634777L;
@@ -61,5 +64,40 @@ public class Usuario implements Serializable {
     @PreUpdate
     public void preUpdate(){
         dataAtualizacao = ZonedDateTime.now(UTC);
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return this.perfis;
+    }
+
+    @Override
+    public String getPassword() {
+        return this.senha;
+    }
+
+    @Override
+    public String getUsername() {
+        return this.email;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
     }
 }

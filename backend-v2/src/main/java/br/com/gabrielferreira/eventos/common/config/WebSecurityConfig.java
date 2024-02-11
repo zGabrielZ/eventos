@@ -1,7 +1,10 @@
 package br.com.gabrielferreira.eventos.common.config;
 
+import br.com.gabrielferreira.eventos.domain.service.security.UsuarioAutenticacaoService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -12,11 +15,13 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class WebSecurityConfig {
+
+    private final UsuarioAutenticacaoService usuarioAutenticacaoService;
 
     // Config senha criptografada
     @Bean
@@ -39,11 +44,13 @@ public class WebSecurityConfig {
 
     //Config seguranca
     @Bean
-    protected SecurityFilterChain securityFilterChain(HttpSecurity http, HandlerMappingIntrospector introspector) throws Exception {
+    protected SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Não é para criar sessão
                 .csrf(AbstractHttpConfigurer::disable) // Desabilitar o csrf
-                .authorizeHttpRequests(auth -> auth.anyRequest().permitAll()) // Todos endpoints expostos
+                .authenticationProvider(new AppAuthenticationProvider(usuarioAutenticacaoService, passwordEncoder()))
+                .authorizeHttpRequests(auth -> auth.requestMatchers(HttpMethod.POST, "/login/**").permitAll()
+                        .anyRequest().authenticated()) // Endpoins permissão
                 .build();
     }
 }

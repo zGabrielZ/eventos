@@ -2,6 +2,7 @@ package br.com.gabrielferreira.eventos.domain.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.security.core.GrantedAuthority;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -16,7 +17,7 @@ import java.util.List;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Entity
 @Table(name = "TB_PERFIL")
-public class Perfil implements Serializable {
+public class Perfil implements Serializable, GrantedAuthority {
 
     @Serial
     private static final long serialVersionUID = 124441226725634777L;
@@ -41,5 +42,10 @@ public class Perfil implements Serializable {
 
     public boolean isNaoContemPerfil(List<Perfil> perfis){
         return !isContemPerfil(perfis);
+    }
+
+    @Override
+    public String getAuthority() {
+        return this.descricao;
     }
 }
