@@ -3,7 +3,9 @@ package br.com.gabrielferreira.eventos.api.controller;
 import br.com.gabrielferreira.eventos.api.mapper.LoginMapper;
 import br.com.gabrielferreira.eventos.api.model.LoginModel;
 import br.com.gabrielferreira.eventos.api.model.input.LoginInputModel;
+import br.com.gabrielferreira.eventos.domain.model.Usuario;
 import br.com.gabrielferreira.eventos.domain.service.security.TokenService;
+import br.com.gabrielferreira.eventos.domain.service.security.UsuarioAutenticacaoService;
 import br.com.gabrielferreira.eventos.domain.service.security.model.InformacoesTokenModel;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +27,8 @@ public class LoginController {
 
     private final TokenService tokenService;
 
+    private final UsuarioAutenticacaoService usuarioAutenticacaoService;
+
     private final LoginMapper loginMapper;
 
     @PostMapping
@@ -32,7 +36,16 @@ public class LoginController {
         UsernamePasswordAuthenticationToken dadosLogin = new UsernamePasswordAuthenticationToken(loginInputModel.getEmail(), loginInputModel.getSenha());
         Authentication authentication =  authenticationManager.authenticate(dadosLogin);
 
-        InformacoesTokenModel informacoesTokenModel = tokenService.gerarLoginToken(authentication);
+        InformacoesTokenModel informacoesTokenModel = tokenService.gerarLoginToken((Usuario) authentication.getPrincipal());
+        LoginModel loginModel = loginMapper.toLoginModel(informacoesTokenModel);
+        return ResponseEntity.ok(loginModel);
+    }
+
+    @PostMapping("/refresh-token")
+    public ResponseEntity<LoginModel> refreshToken(){
+        Usuario usuario = usuarioAutenticacaoService.usuarioAutenticado();
+
+        InformacoesTokenModel informacoesTokenModel = tokenService.gerarLoginToken(usuario);
         LoginModel loginModel = loginMapper.toLoginModel(informacoesTokenModel);
         return ResponseEntity.ok(loginModel);
     }

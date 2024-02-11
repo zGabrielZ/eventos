@@ -3,6 +3,7 @@ package br.com.gabrielferreira.eventos.api.exceptionhandler;
 import br.com.gabrielferreira.eventos.api.mapper.ErroPadraoMapper;
 import br.com.gabrielferreira.eventos.domain.exception.NaoEncontradoException;
 import br.com.gabrielferreira.eventos.domain.exception.RegraDeNegocioException;
+import br.com.gabrielferreira.eventos.domain.exception.UnauthorizedException;
 import br.com.gabrielferreira.eventos.domain.exception.model.ErroPadraoCamposModel;
 import br.com.gabrielferreira.eventos.domain.exception.model.ErroPadraoFormularioModel;
 import br.com.gabrielferreira.eventos.domain.exception.model.ErroPadraoModel;
@@ -62,6 +63,13 @@ public class ApiExceptionHandler {
         log.error(e.getMessage(), e);
         HttpStatus httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
         ErroPadraoModel erroPadraoModel = erroPadraoMapper.toErroPadrao(toFusoPadraoSistema(ZonedDateTime.now()), httpStatus.value(), "Erro inesperado", "Ocorreu um erro inesperado no sistema, tente mais tarde", request.getRequestURI());
+        return ResponseEntity.status(httpStatus).body(erroPadraoModel);
+    }
+
+    @ExceptionHandler(UnauthorizedException.class)
+    public ResponseEntity<ErroPadraoModel> unauthorizedException(UnauthorizedException e, HttpServletRequest request){
+        HttpStatus httpStatus = HttpStatus.UNAUTHORIZED;
+        ErroPadraoModel erroPadraoModel = erroPadraoMapper.toErroPadrao(toFusoPadraoSistema(ZonedDateTime.now()), httpStatus.value(), "Não autorizado", e.getMessage(), request.getRequestURI());
         return ResponseEntity.status(httpStatus).body(erroPadraoModel);
     }
 }

@@ -7,7 +7,6 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
@@ -31,8 +30,8 @@ public class TokenService {
         this.expiracao = expiracao;
     }
 
-    public InformacoesTokenModel gerarLoginToken(Authentication authentication){
-        String token = gerarToken(authentication);
+    public InformacoesTokenModel gerarLoginToken(Usuario usuario){
+        String token = gerarToken(usuario);
 
         if(isTokenValido(token)){
             Claims claims = extrairTodoClaims(token);
@@ -55,11 +54,10 @@ public class TokenService {
         }
     }
 
-    private String gerarToken(Authentication authentication){
+    private String gerarToken(Usuario usuario){
         SecretKey secretKey = getSecret();
         ZonedDateTime dataAtual = ZonedDateTime.now(UTC);
         ZonedDateTime dataExpiracao = dataAtual.plus(Duration.ofMillis(Long.parseLong(expiracao)));
-        Usuario usuario = (Usuario) authentication.getPrincipal();
 
         return Jwts.builder()
                 .issuer("API Evento")
