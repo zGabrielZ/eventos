@@ -1,5 +1,6 @@
 package br.com.gabrielferreira.eventos.common.config;
 
+import br.com.gabrielferreira.eventos.domain.service.security.TokenService;
 import br.com.gabrielferreira.eventos.domain.service.security.UsuarioAutenticacaoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -14,6 +15,7 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
@@ -22,6 +24,8 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 public class WebSecurityConfig {
 
     private final UsuarioAutenticacaoService usuarioAutenticacaoService;
+
+    private final TokenService tokenService;
 
     // Config senha criptografada
     @Bean
@@ -48,6 +52,7 @@ public class WebSecurityConfig {
         return http
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Não é para criar sessão
                 .csrf(AbstractHttpConfigurer::disable) // Desabilitar o csrf
+                .addFilterBefore(new JWTValidatorTokenFilter(tokenService, usuarioAutenticacaoService), UsernamePasswordAuthenticationFilter.class) // Verificar se o token está valido cada requisição
                 .authenticationProvider(new AppAuthenticationProvider(usuarioAutenticacaoService, passwordEncoder()))
                 .authorizeHttpRequests(auth -> auth.requestMatchers(HttpMethod.POST, "/login/**").permitAll()
                         .anyRequest().authenticated()) // Endpoins permissão
