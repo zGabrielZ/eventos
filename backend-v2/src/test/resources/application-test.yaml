@@ -17,3 +17,7 @@ spring:
 
 via:
   cep: https://viacep.com.br/ws/
+
+jwt:
+  secret: Q4>TJUgrS_d$,N)DW}Y<CvAEng'+5/4tz@P%#3xUehC)EKkZx7?KsY6yRbv{,`ADTQs;t@='~%Re3yW2
+  expiration: 3600000
