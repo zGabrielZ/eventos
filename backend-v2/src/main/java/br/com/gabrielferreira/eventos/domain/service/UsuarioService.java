@@ -6,6 +6,7 @@ import br.com.gabrielferreira.eventos.domain.model.Usuario;
 import br.com.gabrielferreira.eventos.domain.repository.UsuarioRepository;
 import br.com.gabrielferreira.eventos.domain.service.validator.UsuarioValidator;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,6 +20,8 @@ public class UsuarioService {
 
     private final UsuarioValidator usuarioValidator;
 
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
+
     @Transactional
     public Usuario cadastrarUsuario(Usuario usuario){
         usuarioValidator.validarCampos(usuario);
@@ -26,6 +29,7 @@ public class UsuarioService {
         usuarioValidator.validarEmail(null, usuario.getEmail());
         usuarioValidator.validarPerfil(usuario.getPerfis());
 
+        usuario.setSenha(bCryptPasswordEncoder.encode(usuario.getSenha()));
         usuario = usuarioRepository.save(usuario);
         return usuario;
     }
@@ -67,7 +71,7 @@ public class UsuarioService {
     private void preencherCamposUsuario(Usuario usuarioEncontrado, Usuario usuario){
         usuarioEncontrado.setNome(usuario.getNome());
         usuarioEncontrado.setEmail(usuario.getEmail());
-        usuarioEncontrado.setSenha(usuario.getSenha());
+        usuarioEncontrado.setSenha(bCryptPasswordEncoder.encode(usuario.getSenha()));
 
         removerPerfisNaoExistentes(usuarioEncontrado.getPerfis(), usuario.getPerfis());
         incluirNovosPerfis(usuarioEncontrado.getPerfis(), usuario.getPerfis());
