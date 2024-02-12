@@ -7,6 +7,7 @@ import br.com.gabrielferreira.eventos.domain.exception.NaoEncontradoException;
 import br.com.gabrielferreira.eventos.domain.model.QCidade;
 import br.com.gabrielferreira.eventos.domain.model.QEvento;
 import br.com.gabrielferreira.eventos.domain.model.QUsuario;
+import br.com.gabrielferreira.eventos.domain.service.security.UsuarioAutenticacaoService;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
@@ -35,7 +36,10 @@ public class ConsultaEventoService {
 
     private final UsuarioService usuarioService;
 
+    private final UsuarioAutenticacaoService usuarioAutenticacaoService;
+
     public Page<EventoProjection> buscarEventosPaginados(Long idUsuario, Pageable pageable, EventoFilterModel filtro){
+        usuarioAutenticacaoService.validarAdminOuProprioUsuario(idUsuario);
         if(usuarioService.isUsuarioNaoExistente(idUsuario)){
             throw new NaoEncontradoException("Usuário não encontrado");
         }

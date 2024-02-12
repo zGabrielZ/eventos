@@ -5,6 +5,7 @@ import br.com.gabrielferreira.eventos.domain.model.Cidade;
 import br.com.gabrielferreira.eventos.domain.model.Evento;
 import br.com.gabrielferreira.eventos.domain.model.Usuario;
 import br.com.gabrielferreira.eventos.domain.repository.EventoRepository;
+import br.com.gabrielferreira.eventos.domain.service.security.UsuarioAutenticacaoService;
 import br.com.gabrielferreira.eventos.domain.service.validator.EventoValidator;
 import br.com.gabrielferreira.eventos.integration.model.CepIntegrationModel;
 import lombok.RequiredArgsConstructor;
@@ -24,8 +25,11 @@ public class EventoService {
 
     private final UsuarioService usuarioService;
 
+    private final UsuarioAutenticacaoService usuarioAutenticacaoService;
+
     @Transactional
     public Evento cadastrarEvento(Long idUsuario, Evento evento){
+        usuarioAutenticacaoService.validarAdminOuProprioUsuario(idUsuario);
         Usuario usuario = usuarioService.buscarUsuarioPorId(idUsuario);
 
         eventoValidator.validarCampos(evento);
@@ -40,12 +44,14 @@ public class EventoService {
     }
 
     public Evento buscarEventoPorId(Long idUsuario, Long id){
+        usuarioAutenticacaoService.validarAdminOuProprioUsuario(idUsuario);
         return eventoRepository.buscarPorId(idUsuario, id)
                 .orElseThrow(() -> new NaoEncontradoException("Evento não encontrado"));
     }
 
     @Transactional
     public Evento atualizarEventoPorId(Long idUsuario, Long id, Evento evento){
+        usuarioAutenticacaoService.validarAdminOuProprioUsuario(idUsuario);
         Evento eventoEncontrado = buscarEventoPorId(idUsuario, id);
 
         eventoValidator.validarCampos(evento);
@@ -59,6 +65,7 @@ public class EventoService {
 
     @Transactional
     public void deletarEventoPorId(Long idUsuario, Long id){
+        usuarioAutenticacaoService.validarAdminOuProprioUsuario(idUsuario);
         Evento eventoEncontrado = buscarEventoPorId(idUsuario, id);
         eventoRepository.delete(eventoEncontrado);
     }

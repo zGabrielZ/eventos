@@ -1,6 +1,7 @@
 package br.com.gabrielferreira.eventos.api.controller;
 
 import br.com.gabrielferreira.eventos.api.model.input.EventoInputModel;
+import br.com.gabrielferreira.eventos.utils.TokenUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,12 +27,17 @@ class EventoControllerIntegrationTest {
 
     private static final String URL = "/usuarios/";
     private static final MediaType MEDIA_TYPE_JSON = MediaType.APPLICATION_JSON;
+    private static final String AUTHORIZATION = "Authorization";
+    private static final String BEARER = "Bearer ";
 
     @Autowired
     protected MockMvc mockMvc;
 
     @Autowired
     protected ObjectMapper objectMapper;
+
+    @Autowired
+    protected TokenUtils tokenUtils;
 
     private EventoInputModel eventoInput;
 
@@ -43,6 +49,8 @@ class EventoControllerIntegrationTest {
 
     private EventoInputModel eventoInputAtualizar;
 
+    private String tokenAdmin;
+
     @BeforeEach
     void setUp(){
         eventoInput = criarEventoInput();
@@ -50,6 +58,7 @@ class EventoControllerIntegrationTest {
         idEventoExistente = 1L;
         idEventoInexistente = -1L;
         eventoInputAtualizar = criarEventoInputAtualizar();
+        tokenAdmin = tokenUtils.gerarToken(mockMvc, "jose@email.com", "123");
     }
 
     @Test
@@ -65,6 +74,7 @@ class EventoControllerIntegrationTest {
 
         ResultActions resultActions = mockMvc
                 .perform(post(URL.concat("{idUsuario}/eventos"), idUsuarioExistente)
+                        .header(AUTHORIZATION, BEARER + tokenAdmin)
                         .content(jsonBody)
                         .contentType(MEDIA_TYPE_JSON)
                         .accept(MEDIA_TYPE_JSON));
@@ -87,6 +97,7 @@ class EventoControllerIntegrationTest {
 
         ResultActions resultActions = mockMvc
                 .perform(post(URL.concat("{idUsuario}/eventos"), idUsuarioExistente)
+                        .header(AUTHORIZATION, BEARER + tokenAdmin)
                         .content(jsonBody)
                         .contentType(MEDIA_TYPE_JSON)
                         .accept(MEDIA_TYPE_JSON));
@@ -102,6 +113,7 @@ class EventoControllerIntegrationTest {
     void deveBuscarEvento() throws Exception {
         ResultActions resultActions = mockMvc
                 .perform(get(URL.concat("{idUsuario}/eventos/{idEvento}"), idUsuarioExistente, idEventoExistente)
+                        .header(AUTHORIZATION, BEARER + tokenAdmin)
                         .accept(MEDIA_TYPE_JSON));
 
         resultActions.andExpect(status().isOk());
@@ -119,6 +131,7 @@ class EventoControllerIntegrationTest {
     void naoDeveBuscarEvento() throws Exception {
         ResultActions resultActions = mockMvc
                 .perform(get(URL.concat("{idUsuario}/eventos/{idEvento}"), idUsuarioExistente, idEventoInexistente)
+                        .header(AUTHORIZATION, BEARER + tokenAdmin)
                         .accept(MEDIA_TYPE_JSON));
 
         resultActions.andExpect(status().isNotFound());
@@ -139,6 +152,7 @@ class EventoControllerIntegrationTest {
 
         ResultActions resultActions = mockMvc
                 .perform(put(URL.concat("{idUsuario}/eventos/{idEvento}"), idUsuarioExistente, idEventoExistente)
+                        .header(AUTHORIZATION, BEARER + tokenAdmin)
                         .content(jsonBody)
                         .contentType(MEDIA_TYPE_JSON)
                         .accept(MEDIA_TYPE_JSON));
@@ -162,6 +176,7 @@ class EventoControllerIntegrationTest {
 
         ResultActions resultActions = mockMvc
                 .perform(put(URL.concat("{idUsuario}/eventos/{idEvento}"), idUsuarioExistente, idEventoInexistente)
+                        .header(AUTHORIZATION, BEARER + tokenAdmin)
                         .content(jsonBody)
                         .contentType(MEDIA_TYPE_JSON)
                         .accept(MEDIA_TYPE_JSON));
@@ -179,6 +194,7 @@ class EventoControllerIntegrationTest {
 
         ResultActions resultActions = mockMvc
                 .perform(put(URL.concat("{idUsuario}/eventos/{idEvento}"), idUsuarioExistente, idEventoExistente)
+                        .header(AUTHORIZATION, BEARER + tokenAdmin)
                         .content(jsonBody)
                         .contentType(MEDIA_TYPE_JSON)
                         .accept(MEDIA_TYPE_JSON));
@@ -194,6 +210,7 @@ class EventoControllerIntegrationTest {
     void deveDeletarEvento() throws Exception {
         ResultActions resultActions = mockMvc
                 .perform(delete(URL.concat("{idUsuario}/eventos/{idEvento}"), idUsuarioExistente, idEventoExistente)
+                        .header(AUTHORIZATION, BEARER + tokenAdmin)
                         .accept(MEDIA_TYPE_JSON));
 
         resultActions.andExpect(status().isNoContent());
@@ -205,6 +222,7 @@ class EventoControllerIntegrationTest {
     void naoDeveDeletarEvento() throws Exception {
         ResultActions resultActions = mockMvc
                 .perform(delete(URL.concat("{idUsuario}/eventos/{idEvento}"), idUsuarioExistente, idEventoInexistente)
+                        .header(AUTHORIZATION, BEARER + tokenAdmin)
                         .accept(MEDIA_TYPE_JSON));
 
         resultActions.andExpect(status().isNotFound());
@@ -222,6 +240,7 @@ class EventoControllerIntegrationTest {
                 .concat("&sort=cidade.dataAtualizacao,desc");
         ResultActions resultActions = mockMvc
                 .perform(get(filtro)
+                        .header(AUTHORIZATION, BEARER + tokenAdmin)
                         .accept(MEDIA_TYPE_JSON));
 
         resultActions.andExpect(status().isOk());
@@ -237,6 +256,7 @@ class EventoControllerIntegrationTest {
                 .concat("&localidade=São Paulo&uf=SP");
         ResultActions resultActions = mockMvc
                 .perform(get(filtro)
+                        .header(AUTHORIZATION, BEARER + tokenAdmin)
                         .accept(MEDIA_TYPE_JSON));
 
         resultActions.andExpect(status().isOk());
@@ -250,6 +270,7 @@ class EventoControllerIntegrationTest {
         String filtro = URL.concat("-1/eventos?page=0&size=5");
         ResultActions resultActions = mockMvc
                 .perform(get(filtro)
+                        .header(AUTHORIZATION, BEARER + tokenAdmin)
                         .accept(MEDIA_TYPE_JSON));
 
         resultActions.andExpect(status().isNotFound());
