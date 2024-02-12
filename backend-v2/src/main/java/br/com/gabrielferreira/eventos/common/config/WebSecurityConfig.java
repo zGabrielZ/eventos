@@ -1,7 +1,11 @@
 package br.com.gabrielferreira.eventos.common.config;
 
+import br.com.gabrielferreira.eventos.api.exceptionhandler.ApiExceptionHandlerForbidden;
+import br.com.gabrielferreira.eventos.api.exceptionhandler.ApiExceptionHandlerUnauthorized;
+import br.com.gabrielferreira.eventos.api.mapper.ErroPadraoMapper;
 import br.com.gabrielferreira.eventos.domain.service.security.TokenService;
 import br.com.gabrielferreira.eventos.domain.service.security.UsuarioAutenticacaoService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -26,6 +30,10 @@ public class WebSecurityConfig {
     private final UsuarioAutenticacaoService usuarioAutenticacaoService;
 
     private final TokenService tokenService;
+
+    private final ObjectMapper objectMapper;
+
+    private final ErroPadraoMapper erroPadraoMapper;
 
     // Config senha criptografada
     @Bean
@@ -58,6 +66,8 @@ public class WebSecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/perfis/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/enderecos/**").permitAll()
                         .anyRequest().authenticated()) // Endpoins permissão
+                .exceptionHandling(eh -> eh.authenticationEntryPoint(new ApiExceptionHandlerUnauthorized(objectMapper, erroPadraoMapper)) // Mensagem personalizada quando não for autenticado
+                .accessDeniedHandler(new ApiExceptionHandlerForbidden(objectMapper, erroPadraoMapper))) // Mensagem personalizada quando não tiver permissão
                 .build();
     }
 }

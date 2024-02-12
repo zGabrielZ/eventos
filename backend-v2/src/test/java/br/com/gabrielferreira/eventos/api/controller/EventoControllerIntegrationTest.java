@@ -276,4 +276,21 @@ class EventoControllerIntegrationTest {
         resultActions.andExpect(status().isNotFound());
         resultActions.andExpect(jsonPath("$.mensagem").value("Usuário não encontrado"));
     }
+
+    @Test
+    @DisplayName("Não deve alterar evento quando não tiver usuário logado")
+    @Order(13)
+    void naoDeveAlterarEventoQuandoNaoTiverUsuarioLogado() throws Exception {
+        String jsonBody = objectMapper.writeValueAsString(eventoInputAtualizar);
+
+        ResultActions resultActions = mockMvc
+                .perform(put(URL.concat("{idUsuario}/eventos/{idEvento}"), idUsuarioExistente, idEventoExistente)
+                        .content(jsonBody)
+                        .contentType(MEDIA_TYPE_JSON)
+                        .accept(MEDIA_TYPE_JSON));
+
+        resultActions.andExpect(status().isUnauthorized());
+        resultActions.andExpect(jsonPath("$.titulo").value("Não autorizado"));
+        resultActions.andExpect(jsonPath("$.mensagem").value("Você precisa fazer login primeiro para executar esta função"));
+    }
 }
