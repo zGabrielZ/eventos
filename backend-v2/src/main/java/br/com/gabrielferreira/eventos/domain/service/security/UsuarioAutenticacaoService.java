@@ -1,6 +1,8 @@
 package br.com.gabrielferreira.eventos.domain.service.security;
 
+import br.com.gabrielferreira.eventos.domain.exception.ForbiddenException;
 import br.com.gabrielferreira.eventos.domain.exception.NaoEncontradoException;
+import br.com.gabrielferreira.eventos.domain.exception.RegraDeNegocioException;
 import br.com.gabrielferreira.eventos.domain.exception.UnauthorizedException;
 import br.com.gabrielferreira.eventos.domain.model.Usuario;
 import br.com.gabrielferreira.eventos.domain.repository.UsuarioRepository;
@@ -12,6 +14,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import java.util.Optional;
+
+import static br.com.gabrielferreira.eventos.common.utils.ConstantesUtils.*;
 
 @Service
 @RequiredArgsConstructor
@@ -39,7 +43,7 @@ public class UsuarioAutenticacaoService implements UserDetailsService {
         Optional<Usuario> usuarioOpt = usuarioRepository.buscarPorId(id);
         if(usuarioOpt.isEmpty()){
             log.warn("Usuário do id {} não encontrado", id);
-            throw new NaoEncontradoException(String.format("Id %s não encontrado", id));
+            throw new NaoEncontradoException("Usuário não encontrado");
         }
         log.info("Usuário do id {} encontrado", id);
         return usuarioOpt.get();
@@ -51,6 +55,31 @@ public class UsuarioAutenticacaoService implements UserDetailsService {
         } catch (Exception e){
             log.error("Usuário inválido {}", e.getMessage());
             throw new UnauthorizedException("Usuário inválido");
+        }
+    }
+
+    public void validarAdminOuProprioUsuario(Long idUsuario){
+        Usuario usuario = usuarioAutenticado();
+        if(!usuario.getId().equals(idUsuario) && usuario.isNaoTemPerfil(ROLE_ADMIN)){
+            throw new ForbiddenException(MSG_FORBIDDEN);
+        }
+    }
+
+    public void validarAdmin(){
+        Usuario usuario = usuarioAutenticado();
+        if(usuario.isNaoTemPerfil(ROLE_ADMIN)){
+            throw new ForbiddenException(MSG_FORBIDDEN);
+        }
+    }
+
+    public void validarAdminExclusao(Long idUsuario){
+        Usuario usuario = usuarioAutenticado();
+        if(usuario.isNaoTemPerfil(ROLE_ADMIN)){
+            throw new ForbiddenException(MSG_FORBIDDEN);
+        }
+
+        if(usuario.getId().equals(idUsuario)){
+            throw new RegraDeNegocioException("Você não pode excluir a sua própria conta no sistema");
         }
     }
 }

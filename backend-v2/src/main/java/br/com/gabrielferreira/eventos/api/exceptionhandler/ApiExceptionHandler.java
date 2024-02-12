@@ -1,6 +1,7 @@
 package br.com.gabrielferreira.eventos.api.exceptionhandler;
 
 import br.com.gabrielferreira.eventos.api.mapper.ErroPadraoMapper;
+import br.com.gabrielferreira.eventos.domain.exception.ForbiddenException;
 import br.com.gabrielferreira.eventos.domain.exception.NaoEncontradoException;
 import br.com.gabrielferreira.eventos.domain.exception.RegraDeNegocioException;
 import br.com.gabrielferreira.eventos.domain.exception.UnauthorizedException;
@@ -70,6 +71,13 @@ public class ApiExceptionHandler {
     public ResponseEntity<ErroPadraoModel> unauthorizedException(UnauthorizedException e, HttpServletRequest request){
         HttpStatus httpStatus = HttpStatus.UNAUTHORIZED;
         ErroPadraoModel erroPadraoModel = erroPadraoMapper.toErroPadrao(toFusoPadraoSistema(ZonedDateTime.now()), httpStatus.value(), "Não autorizado", e.getMessage(), request.getRequestURI());
+        return ResponseEntity.status(httpStatus).body(erroPadraoModel);
+    }
+
+    @ExceptionHandler(ForbiddenException.class)
+    public ResponseEntity<ErroPadraoModel> forbiddenException(ForbiddenException e, HttpServletRequest request){
+        HttpStatus httpStatus = HttpStatus.FORBIDDEN;
+        ErroPadraoModel erroPadraoModel = erroPadraoMapper.toErroPadrao(toFusoPadraoSistema(ZonedDateTime.now()), httpStatus.value(), "Proibido", e.getMessage(), request.getRequestURI());
         return ResponseEntity.status(httpStatus).body(erroPadraoModel);
     }
 }

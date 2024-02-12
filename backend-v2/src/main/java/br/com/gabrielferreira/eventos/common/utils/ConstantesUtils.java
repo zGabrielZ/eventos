@@ -8,6 +8,9 @@ public class ConstantesUtils {
 
     private ConstantesUtils(){}
 
+    public static final String ROLE_ADMIN = "ROLE_ADMIN";
+    public static final String MSG_FORBIDDEN = "Você não tem a permissão de realizar esta ação";
+
     public static boolean isPossuiCaracteresEspecias(String valor){
         boolean isPossuiCaracteresEspeciais = false;
         String padrao = "[@_!#$%^&*()<>?/|}{~:]";

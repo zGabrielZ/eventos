@@ -2,6 +2,7 @@ package br.com.gabrielferreira.eventos.api.controller;
 
 import br.com.gabrielferreira.eventos.api.model.input.PerfilIdInputModel;
 import br.com.gabrielferreira.eventos.api.model.input.UsuarioInputModel;
+import br.com.gabrielferreira.eventos.utils.TokenUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,12 +33,17 @@ class UsuarioControllerIntegrationTest {
     private static final String SENHA_COM_DIGITO = "123";
     private static final String SENHA_COM_CARACTERE_ESPECIAL = "@aaa";
     private static final String SENHA_COM_CARACTERE_ESPECIAL_MINUSCULAS_MAIUSCULAS = "@AAAaa";
+    private static final String AUTHORIZATION = "Authorization";
+    private static final String BEARER = "Bearer ";
 
     @Autowired
     protected MockMvc mockMvc;
 
     @Autowired
     protected ObjectMapper objectMapper;
+
+    @Autowired
+    protected TokenUtils tokenUtils;
 
     private UsuarioInputModel input;
 
@@ -47,12 +53,21 @@ class UsuarioControllerIntegrationTest {
 
     private UsuarioInputModel inputAtualizar;
 
+    private String tokenAdmin;
+
+    private String tokenNaoAdmin;
+
+    private Long idUsuarioExistenteNaoAdmin;
+
     @BeforeEach
     void setUp(){
         input = criarUsuarioInput();
         idUsuarioExistente = 1L;
         idUsuarioInexsitente = -1L;
         inputAtualizar = criarUsuarioInputAtualizar();
+        tokenAdmin = tokenUtils.gerarToken(mockMvc, "jose@email.com", "123");
+        tokenNaoAdmin = tokenUtils.gerarToken(mockMvc, "marcos@email.com", "123");
+        idUsuarioExistenteNaoAdmin = 2L;
     }
 
     @Test
@@ -66,6 +81,7 @@ class UsuarioControllerIntegrationTest {
 
         ResultActions resultActions = mockMvc
                 .perform(post(URL)
+                        .header(AUTHORIZATION, BEARER + tokenAdmin)
                         .content(jsonBody)
                         .contentType(MEDIA_TYPE_JSON)
                         .accept(MEDIA_TYPE_JSON));
@@ -91,6 +107,7 @@ class UsuarioControllerIntegrationTest {
 
         ResultActions resultActions = mockMvc
                 .perform(post(URL)
+                        .header(AUTHORIZATION, BEARER + tokenAdmin)
                         .content(jsonBody)
                         .contentType(MEDIA_TYPE_JSON)
                         .accept(MEDIA_TYPE_JSON));
@@ -111,6 +128,7 @@ class UsuarioControllerIntegrationTest {
 
         ResultActions resultActions = mockMvc
                 .perform(post(URL)
+                        .header(AUTHORIZATION, BEARER + tokenAdmin)
                         .content(jsonBody)
                         .contentType(MEDIA_TYPE_JSON)
                         .accept(MEDIA_TYPE_JSON));
@@ -130,6 +148,7 @@ class UsuarioControllerIntegrationTest {
 
         ResultActions resultActions = mockMvc
                 .perform(post(URL)
+                        .header(AUTHORIZATION, BEARER + tokenAdmin)
                         .content(jsonBody)
                         .contentType(MEDIA_TYPE_JSON)
                         .accept(MEDIA_TYPE_JSON));
@@ -149,6 +168,7 @@ class UsuarioControllerIntegrationTest {
 
         ResultActions resultActions = mockMvc
                 .perform(post(URL)
+                        .header(AUTHORIZATION, BEARER + tokenAdmin)
                         .content(jsonBody)
                         .contentType(MEDIA_TYPE_JSON)
                         .accept(MEDIA_TYPE_JSON));
@@ -168,6 +188,7 @@ class UsuarioControllerIntegrationTest {
 
         ResultActions resultActions = mockMvc
                 .perform(post(URL)
+                        .header(AUTHORIZATION, BEARER + tokenAdmin)
                         .content(jsonBody)
                         .contentType(MEDIA_TYPE_JSON)
                         .accept(MEDIA_TYPE_JSON));
@@ -187,6 +208,7 @@ class UsuarioControllerIntegrationTest {
 
         ResultActions resultActions = mockMvc
                 .perform(post(URL)
+                        .header(AUTHORIZATION, BEARER + tokenAdmin)
                         .content(jsonBody)
                         .contentType(MEDIA_TYPE_JSON)
                         .accept(MEDIA_TYPE_JSON));
@@ -208,6 +230,7 @@ class UsuarioControllerIntegrationTest {
 
         ResultActions resultActions = mockMvc
                 .perform(post(URL)
+                        .header(AUTHORIZATION, BEARER + tokenAdmin)
                         .content(jsonBody)
                         .contentType(MEDIA_TYPE_JSON)
                         .accept(MEDIA_TYPE_JSON));
@@ -229,6 +252,7 @@ class UsuarioControllerIntegrationTest {
 
         ResultActions resultActions = mockMvc
                 .perform(post(URL)
+                        .header(AUTHORIZATION, BEARER + tokenAdmin)
                         .content(jsonBody)
                         .contentType(MEDIA_TYPE_JSON)
                         .accept(MEDIA_TYPE_JSON));
@@ -244,6 +268,7 @@ class UsuarioControllerIntegrationTest {
     void deveBuscarUsuarioPorId() throws Exception {
         ResultActions resultActions = mockMvc
                 .perform(get(URL.concat("/{id}"), idUsuarioExistente)
+                        .header(AUTHORIZATION, BEARER + tokenAdmin)
                         .accept(MEDIA_TYPE_JSON));
 
         resultActions.andExpect(status().isOk());
@@ -260,6 +285,7 @@ class UsuarioControllerIntegrationTest {
     void naoDeveBuscarUsuarioPorId() throws Exception {
         ResultActions resultActions = mockMvc
                 .perform(get(URL.concat("/{id}"), idUsuarioInexsitente)
+                        .header(AUTHORIZATION, BEARER + tokenAdmin)
                         .accept(MEDIA_TYPE_JSON));
 
         resultActions.andExpect(status().isNotFound());
@@ -278,6 +304,7 @@ class UsuarioControllerIntegrationTest {
 
         ResultActions resultActions = mockMvc
                 .perform(put(URL.concat("/{id}"), idUsuarioExistente)
+                        .header(AUTHORIZATION, BEARER + tokenAdmin)
                         .content(jsonBody)
                         .contentType(MEDIA_TYPE_JSON)
                         .accept(MEDIA_TYPE_JSON));
@@ -299,6 +326,7 @@ class UsuarioControllerIntegrationTest {
 
         ResultActions resultActions = mockMvc
                 .perform(put(URL.concat("/{id}"), idUsuarioExistente)
+                        .header(AUTHORIZATION, BEARER + tokenAdmin)
                         .content(jsonBody)
                         .contentType(MEDIA_TYPE_JSON)
                         .accept(MEDIA_TYPE_JSON));
@@ -312,7 +340,8 @@ class UsuarioControllerIntegrationTest {
     @Order(14)
     void deveDeletarUsuarioQuandoExistirDados() throws Exception {
         ResultActions resultActions = mockMvc
-                .perform(delete(URL.concat("/{id}"), idUsuarioExistente)
+                .perform(delete(URL.concat("/{id}"), idUsuarioExistenteNaoAdmin)
+                        .header(AUTHORIZATION, BEARER + tokenAdmin)
                         .accept(MEDIA_TYPE_JSON));
 
         resultActions.andExpect(status().isNoContent());
@@ -324,6 +353,7 @@ class UsuarioControllerIntegrationTest {
     void naoDeveDeletarUsuario() throws Exception {
         ResultActions resultActions = mockMvc
                 .perform(delete(URL.concat("/{id}"), idUsuarioInexsitente)
+                        .header(AUTHORIZATION, BEARER + tokenAdmin)
                         .accept(MEDIA_TYPE_JSON));
 
         resultActions.andExpect(status().isNotFound());
@@ -338,6 +368,7 @@ class UsuarioControllerIntegrationTest {
 
         ResultActions resultActions = mockMvc
                 .perform(get(filtro)
+                        .header(AUTHORIZATION, BEARER + tokenAdmin)
                         .accept(MEDIA_TYPE_JSON));
 
         resultActions.andExpect(status().isOk());
@@ -352,9 +383,70 @@ class UsuarioControllerIntegrationTest {
 
         ResultActions resultActions = mockMvc
                 .perform(get(filtro)
+                        .header(AUTHORIZATION, BEARER + tokenAdmin)
                         .accept(MEDIA_TYPE_JSON));
 
         resultActions.andExpect(status().isOk());
         resultActions.andExpect(jsonPath("$.content").exists());
+    }
+
+    @Test
+    @DisplayName("Não deve cadastrar usuário quando usuário logado for diferente de admin")
+    @Order(18)
+    void naoDeveCadastrarUsuarioQuandoInformarUsuarioLogadoDiferenteAdmin() throws Exception{
+        String jsonBody = objectMapper.writeValueAsString(input);
+
+        ResultActions resultActions = mockMvc
+                .perform(post(URL)
+                        .header(AUTHORIZATION, BEARER + tokenNaoAdmin)
+                        .content(jsonBody)
+                        .contentType(MEDIA_TYPE_JSON)
+                        .accept(MEDIA_TYPE_JSON));
+
+        resultActions.andExpect(status().isForbidden());
+        resultActions.andExpect(jsonPath("$.titulo").value("Proibido"));
+        resultActions.andExpect(jsonPath("$.mensagem").value("Você não tem a permissão de realizar esta ação"));
+    }
+
+    @Test
+    @DisplayName("Não deve buscar usuário por id quando usuário logado for diferente de admin")
+    @Order(19)
+    void naoDeveBuscarUsuarioPorIdQuandoUsuarioLogadoDiferenteAdmin() throws Exception {
+        ResultActions resultActions = mockMvc
+                .perform(get(URL.concat("/{id}"), idUsuarioExistente)
+                        .header(AUTHORIZATION, BEARER + tokenNaoAdmin)
+                        .accept(MEDIA_TYPE_JSON));
+
+        resultActions.andExpect(status().isForbidden());
+        resultActions.andExpect(jsonPath("$.titulo").value("Proibido"));
+        resultActions.andExpect(jsonPath("$.mensagem").value("Você não tem a permissão de realizar esta ação"));
+    }
+
+    @Test
+    @DisplayName("Não deve deletar usuário quando usuário logado for diferente de admin")
+    @Order(20)
+    void naoDeveDeletarUsuarioQuandoUsuarioLogadoDiferenteAdmin() throws Exception {
+        ResultActions resultActions = mockMvc
+                .perform(delete(URL.concat("/{id}"), idUsuarioExistente)
+                        .header(AUTHORIZATION, BEARER + tokenNaoAdmin)
+                        .accept(MEDIA_TYPE_JSON));
+
+        resultActions.andExpect(status().isForbidden());
+        resultActions.andExpect(jsonPath("$.titulo").value("Proibido"));
+        resultActions.andExpect(jsonPath("$.mensagem").value("Você não tem a permissão de realizar esta ação"));
+    }
+
+    @Test
+    @DisplayName("Não deve deletar usuário quando usuário logado for igual ao usuário")
+    @Order(21)
+    void naoDeveDeletarUsuarioQuandoUsuarioLogadoForIgualAoUsuario() throws Exception {
+        ResultActions resultActions = mockMvc
+                .perform(delete(URL.concat("/{id}"), idUsuarioExistente)
+                        .header(AUTHORIZATION, BEARER + tokenAdmin)
+                        .accept(MEDIA_TYPE_JSON));
+
+        resultActions.andExpect(status().isBadRequest());
+        resultActions.andExpect(jsonPath("$.titulo").value("Regra de negócio"));
+        resultActions.andExpect(jsonPath("$.mensagem").value("Você não pode excluir a sua própria conta no sistema"));
     }
 }

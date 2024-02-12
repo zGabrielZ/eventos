@@ -4,6 +4,7 @@ import br.com.gabrielferreira.eventos.domain.dao.QueryDslDAO;
 import br.com.gabrielferreira.eventos.domain.dao.filter.UsuarioFilterModel;
 import br.com.gabrielferreira.eventos.domain.dao.projection.UsuarioProjection;
 import br.com.gabrielferreira.eventos.domain.model.QUsuario;
+import br.com.gabrielferreira.eventos.domain.service.security.UsuarioAutenticacaoService;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
@@ -30,7 +31,10 @@ public class ConsultaUsuarioService {
 
     private final QueryDslDAO queryDslDAO;
 
+    private final UsuarioAutenticacaoService usuarioAutenticacaoService;
+
     public Page<UsuarioProjection> buscarUsuariosPaginados(Pageable pageable, UsuarioFilterModel filtro){
+        usuarioAutenticacaoService.validarAdmin();
         QUsuario qUsuario = QUsuario.usuario;
         BooleanBuilder query = new BooleanBuilder();
         montarQuery(query, filtro, qUsuario);

@@ -4,6 +4,7 @@ import br.com.gabrielferreira.eventos.domain.exception.NaoEncontradoException;
 import br.com.gabrielferreira.eventos.domain.model.Perfil;
 import br.com.gabrielferreira.eventos.domain.model.Usuario;
 import br.com.gabrielferreira.eventos.domain.repository.UsuarioRepository;
+import br.com.gabrielferreira.eventos.domain.service.security.UsuarioAutenticacaoService;
 import br.com.gabrielferreira.eventos.domain.service.validator.UsuarioValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -22,8 +23,11 @@ public class UsuarioService {
 
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
+    private final UsuarioAutenticacaoService usuarioAutenticacaoService;
+
     @Transactional
     public Usuario cadastrarUsuario(Usuario usuario){
+        usuarioAutenticacaoService.validarAdmin();
         usuarioValidator.validarCampos(usuario);
         usuarioValidator.validarSenha(usuario.getSenha());
         usuarioValidator.validarEmail(null, usuario.getEmail());
@@ -35,12 +39,14 @@ public class UsuarioService {
     }
 
     public Usuario buscarUsuarioPorId(Long id){
+        usuarioAutenticacaoService.validarAdminOuProprioUsuario(id);
         return usuarioRepository.buscarPorId(id)
                 .orElseThrow(() -> new NaoEncontradoException("Usuário não encontrado"));
     }
 
     @Transactional
     public Usuario atualizarUsuarioPorId(Long id, Usuario usuario){
+        usuarioAutenticacaoService.validarAdminOuProprioUsuario(id);
         Usuario usuarioEncontrado = buscarUsuarioPorId(id);
 
         usuarioValidator.validarCampos(usuario);
@@ -56,6 +62,7 @@ public class UsuarioService {
 
     @Transactional
     public void deletarUsuarioPorId(Long id){
+        usuarioAutenticacaoService.validarAdminExclusao(id);
         Usuario usuarioEncontrado = buscarUsuarioPorId(id);
         usuarioRepository.delete(usuarioEncontrado);
     }

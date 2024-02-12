@@ -100,4 +100,12 @@ public class Usuario implements Serializable, UserDetails {
     public boolean isEnabled() {
         return true;
     }
+
+    public boolean isTemPerfil(String autoriedade){
+        return this.perfis.stream().anyMatch(p -> p.getAutoriedade().equals(autoriedade));
+    }
+
+    public boolean isNaoTemPerfil(String autoriedade){
+        return !isTemPerfil(autoriedade);
+    }
 }
