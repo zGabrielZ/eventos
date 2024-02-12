@@ -6,6 +6,7 @@ import br.com.gabrielferreira.eventos.domain.dao.projection.PerfilProjection;
 import br.com.gabrielferreira.eventos.domain.exception.NaoEncontradoException;
 import br.com.gabrielferreira.eventos.domain.model.QPerfil;
 import br.com.gabrielferreira.eventos.domain.model.QUsuario;
+import br.com.gabrielferreira.eventos.domain.service.security.UsuarioAutenticacaoService;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
@@ -29,7 +30,10 @@ public class ConsultaPerfisUsuarioService {
 
     private final QueryDslDAO queryDslDAO;
 
+    private final UsuarioAutenticacaoService usuarioAutenticacaoService;
+
     public Page<PerfilProjection> buscarPerfisPorUsuario(Long idUsuario, Pageable pageable, PerfilFilterModel filtro){
+        usuarioAutenticacaoService.validarAdminOuProprioUsuario(idUsuario);
         if(usuarioService.isUsuarioNaoExistente(idUsuario)){
             throw new NaoEncontradoException("Usuário não encontrado");
         }

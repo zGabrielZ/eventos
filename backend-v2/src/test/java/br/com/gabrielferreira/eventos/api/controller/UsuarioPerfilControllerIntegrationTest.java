@@ -1,5 +1,6 @@
 package br.com.gabrielferreira.eventos.api.controller;
 
+import br.com.gabrielferreira.eventos.utils.TokenUtils;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -24,8 +25,22 @@ class UsuarioPerfilControllerIntegrationTest {
     private static final String FILTRO_USUARIO_EXISTENTE = URL.concat("/1").concat("/perfis");
     private static final String FILTRO_USUARIO_INEXISTENTE = URL.concat("/-1").concat("/perfis");
 
+    private static final String AUTHORIZATION = "Authorization";
+
+    private static final String BEARER = "Bearer ";
+
     @Autowired
     protected MockMvc mockMvc;
+
+    @Autowired
+    protected TokenUtils tokenUtils;
+
+    private String tokenAdmin;
+
+    @BeforeEach
+    void setUp(){
+        tokenAdmin = tokenUtils.gerarToken(mockMvc, "jose@email.com", "123");
+    }
 
     @Test
     @DisplayName("Deve buscar perfis quando informar usuário existente")
@@ -35,6 +50,7 @@ class UsuarioPerfilControllerIntegrationTest {
 
         ResultActions resultActions = mockMvc
                 .perform(get(filtro)
+                        .header(AUTHORIZATION, BEARER + tokenAdmin)
                         .accept(MEDIA_TYPE_JSON));
 
         resultActions.andExpect(status().isOk());
@@ -49,6 +65,7 @@ class UsuarioPerfilControllerIntegrationTest {
 
         ResultActions resultActions = mockMvc
                 .perform(get(filtro)
+                        .header(AUTHORIZATION, BEARER + tokenAdmin)
                         .accept(MEDIA_TYPE_JSON));
 
         resultActions.andExpect(status().isOk());
@@ -61,6 +78,7 @@ class UsuarioPerfilControllerIntegrationTest {
     void naoDeveBuscarPerfisQuandoInformarUsuarioInexsistente() throws Exception{
         ResultActions resultActions = mockMvc
                 .perform(get(FILTRO_USUARIO_INEXISTENTE)
+                        .header(AUTHORIZATION, BEARER + tokenAdmin)
                         .accept(MEDIA_TYPE_JSON));
 
         resultActions.andExpect(status().isNotFound());
