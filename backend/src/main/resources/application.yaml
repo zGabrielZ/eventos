@@ -4,10 +4,6 @@ server:
 spring:
   profiles:
     active:
-      - test
+      - ${APP_PROFILE:dev}
   jpa:
     open-in-view: false
-
-jwt:
-  secret: ${JWT_SECRET:ES;%8_gCf)e+*q[J(mM@#6Tp>k*Ft=/j5{q_8cD~;bu)n?7;Yz`d2(RbgpWS!._A[cszkq}(:/]2<@3pa[f,nHZ5m9Mr6xwS:/,H&U3A>Ds;[W}
-  expiration: ${JWT_EXPIRATION:3600000}
