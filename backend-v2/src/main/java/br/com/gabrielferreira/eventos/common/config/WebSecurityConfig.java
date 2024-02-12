@@ -55,6 +55,7 @@ public class WebSecurityConfig {
                 .addFilterBefore(new JWTValidatorTokenFilter(tokenService, usuarioAutenticacaoService), UsernamePasswordAuthenticationFilter.class) // Verificar se o token está valido cada requisição
                 .authenticationProvider(new AppAuthenticationProvider(usuarioAutenticacaoService, passwordEncoder()))
                 .authorizeHttpRequests(auth -> auth.requestMatchers(HttpMethod.POST, "/login/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/perfis/**").permitAll()
                         .anyRequest().authenticated()) // Endpoins permissão
                 .build();
     }
