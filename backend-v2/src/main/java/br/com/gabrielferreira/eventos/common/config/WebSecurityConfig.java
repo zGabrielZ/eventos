@@ -56,6 +56,7 @@ public class WebSecurityConfig {
                 .authenticationProvider(new AppAuthenticationProvider(usuarioAutenticacaoService, passwordEncoder()))
                 .authorizeHttpRequests(auth -> auth.requestMatchers(HttpMethod.POST, "/login/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/perfis/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/enderecos/**").permitAll()
                         .anyRequest().authenticated()) // Endpoins permissão
                 .build();
     }
