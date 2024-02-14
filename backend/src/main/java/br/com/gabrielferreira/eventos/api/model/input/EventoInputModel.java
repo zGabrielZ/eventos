@@ -1,5 +1,6 @@
 package br.com.gabrielferreira.eventos.api.model.input;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotBlank;
@@ -24,18 +25,22 @@ public class EventoInputModel implements Serializable {
     @Serial
     private static final long serialVersionUID = -4454428904630791421L;
 
+    @Schema(description = "Nome do evento", example = "Evento #1")
     @NotBlank
     @Size(min = 1,max = 255)
     private String nome;
 
+    @Schema(description = "Data do evento", example = "2024-12-20")
     @FutureOrPresent
     @NotNull
     private LocalDate data;
 
+    @Schema(description = "Url do evento", example = "https://www.youtube.com")
     @URL
     @Size(min = 1, max = 255)
     private String url;
 
+    @Schema(description = "Cidade do evento")
     @Valid
     @NotNull
     private CidadeInputModel cidade;
