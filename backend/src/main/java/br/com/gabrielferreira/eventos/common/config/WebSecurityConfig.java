@@ -45,7 +45,8 @@ public class WebSecurityConfig {
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
         return (web -> web.ignoring().requestMatchers(new AntPathRequestMatcher("/**.html"), new AntPathRequestMatcher("/**.css")
-                , new AntPathRequestMatcher("/**.js")));
+                , new AntPathRequestMatcher("/**.js"), new AntPathRequestMatcher("/v3/api-docs/**"), new AntPathRequestMatcher("/swagger-ui/**")
+                , new AntPathRequestMatcher("/swagger-ui.html")));
     }
 
     // Config a partir da autenticação
