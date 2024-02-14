@@ -7,6 +7,12 @@ import br.com.gabrielferreira.eventos.domain.model.Usuario;
 import br.com.gabrielferreira.eventos.domain.service.security.TokenService;
 import br.com.gabrielferreira.eventos.domain.service.security.UsuarioAutenticacaoService;
 import br.com.gabrielferreira.eventos.domain.service.security.model.InformacoesTokenModel;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@Tag(name = "Login Controller", description = "Endpoints para realizar login")
 @RestController
 @RequestMapping("/login")
 @RequiredArgsConstructor
@@ -31,6 +38,14 @@ public class LoginController {
 
     private final LoginMapper loginMapper;
 
+    @Operation(summary = "Logar usuário")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Usuário logado",
+                    content = { @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = LoginModel.class)) }),
+            @ApiResponse(responseCode = "400", description = "Regra de negócio",
+                    content = @Content)
+    })
     @PostMapping
     public ResponseEntity<LoginModel> login(@Valid @RequestBody LoginInputModel loginInputModel){
         UsernamePasswordAuthenticationToken dadosLogin = new UsernamePasswordAuthenticationToken(loginInputModel.getEmail(), loginInputModel.getSenha());
@@ -41,6 +56,14 @@ public class LoginController {
         return ResponseEntity.ok(loginModel);
     }
 
+    @Operation(summary = "Refresh token do usuário")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Token atualizado",
+                    content = { @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = LoginModel.class)) }),
+            @ApiResponse(responseCode = "401", description = "Usuário não autenticado",
+                    content = @Content)
+    })
     @PostMapping("/refresh-token")
     public ResponseEntity<LoginModel> refreshToken(){
         Usuario usuario = usuarioAutenticacaoService.usuarioAutenticado();

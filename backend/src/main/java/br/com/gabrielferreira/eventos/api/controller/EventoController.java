@@ -46,7 +46,7 @@ public class EventoController {
                             schema = @Schema(implementation = EventoModel.class)) }),
             @ApiResponse(responseCode = "400", description = "Regra de negócio",
                     content = @Content),
-            @ApiResponse(responseCode = "401", description = "Não permitido para realizar requisição",
+            @ApiResponse(responseCode = "403", description = "Não permitido para realizar requisição",
                     content = @Content),
             @ApiResponse(responseCode = "404", description = "Usuário não encontrado",
                     content = @Content)
@@ -67,7 +67,7 @@ public class EventoController {
             @ApiResponse(responseCode = "200", description = "Evento encontrado",
                     content = { @Content(mediaType = "application/json",
                             schema = @Schema(implementation = EventoModel.class)) }),
-            @ApiResponse(responseCode = "401", description = "Não permitido para realizar requisição",
+            @ApiResponse(responseCode = "403", description = "Não permitido para realizar requisição",
                     content = @Content),
             @ApiResponse(responseCode = "404", description = "Evento não encontrado",
                     content = @Content)
@@ -87,7 +87,7 @@ public class EventoController {
                             schema = @Schema(implementation = EventoModel.class)) }),
             @ApiResponse(responseCode = "400", description = "Regra de negócio",
                     content = @Content),
-            @ApiResponse(responseCode = "401", description = "Não permitido para realizar requisição",
+            @ApiResponse(responseCode = "403", description = "Não permitido para realizar requisição",
                     content = @Content),
             @ApiResponse(responseCode = "404", description = "Usuário ou Evento não encontrado",
                     content = @Content)
@@ -105,7 +105,7 @@ public class EventoController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "Evento deletado",
                     content = @Content),
-            @ApiResponse(responseCode = "401", description = "Não permitido para realizar requisição",
+            @ApiResponse(responseCode = "403", description = "Não permitido para realizar requisição",
                     content = @Content),
             @ApiResponse(responseCode = "404", description = "Evento não encontrado",
                     content = @Content)
@@ -121,7 +121,7 @@ public class EventoController {
             @ApiResponse(responseCode = "200", description = "Eventos encontrados",
                     content = { @Content(mediaType = "application/json",
                             schema = @Schema(implementation = EventoModel.class)) }),
-            @ApiResponse(responseCode = "401", description = "Não permitido para realizar requisição",
+            @ApiResponse(responseCode = "403", description = "Não permitido para realizar requisição",
                     content = @Content),
             @ApiResponse(responseCode = "404", description = "Usuário não encontrado",
                     content = @Content)
