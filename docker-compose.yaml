@@ -1,0 +1,39 @@
+version: "3.8"
+services:
+  api-eventos:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    working_dir: /backend
+    container_name: api-eventos
+    env_file:
+      - docker-devtest.env
+    ports:
+      - "8080:8080"
+    command: mvn spring-boot:run
+    networks:
+      - compose-bridge
+    restart: always
+    depends_on:
+      - db
+
+  db:
+    image: postgres:14.3
+    container_name: db
+    environment:
+      - TZ=UTC
+      - POSTGRES_USER=gabriel-docker-devtest
+      - POSTGRES_PASSWORD=gabriel-docker-devtest
+      - POSTGRES_DB=evento-docker-devtest
+    ports:
+      - "5000:5432"
+    restart: always
+    volumes:
+      - ./vol-db:/var/lib/postgresql/data
+      - ./init-db-devtest.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - compose-bridge
+
+networks:
+  compose-bridge:
+    driver: bridge
