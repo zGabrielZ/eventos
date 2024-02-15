@@ -59,6 +59,18 @@ Após executar o projeto, entra no navegador e digite http://localhost:8080/swag
 
 ![Documentação](https://github.com/zGabrielZ/assets/blob/main/API%20Evento/doc-api-evento.png)
 
+# Como executar o projeto via docker
+```
+# clonar o projeto evento api
+git clone https://github.com/zGabrielZ/api-evento.git
+
+# entrar no terminal e utilizar o comando abaixo
+docker-compose up -d
+
+# apos isso vai ser criado o container da app
+
+```
+
 # Autor
 
 Gabriel Ferreira
