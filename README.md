@@ -37,7 +37,7 @@ Pré requisito: Java 17 e Docker
 
 ```
 # clonar o projeto evento api
-git clone https://github.com/zGabrielZ/api-evento.git
+git clone https://github.com/zGabrielZ/eventos.git
 
 # clonar o projeto que está com o script do docker yaml do banco de dados postgressql, isso é o ambiente dev
 git clone https://github.com/zGabrielZ/configs.git
@@ -62,7 +62,7 @@ Após executar o projeto, entra no navegador e digite http://localhost:8080/swag
 # Como executar o projeto via docker
 ```
 # clonar o projeto evento api
-git clone https://github.com/zGabrielZ/api-evento.git
+git clone https://github.com/zGabrielZ/eventos.git
 
 # entrar no terminal e utilizar o comando abaixo
 docker-compose up -d
